@@ -1,0 +1,39 @@
+{
+  "version": "2025.10.22",
+  "currency": "AED",
+  "units": "SqFt",
+  "mepPctOfBase": 0.22,
+  "quality": {
+    "light":    { "rate": 240 },
+    "standard": { "rate": 306 },
+    "premium":  { "rate": 395 }
+  },
+  "options": {
+    "furniture": { "type": "adder", "rate": 32, "label": "Furniture Supply" },
+    "ffe":       { "type": "adder", "rate": 18, "label": "Loose Furnishings & Décor" },
+    "art":       { "type": "adder", "rate": 6,  "label": "Original Art Procurement" },
+    "smart":     { "type": "adder", "rate": 20, "label": "Smart Workplace (IoT/AV)" },
+    "green":     { "type": "adder", "rate": 12, "label": "LEED / Sustainability" },
+    "fullhvac":  { "type": "adder", "rate": 13, "label": "Full HVAC Supply & Plant" }
+  },
+  "slices": {
+    "baseFitOut": { "label": "Fit-Out (Base)", "color": "#1f4b6e" },
+    "mepBase":    { "label": "MEP (Base)",     "color": "#2a6c9b" },
+    "furniture":  { "label": "Furniture Supply", "color": "#f39a2e" },
+    "ffe":        { "label": "Loose Furnishings & Décor", "color": "#f2cf61" },
+    "art":        { "label": "Original Art", "color": "#9ed08c" },
+    "smart":      { "label": "Smart Workplace", "color": "#6db5e4" },
+    "green":      { "label": "LEED / Sustainability", "color": "#6cc6a6" },
+    "fullhvac":   { "label": "Full HVAC Supply & Plant", "color": "#8b9bb7" }
+  },
+  "glossary": {
+    "Fit-Out (Base)": [
+      "Partitions, ceilings, finishes, joinery",
+      "Lighting, small power distribution",
+      "Basic mechanical distribution"
+    ],
+    "MEP (Base)": [
+      "Mechanical, Electrical & Plumbing baseline allowance as % of Fit-Out base"
+    ]
+  }
+}

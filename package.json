@@ -1,0 +1,17 @@
+{
+  "name": "trdb-estimator-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions for TRDB Fitout Cost Estimator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["netlify", "functions", "email"],
+  "author": "Temple Rock Design Build",
+  "license": "ISC",
+  "dependencies": {
+    "nodemailer": "^6.10.1",
+    "googleapis": "^128.0.0",
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}

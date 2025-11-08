@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TRDB Fit-Out Cost Estimator</title>
+<!-- Order matters: put your choice LAST -->
+<link rel="icon" href="/favicon.ico" sizes="any">            <!-- optional fallback -->
+<link rel="icon" type="image/png" href="/public/assets/favicon.png?v=2" sizes="32x32">
+
+  <!-- Google Analytics 4 (Estimator) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CBEDXTN27Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-CBEDXTN27Q', { 'anonymize_ip': true });
+  </script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./public/styles.css" />
+
+  <!-- Chart.js + jsPDF (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <!-- html2canvas for PDF rendering (EN + AR) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="brand">
+      <a class="logo-link" href="https://thetemplerock.com" target="_blank" rel="noopener">
+        <img class="logo" src="./public/assets/trdb-logo.png" alt="TR Design Build Logo" />
+      </a>
+
+      <div class="brand-text">
+        <h1 id="t_appTitle">TRDB Fit-Out Cost Estimator</h1>
+        <p class="subtitle" id="t_appSubtitle">AI-Powered Office Fit-Out Budgeting (UAE &amp; KSA)</p>
+      </div>
+
+      <!-- Language toggle -->
+      <div class="lang-toggle" aria-label="Language">
+        <button id="lang-en" class="btn lang active" type="button">EN</button>
+        <button id="lang-ar" class="btn lang" type="button">AR</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="container">
+    <!-- LEFT: Inputs -->
+    <section class="card inputs">
+      <h2 id="t_projectInputs">Project Inputs</h2>
+
+      <!-- Market -->
+      <div class="row">
+        <label id="t_market">Market</label><br />
+        <select id="market">
+          <option value="UAE_Dubai" data-en="UAE – Dubai" data-ar="الإمارات – دبي">UAE – Dubai</option>
+          <option value="UAE_AbuDhabi" data-en="UAE – Abu Dhabi" data-ar="الإمارات – أبوظبي">UAE – Abu Dhabi</option>
+          <option value="UAE_RAK" data-en="UAE – Ras Al Khaimah" data-ar="الإمارات – رأس الخيمة">UAE – Ras Al Khaimah</option>
+          <option value="KSA_Riyadh" data-en="KSA – Riyadh" data-ar="السعودية – الرياض">KSA – Riyadh</option>
+          <option value="KSA_Jeddah" data-en="KSA – Jeddah" data-ar="السعودية – جدة">KSA – Jeddah</option>
+        </select>
+        <span class="badge" id="t_unitsBadge">SqFt</span>
+      </div>
+
+      <!-- Size -->
+      <div class="row">
+        <label><span id="t_projectSize">Project Size (SqFt)</span>: <b id="sqftOut">10,000</b></label><br />
+        <div class="slider-row">
+          <input id="sqft" type="range" min="1000" max="30000" step="100" value="10000" />
+        </div>
+
+        <div class="range-value">
+          <input id="sqftInput" class="input--sqft card" type="text" inputmode="numeric" pattern="[0-9]*" value="10000" aria-label="Project Size in SqFt" />
+          <button class="btn-step" id="btnMinus" aria-label="Decrease size">–</button>
+          <button class="btn-step" id="btnPlus"  aria-label="Increase size">+</button>
+        </div>
+
+        <div class="chips" aria-label="Quick size presets">
+          <button class="chip" data-size="5000">5k</button>
+          <button class="chip active" data-size="10000">10k</button>
+          <button class="chip" data-size="15000">15k</button>
+          <button class="chip" data-size="20000">20k</button>
+        </div>
+      </div>
+
+      <!-- Quality -->
+      <div class="row">
+        <label id="t_fitOutQuality">Fit-Out Quality</label><br />
+        <div class="quality-grid" id="quality">
+          <label class="pill"><input type="radio" name="quality" value="Light" /> <span id="t_qualityLight">Light</span></label>
+          <label class="pill"><input type="radio" name="quality" value="Standard" checked /> <span id="t_qualityStandard">Standard</span></label>
+          <label class="pill"><input type="radio" name="quality" value="Premium" /> <span id="t_qualityPremium">Premium</span></label>
+        </div>
+      </div>
+
+      <!-- Inline quality explanation -->
+      <div id="qualityDesc" class="quality-desc" aria-live="polite"></div>
+
+      <!-- Options -->
+      <div class="row">
+        <label id="t_options">Options</label>
+        <div class="flex">
+          <label><input type="checkbox" id="opt-furniture" /> <span id="t_optionFurniture">Furniture Supply</span></label>
+          <label><input type="checkbox" id="opt-ffe" /> <span id="t_optionLooseDecor">Loose Furnishings &amp; Décor</span></label>
+          <label><input type="checkbox" id="opt-art" /> <span id="t_optionArt">Original Art Procurement</span></label>
+          <label><input type="checkbox" id="opt-smart" /> <span id="t_optionSmartWorkplace">Smart Workplace (IoT/AV)</span></label>
+          <label><input type="checkbox" id="opt-green" /> <span id="t_optionGreen">LEED / Sustainability</span></label>
+          <label><input type="checkbox" id="opt-fast" /> <span id="t_optionFastTrack">Fast-Track Timeline</span></label>
+          <label><input type="checkbox" id="opt-fullhvac" /> <span id="t_optionHVACFull">Full HVAC Supply &amp; Plant</span></label>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+  <button id="btn-get-estimate" class="btn primary"><span id="t_getEstimate">Get Your Estimate</span></button>
+  <a id="btn-consult" class="btn cta"
+     href="https://thetemplerock.com/ola/services/book-a-consultation#7130d1e4-1a6e-4871-91d3-920d5f5b3e33"
+     target="_blank" rel="noopener noreferrer"><span id="t_bookConsultation">Book Consultation</span></a>
+</div>
+
+      <p class="small" id="t_baseNote">
+        Base MEP covers distribution/connection to existing systems. Select "Full HVAC Supply &amp; Plant" to include supply of equipment and plant-side works where required.
+      </p>
+    </section>
+
+    <!-- RIGHT: Results -->
+    <section class="card results">
+      <h2 id="t_estimationResults">Estimation Results</h2>
+
+      <div class="kpi">
+        <span id="t_baseCostLabel">TRDB Base (ex-options):</span>
+        <b id="trdbBase">–</b>
+      </div>
+      <div class="kpi">
+        <span id="t_totalCostLabel">Total Project Cost (with options):</span>
+        <b id="total">–</b>
+      </div>
+
+      <canvas id="pie" width="420" height="280" aria-label="Cost breakdown chart"></canvas>
+      <hr />
+
+      <!-- Collapsible info panel -->
+      <details class="info" open>
+        <summary id="t_whatsIncludedTitle">What's included in each slice?</summary>
+        <div id="info-panel"></div>
+      </details>
+
+      <!-- Glossary -->
+      <details class="info">
+        <summary id="t_glossaryTitle">Glossary</summary>
+        <div class="small" style="margin-top:8px; line-height:1.5">
+          <b>MEP</b>: <span id="t_gl_mep">Mechanical, Electrical &amp; Plumbing</span><br/>
+          <b>HVAC</b>: <span id="t_gl_hvac">Heating, Ventilation &amp; Air Conditioning</span><br/>
+          <b>BMS</b>: <span id="t_gl_bms">Building Management System</span><br/>
+          <b>IAQ</b>: <span id="t_gl_iaq">Indoor Air Quality</span><br/>
+          <b>LV</b>: <span id="t_gl_lv">Low-Voltage (data/voice/IT/AV cabling &amp; containment)</span>
+        </div>
+      </details>
+
+      <p class="small" id="t_disclaimer">
+        Note: Ranges reflect scope, specification and program assumptions. For a firm proposal, use "Email this Estimate", WhatsApp, or book a consultation.
+      </p>
+    </section>
+<!-- Unified Lead Capture Modal -->
+<div id="leadModal" class="lead-modal" style="display:none;">
+  <div class="lead-modal-content">
+    <div class="lead-modal-header">
+      <h3>Get Your Estimate</h3>
+      <button class="lead-modal-close" onclick="closeLeadModal()">&times;</button>
+    </div>
+    
+    <form id="leadForm" class="lead-form">
+      <div class="lead-form-group">
+        <label for="leadName">Full Name *</label>
+        <input type="text" id="leadName" name="name" required>
+      </div>
+      
+      <div class="lead-form-group">
+        <label for="leadEmail">Email Address *</label>
+        <input type="email" id="leadEmail" name="email" required>
+      </div>
+      
+      <div class="lead-form-group">
+        <label for="leadCompany">Company (Optional)</label>
+        <input type="text" id="leadCompany" name="company">
+      </div>
+      
+      <div class="lead-form-summary">
+        <p><strong>Your Estimate:</strong></p>
+        <p id="leadEstimateSummary"></p>
+      </div>
+
+      <div class="lead-delivery-options">
+        <p><strong>How would you like to receive it?</strong></p>
+        <label class="delivery-option">
+          <input type="radio" name="deliveryMethod" value="email" checked>
+          <span>📧 Email me the estimate</span>
+        </label>
+        <label class="delivery-option">
+          <input type="radio" name="deliveryMethod" value="pdf">
+          <span>📄 Download PDF</span>
+        </label>
+        <label class="delivery-option">
+          <input type="radio" name="deliveryMethod" value="whatsapp">
+          <span>💬 Share via WhatsApp</span>
+        </label>
+      </div>
+      
+      <button type="submit" class="btn cta" style="width:100%;">Get My Estimate</button>
+      <button type="button" class="btn" onclick="closeLeadModal()" style="width:100%; margin-top:8px;">Cancel</button>
+    </form>
+  </div>
+</div>
+  <div class="lead-modal-content">
+    <div class="lead-modal-header">
+      <h3>Get Your Estimate</h3>
+      <button class="lead-modal-close" onclick="closeLeadModal()">&times;</button>
+    </div>
+    
+    <form id="leadForm" class="lead-form">
+      <div class="lead-form-group">
+        <label for="leadName">Full Name *</label>
+        <input type="text" id="leadName" name="name" required>
+      </div>
+      
+      <div class="lead-form-group">
+        <label for="leadEmail">Email Address *</label>
+        <input type="email" id="leadEmail" name="email" required>
+      </div>
+      
+      <div class="lead-form-group">
+        <label for="leadCompany">Company (Optional)</label>
+        <input type="text" id="leadCompany" name="company">
+      </div>
+      
+      <div class="lead-form-summary">
+        <p><strong>Your Estimate:</strong></p>
+        <p id="leadEstimateSummary"></p>
+      </div>
+      
+      <button type="submit" class="btn cta" style="width:100%;">Send Estimate to My Email</button>
+      <button type="button" class="btn" onclick="closeLeadModal()" style="width:100%; margin-top:8px;">Cancel</button>
+    </form>
+  </div>
+</div>  
+</main>
+
+  <!-- Mobile sticky CTA -->
+  <div class="sticky-cta" id="stickyCta">
+    <a class="btn-primary"
+       href="https://thetemplerock.com/ola/services/book-a-consultation#7130d1e4-1a6e-4871-91d3-920d5f5b3e33"
+       target="_blank" rel="noopener noreferrer"
+       id="t_stickyCta">Book consultation</a>
+  </div>
+
+  <footer class="site-footer">
+    © <span id="yr"></span> TR Design Build – TRDB. All rights reserved.<br/>
+    <small id="t_footerNote">Estimates are generated by TR Design Build's proprietary AI model and are aligned with publicly available industry data in the UAE &amp; KSA.</small>
+  </footer>
+
+  <!-- App -->
+  <script src="./src/app.js?v=15"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: no-referrer-when-downgrade
+Content-Security-Policy:
+  default-src 'self';
+  script-src  'self' https://www.googletagmanager.com https://www.google-analytics.com;
+  connect-src 'self' https://www.google-analytics.com;
+  img-src     'self' data: https://www.google-analytics.com https://www.googletagmanager.com;
+  style-src   'self' 'unsafe-inline';
+  font-src    'self' data:;
+  frame-ancestors 'none';

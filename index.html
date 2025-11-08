@@ -1,0 +1,3113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRDB Fitout Cost Estimator</title>
+    <link rel="icon" type="image/png" href="/public/assets/trdb-logo.png">
+    <link rel="apple-touch-icon" href="/public/assets/trdb-logo.png">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CBEDXTN27Q"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-CBEDXTN27Q');</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--orange:#e67e22;--orange-dark:#d35400;--bg-1:#0f172a;--bg-2:#1e293b;--bg-3:#334155;--text-1:#f1f5f9;--text-2:#cbd5e1;--text-3:#94a3b8;--cyan:#06b6d4;--green:#10b981;--red:#ef4444;--border:#334155}
+html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg-1);color:var(--text-1);line-height:1.6;overflow-x:hidden;width:100%;max-width:100vw}
+.header{background:var(--bg-2);border-bottom:2px solid var(--orange);padding:1rem 2rem;display:flex;align-items:center;gap:2rem;position:sticky;top:0;z-index:100;box-shadow:0 4px 6px rgba(0,0,0,0.4)}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:1rem}
+.btn-signup{background:var(--orange);color:white;border:none;padding:0.625rem 1.5rem;border-radius:8px;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.btn-signup:hover{background:var(--orange-dark);transform:translateY(-2px);box-shadow:0 4px 12px rgba(230,126,34,0.4)}
+.welcome-msg{color:var(--green);font-weight:600;display:none}
+.logo{height:40px;transition:transform 0.25s}
+.logo:hover{transform:scale(1.05)}
+.title{font-size:1.5rem;font-weight:700;flex:1}
+.lang{display:flex;gap:0.5rem;background:var(--bg-3);border-radius:8px;padding:4px}
+.lang button{background:0;border:0;color:var(--text-2);padding:0.5rem 1rem;border-radius:6px;font-weight:600;cursor:pointer;transition:0.15s}
+.lang button.active{background:var(--orange);color:#fff}
+.lang button:hover:not(.active){background:var(--bg-1);color:var(--text-1)}
+.page{max-width:1600px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:400px 1fr;gap:2rem;min-height:calc(100vh - 80px);width:100%;box-sizing:border-box}
+.inputs{background:var(--bg-2);border-radius:16px;padding:2rem;border:1px solid var(--border);box-shadow:0 10px 15px rgba(0,0,0,0.5);height:fit-content}
+.field{display:block;margin-bottom:1.5rem}
+.field span{display:block;font-weight:600;color:var(--text-2);margin-bottom:0.5rem;font-size:0.875rem;text-transform:uppercase;letter-spacing:0.05em}
+.field select{width:100%;padding:0.875rem 1rem;background:var(--bg-3);border:2px solid var(--border);border-radius:10px;color:var(--text-1);font-size:1rem;cursor:pointer;transition:0.25s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23cbd5e1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center;background-size:1.5rem;padding-right:3rem}
+.field select:hover{border-color:var(--orange)}
+.field select:focus{outline:0;border-color:var(--orange);box-shadow:0 0 0 3px rgba(230,126,34,0.2)}
+.size-control{margin-bottom:2rem}
+.unit-toggle{display:flex;gap:0.5rem;background:var(--bg-3);border-radius:10px;padding:4px;margin-bottom:1rem}
+.unit-toggle button{flex:1;background:0;border:0;color:var(--text-2);padding:0.625rem;border-radius:8px;font-weight:600;cursor:pointer;transition:0.15s}
+.unit-toggle button.active{background:var(--orange);color:#fff}
+#sizeRange{width:100%;height:6px;background:var(--bg-3);border-radius:3px;outline:0;margin-bottom:1rem;-webkit-appearance:none}
+#sizeRange::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--orange);border-radius:50%;cursor:pointer;box-shadow:0 4px 6px rgba(0,0,0,0.4);transition:0.15s}
+#sizeRange::-webkit-slider-thumb:hover{transform:scale(1.2);background:var(--orange-dark)}
+#sizeRange::-moz-range-thumb{width:20px;height:20px;background:var(--orange);border-radius:50%;cursor:pointer;border:0;box-shadow:0 4px 6px rgba(0,0,0,0.4)}
+.nudgers{display:flex;gap:0.5rem;align-items:center;margin-bottom:1rem}
+.nudgers button{width:40px;height:40px;background:var(--bg-3);border:2px solid var(--border);border-radius:8px;color:var(--text-1);font-size:1.25rem;cursor:pointer;transition:0.15s;display:flex;align-items:center;justify-content:center}
+.nudgers button:hover{background:var(--orange);border-color:var(--orange);transform:scale(1.05)}
+.nudgers input{flex:1;text-align:center;padding:0.625rem;background:var(--bg-3);border:2px solid var(--border);border-radius:8px;color:var(--text-1);font-size:1.125rem;font-weight:700;transition:0.25s}
+.nudgers input:focus{outline:0;border-color:var(--orange);box-shadow:0 0 0 3px rgba(230,126,34,0.2)}
+.quick-chips{display:flex;gap:0.5rem}
+.chip{flex:1;padding:0.5rem;background:var(--bg-3);border:2px solid var(--border);border-radius:8px;color:var(--text-2);font-weight:600;font-size:0.875rem;cursor:pointer;transition:0.15s;text-align:center}
+.chip:hover{background:var(--bg-1);border-color:var(--orange);color:var(--text-1);transform:translateY(-2px)}
+.quality{border:2px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;background:var(--bg-3)}
+.quality legend{font-weight:700;color:var(--text-1);padding:0 0.75rem;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.05em}
+.quality label{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;margin:0.5rem 0;background:var(--bg-2);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:0.15s}
+.quality label:hover{border-color:var(--orange);background:var(--bg-1)}
+.quality input[type="radio"]{width:20px;height:20px;accent-color:var(--orange);cursor:pointer}
+.quality label:has(input:checked){border-color:var(--orange);background:rgba(230,126,34,0.1)}
+.base-includes{margin-bottom:1.5rem}
+.base-includes details{background:var(--bg-3);border:2px solid var(--border);border-radius:10px;padding:0.75rem;margin-bottom:0.5rem;transition:0.25s}
+.base-includes details:hover{border-color:var(--cyan)}
+.base-includes details[open]{border-color:var(--cyan);background:rgba(6,182,212,0.05)}
+.base-includes summary{font-weight:700;color:var(--cyan);cursor:pointer;display:flex;align-items:center;gap:0.5rem;user-select:none;font-size:0.875rem}
+.base-includes summary::before{content:'▶';display:inline-block;transition:transform 0.15s;font-size:0.75rem}
+.base-includes details[open] summary::before{transform:rotate(90deg)}
+.base-includes ul{list-style:none;margin-top:0.5rem;padding-left:1.25rem}
+.base-includes li{color:var(--text-2);font-size:0.75rem;padding:0.125rem 0;position:relative}
+.base-includes li::before{content:'✓';position:absolute;left:-1rem;color:var(--cyan);font-weight:700;font-size:0.75rem}
+.options{border:2px solid var(--border);border-radius:12px;padding:1rem;background:var(--bg-3)}
+.options legend{font-weight:700;color:var(--text-1);padding:0 0.75rem;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.05em}
+.opt-row{display:flex;gap:0.75rem;padding:0.75rem;margin:0.5rem 0;background:var(--bg-2);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:0.25s}
+.opt-row:hover{border-color:var(--orange);background:var(--bg-1);transform:translateX(4px)}
+.opt-row:has(input:checked){border-color:var(--orange);background:rgba(230,126,34,0.1)}
+.opt-row input[type="checkbox"]{width:20px;height:20px;accent-color:var(--orange);cursor:pointer;flex-shrink:0}
+.opt-body{flex:1}
+.opt-title{font-weight:700;color:var(--text-1);font-size:0.875rem}
+.opt-details{max-height:0;overflow:hidden;transition:max-height 0.3s ease;margin-top:0}
+.opt-row:has(input:checked) .opt-details{max-height:300px;margin-top:0.5rem}
+.opt-details ul{list-style:none;padding:0;margin:0}
+.opt-details li{color:var(--text-2);font-size:0.75rem;padding:0.2rem 0;padding-left:1rem;position:relative}
+.opt-details li::before{content:'•';position:absolute;left:0;color:var(--orange);font-weight:700}
+.results{background:var(--bg-2);border-radius:16px;padding:2rem;border:1px solid var(--border);box-shadow:0 10px 15px rgba(0,0,0,0.5);display:flex;flex-direction:column;gap:2rem}
+.hero{background:linear-gradient(135deg,var(--orange) 0%,var(--orange-dark) 100%);border-radius:12px;padding:2.5rem;text-align:center;box-shadow:0 20px 25px rgba(0,0,0,0.6);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);animation:pulse 8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.1);opacity:0.8}}
+.hero-total{font-size:3.5rem;font-weight:900;color:#fff;margin-bottom:0.5rem;text-shadow:0 2px 10px rgba(0,0,0,0.3);position:relative;z-index:1}
+.hero-note{font-size:0.875rem;color:rgba(255,255,255,0.9);margin-bottom:1rem;position:relative;z-index:1}
+.hero-meta{position:relative;z-index:1}
+.hero .chips{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+.hero .chip{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);color:#fff;padding:0.5rem 1rem;border-radius:20px;font-size:0.875rem;font-weight:600;border:1px solid rgba(255,255,255,0.3)}
+.view-details{background:#fff;color:var(--orange);border:0;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;transition:0.25s;box-shadow:0 4px 6px rgba(0,0,0,0.4)}
+.view-details:hover{transform:translateY(-2px);box-shadow:0 10px 15px rgba(0,0,0,0.5)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.kpis>div{background:var(--bg-3);padding:1.5rem;border-radius:10px;border:2px solid var(--border);text-align:center}
+.kpi-label{display:block;color:var(--text-3);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem}
+.kpis strong{display:block;color:var(--text-1);font-size:1.5rem;font-weight:700}
+.chart-container{background:var(--bg-3);border-radius:12px;padding:2rem;border:2px solid var(--border);min-height:450px;display:flex;flex-direction:column}
+.chart-header{margin-bottom:1.5rem;text-align:center}
+.chart-header h3{color:var(--text-1);font-size:1.25rem;font-weight:700;margin-bottom:0.5rem}
+.chart-header p{color:var(--text-3);font-size:0.875rem}
+#breakdownChart{max-width:100%;flex:1}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.glossary-section{background:var(--bg-2);border-radius:12px;padding:1.5rem;margin-bottom:2rem;border:2px solid var(--border)}
+.glossary-section summary{font-size:1.1rem;font-weight:700;color:var(--cyan);cursor:pointer;user-select:none;list-style:none;margin-bottom:0}
+.glossary-section summary::-webkit-details-marker{display:none}
+.glossary-section[open] summary{margin-bottom:1rem}
+.glossary-content{display:grid;gap:0.75rem}
+.glossary-item{font-size:0.9rem;line-height:1.6;color:var(--text-2)}
+.glossary-item strong{color:var(--cyan);font-weight:700;display:inline-block;min-width:80px}
+.footer{background:var(--bg-1);border-top:2px solid var(--border);padding:2rem 1rem;margin-top:2rem}
+.footer-content{max-width:1400px;margin:0 auto;text-align:center}
+.footer-content p{color:var(--text-2);font-size:0.85rem;margin:0.5rem 0;line-height:1.6}
+.footer-disclaimer{font-size:0.75rem;color:var(--text-3)}
+.actions button,.actions a{padding:1rem 1.5rem;border-radius:10px;font-weight:700;cursor:pointer;transition:0.25s;text-align:center;text-decoration:none;border:2px solid var(--border);background:var(--bg-3);color:var(--text-1);display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:1rem}
+.actions button:hover,.actions a:hover{transform:translateY(-2px);box-shadow:0 4px 6px rgba(0,0,0,0.4);border-color:var(--orange);background:var(--bg-1)}
+.actions .primary{background:var(--orange);color:#fff;border-color:var(--orange);grid-column:1/-1}
+.actions .primary:hover{background:var(--orange-dark);border-color:var(--orange-dark)}
+.actions .whatsapp{background:#25d366;color:#fff;border-color:#25d366}
+.actions .whatsapp:hover{background:#20ba5a;border-color:#20ba5a}
+.btn-save-estimate{background:var(--orange);color:#fff;border-color:var(--orange)}
+.btn-save-estimate:hover{background:var(--orange-dark);border-color:var(--orange-dark)}
+.modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:2rem;overflow-y:auto}
+.modal[aria-hidden="false"]{display:flex}
+.modal__backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);animation:fadeIn 0.25s;z-index:1}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal__dialog{position:relative;background:var(--bg-2);border-radius:16px;max-width:900px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 25px rgba(0,0,0,0.6);border:2px solid var(--border);animation:slideUp 0.25s;z-index:2;display:flex;flex-direction:column;padding:2rem}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal__close{position:absolute;top:1rem;right:1rem;width:40px;height:40px;background:var(--bg-3);border:2px solid var(--border);border-radius:50%;color:var(--text-1);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.15s;z-index:10}
+.modal__close:hover{background:var(--red);border-color:var(--red);color:#fff;transform:rotate(90deg)}
+.modal__content{padding:2rem;overflow-y:auto;max-height:calc(90vh - 4rem);flex:1}
+.modal__content h2{color:var(--orange);font-size:2rem;margin-bottom:1.5rem;text-align:center}
+.lead-modal__header{background:var(--bg-3);padding:1.5rem 2rem;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;border-radius:14px 14px 0 0;position:relative;z-index:3;flex-shrink:0}
+.lead-modal__title{font-size:1.5rem;font-weight:700;color:var(--text-1)}
+.lead-modal__content{padding:2rem;overflow-y:auto;flex:1}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-group{margin-bottom:1rem}
+.form-group.full-width{grid-column:1/-1}
+.form-label{display:block;color:var(--text-2);font-weight:600;margin-bottom:0.5rem;font-size:0.875rem}
+.form-label.required::after{content:' *';color:var(--red)}
+.form-input,.form-textarea{width:100%;padding:0.875rem;background:var(--bg-3);border:2px solid var(--border);border-radius:8px;color:var(--text-1);font-size:1rem;transition:0.25s;font-family:inherit}
+.form-input:focus,.form-textarea:focus{outline:0;border-color:var(--orange);box-shadow:0 0 0 3px rgba(230,126,34,0.2)}
+.phone-input-group{display:flex;gap:0.5rem}
+.country-code{flex:0 0 120px;font-size:0.95rem}
+.phone-number{flex:1}
+.form-textarea{resize:vertical;min-height:80px}
+.estimate-summary{background:var(--bg-3);border:2px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:1.5rem}
+.estimate-summary h4{color:var(--text-1);font-size:0.875rem;font-weight:700;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em}
+.estimate-summary p{color:var(--text-2);font-size:0.8125rem;line-height:1.6}
+.form-actions{display:flex;gap:1rem;justify-content:flex-end}
+.btn-cancel,.btn-submit{padding:0.875rem 2rem;border-radius:8px;font-weight:700;cursor:pointer;transition:0.25s;border:2px solid;font-size:1rem}
+.btn-cancel{background:0;border-color:var(--border);color:var(--text-2)}
+.btn-cancel:hover{background:var(--bg-1);border-color:var(--border);color:var(--text-1)}
+.btn-submit{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn-submit:hover{background:var(--orange-dark);border-color:var(--orange-dark);transform:translateY(-2px);box-shadow:0 4px 6px rgba(0,0,0,0.4)}
+.cost-table{width:100%;border-collapse:collapse;margin-bottom:2rem}
+.cost-table th,.cost-table td{padding:1rem;text-align:left;border-bottom:1px solid var(--border)}
+.cost-table th{background:var(--bg-3);color:var(--text-2);font-weight:700;text-transform:uppercase;font-size:0.875rem}
+.cost-table td{color:var(--text-1)}
+.cost-table .amt{text-align:right;font-weight:700}
+.cost-table tfoot td{background:rgba(230,126,34,0.1);color:var(--orange);font-weight:900;font-size:1.25rem;border-top:3px solid var(--orange)}
+.modal-notes{background:var(--bg-3);border-radius:12px;padding:1.5rem;border:2px solid var(--border)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.modal-notes h3{color:var(--cyan);font-size:1rem;margin-bottom:0.75rem;text-transform:uppercase}
+.modal-notes ul{list-style:none;padding:0}
+.modal-notes li{color:var(--text-2);font-size:0.875rem;padding:0.25rem 0;padding-left:1.25rem;position:relative}
+.modal-notes li::before{content:'✓';position:absolute;left:0;color:var(--cyan);font-weight:700}
+@media(max-width:1024px){
+.page{grid-template-columns:1fr;width:100%;max-width:100%;padding:1.5rem}
+.inputs{max-width:600px;margin:0 auto}
+.results{max-width:100%}
+.kpis{grid-template-columns:1fr 1fr}
+.form-row{grid-template-columns:1fr}
+.grid-2{grid-template-columns:1fr}
+.header{padding:1rem 1.5rem}
+.header-right{gap:0.75rem}
+}
+@media(max-width:640px){
+.page{padding:1rem;width:100%;overflow-x:hidden}
+.hero-total{font-size:2rem}
+.kpis{grid-template-columns:1fr}
+.actions{grid-template-columns:1fr}
+
+/* CRITICAL: Fix header for both iOS and Android */
+.header{
+    padding:0.75rem 1rem;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    grid-template-rows:auto auto;
+    gap:0.75rem 0.5rem;
+    align-items:center;
+}
+.logo{
+    grid-column:1;
+    grid-row:1;
+    height:36px;
+}
+.title{
+    grid-column:2;
+    grid-row:1;
+    font-size:1rem;
+    line-height:1.2;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.header-right{
+    grid-column:1 / -1;
+    grid-row:2;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:0.5rem;
+    width:100%;
+    margin-left:0;
+    flex-wrap:nowrap;
+}
+.btn-my-estimates,.btn-login,.btn-signup{
+    padding:0.5rem 0.7rem;
+    font-size:0.75rem;
+    white-space:nowrap;
+    flex-shrink:1;
+    min-width:0;
+}
+.lang{
+    padding:3px;
+    gap:0.25rem;
+    flex-shrink:0;
+}
+.lang button{
+    padding:0.4rem 0.6rem;
+    font-size:0.75rem;
+    white-space:nowrap;
+}
+.welcome-msg{
+    font-size:0.75rem;
+    flex-shrink:1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    min-width:0;
+}
+
+/* CRITICAL: Fix main content overflow */
+.inputs{padding:1.25rem;width:100%;max-width:100%;overflow-x:hidden}
+.results{width:100%;max-width:100%;overflow-x:hidden}
+
+/* Fix size control on mobile */
+.size-control{overflow:visible}
+.nudgers{gap:0.5rem}
+.nudgers button{width:36px;height:36px;font-size:1.1rem}
+.nudgers input{flex:1;min-width:0;font-size:1rem}
+.quick-sizes{gap:0.5rem}
+.chip{padding:0.5rem 0.75rem;font-size:0.85rem;white-space:nowrap}
+
+/* Fix select dropdowns */
+.field select{font-size:0.95rem;padding:0.75rem 2.5rem 0.75rem 0.875rem;background-size:1.25rem}
+
+/* Fix quality options */
+.quality label{padding:0.75rem;font-size:0.9rem}
+
+/* Fix results section */
+.hero{padding:1.25rem;text-align:center}
+.hero-total{font-size:1.75rem;margin-bottom:0.5rem}
+.hero-title{font-size:1rem}
+.hero-chips{flex-wrap:wrap;gap:0.5rem;justify-content:center}
+.kpi{padding:1rem;min-width:0}
+.kpi-val{font-size:1.5rem}
+.kpi-lab{font-size:0.85rem}
+
+/* Modal fixes */
+.modal{padding:0.5rem;align-items:stretch;padding-top:1rem;padding-bottom:1rem}
+.modal__dialog{max-height:calc(100vh - 2rem);min-height:auto;margin:0;width:calc(100vw - 1rem)}
+.modal__content,.lead-modal__content{padding:1rem;font-size:0.875rem;max-height:none}
+.lead-modal__header{padding:1rem}
+
+/* Form fixes */
+.form-row{grid-template-columns:1fr;gap:0.75rem}
+.form-group{margin-bottom:0.75rem}
+.form-input,.form-textarea{font-size:16px;padding:0.75rem}
+.form-textarea{min-height:60px}
+.estimate-summary{padding:0.75rem;margin-bottom:1rem}
+.form-actions{margin-top:1rem;position:sticky;bottom:0;background:var(--bg-2);padding:1rem;margin-left:-1rem;margin-right:-1rem;margin-bottom:-1rem;border-top:2px solid var(--border);gap:0.75rem}
+.btn-cancel,.btn-submit{padding:0.75rem 1.5rem}
+
+/* Fix breakdown table */
+#breakdownModal table{font-size:0.9rem}
+#breakdownModal td,#breakdownModal th{padding:0.75rem 0.5rem}
+}
+/* Arabic RTL Styles */
+[dir="rtl"]{font-family:'Cairo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+[dir="rtl"] .header{flex-direction:row-reverse}
+[dir="rtl"] .title{text-align:right}
+[dir="rtl"] .page{grid-template-columns:1fr 400px}
+[dir="rtl"] .field span{text-align:right}
+[dir="rtl"] .field select{background-position:left 0.75rem center;padding-left:3rem;padding-right:1rem;text-align:right}
+[dir="rtl"] .quality label{flex-direction:row-reverse}
+[dir="rtl"] .quality legend{text-align:right}
+[dir="rtl"] .base-includes summary{flex-direction:row-reverse}
+[dir="rtl"] .base-includes li{padding-right:1.25rem;padding-left:0;text-align:right}
+[dir="rtl"] .base-includes li::before{right:0;left:auto}
+[dir="rtl"] .options legend{text-align:right}
+[dir="rtl"] .opt-row{flex-direction:row-reverse}
+[dir="rtl"] .opt-row:hover{transform:translateX(-4px)}
+[dir="rtl"] .opt-body{text-align:right}
+[dir="rtl"] .opt-details li{padding-right:1rem;padding-left:0;text-align:right}
+[dir="rtl"] .opt-details li::before{right:0;left:auto}
+[dir="rtl"] .actions button,[dir="rtl"] .actions a{flex-direction:row-reverse}
+[dir="rtl"] .form-group label{text-align:right}
+[dir="rtl"] .form-input{text-align:right}
+[dir="rtl"] .form-actions{flex-direction:row-reverse}
+[dir="rtl"] .estimate-summary{text-align:right}
+[dir="rtl"] #breakdownModal table{direction:rtl}
+[dir="rtl"] #breakdownModal th,[dir="rtl"] #breakdownModal td{text-align:right}
+[dir="rtl"] #breakdownModal .amt{text-align:left}
+[dir="rtl"] .glossary-section{text-align:right}
+[dir="rtl"] .glossary-item{text-align:right}
+[dir="rtl"] .glossary-item strong{margin-left:0.5rem}
+@media (max-width:1024px){[dir="rtl"] .page{grid-template-columns:1fr}}
+@keyframes slideInRight{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(400px);opacity:0}}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="https://www.thetemplerock.com/" target="_blank" rel="noopener">
+            <img class="logo" src="/public/assets/trdb-logo.png" alt="TR Design Build" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%2240%22%3E%3Ctext x=%2210%22 y=%2228%22 font-family=%22Arial%22 font-size=%2224%22 font-weight=%22bold%22 fill=%22%23e67e22%22%3ETRDB%3C/text%3E%3C/svg%3E'">
+        </a>
+        <h1 class="title" data-i18n="pageTitle">TRDB Fitout Cost Estimator</h1>
+        <div class="header-right">
+            <button id="btnMyEstimates" class="btn-signup" type="button" style="background:var(--cyan);display:none;" data-i18n="myEstimatesBtn">📂 My Estimates</button>
+            <button id="btnLogin" class="btn-signup" type="button" style="background:var(--cyan);display:none;" data-i18n="loginBtn">Login</button>
+            <button id="btnLogout" class="btn-signup" type="button" style="background:var(--red);display:none;" data-i18n="logoutBtn">Logout</button>
+            <button id="btnSignUp" class="btn-signup" type="button" data-i18n="signUpFree">Sign Up Free</button>
+            <span id="welcomeMsg" class="welcome-msg"></span>
+            <nav class="lang">
+                <button id="btn-lang-en" class="active" type="button">EN</button>
+                <button id="btn-lang-ar" type="button">AR</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="inputs">
+            <label class="field">
+                <span data-i18n="locationLabel">🌍 Choose Location</span>
+                <select id="marketSelect">
+                    <option value="uae-dubai">UAE — Dubai</option>
+                    <option value="uae-abudhabi">UAE — Abu Dhabi</option>
+                    <option value="uae-rasalkhaimah">UAE — Ras Al Khaimah</option>
+                    <option value="ksa-riyadh">KSA — Riyadh</option>
+                    <option value="ksa-jeddah">KSA — Jeddah</option>
+                </select>
+            </label>
+
+            <div class="size-control">
+                <div class="unit-toggle">
+                    <button id="btn-sqft" class="active" type="button">SqFt</button>
+                    <button id="btn-m2" type="button">m²</button>
+                </div>
+                <input id="sizeRange" type="range" min="1000" max="20000" step="50" value="5000">
+                <div class="nudgers">
+                    <button id="sizeMinus" type="button">−</button>
+                    <input id="sizeInput" type="number" min="250" step="50" value="5000">
+                    <button id="sizePlus" type="button">+</button>
+                </div>
+                <div class="quick-chips">
+                    <button class="chip" data-size="5000">5k</button>
+                    <button class="chip" data-size="10000">10k</button>
+                    <button class="chip" data-size="15000">15k</button>
+                    <button class="chip" data-size="20000">20k</button>
+                </div>
+            </div>
+<label class="field">
+                <span>Number of Floors</span>
+                <select id="floorCount">
+                    <option>1 Floor</option>
+                    <option>2 Floors</option>
+                    <option>3+ Floors</option>
+                </select>
+            </label>
+
+            <label class="field">
+                <span>Primary Usage</span>
+                <select id="usageType">
+                    <option>Office</option>
+                    <option>Retail / F&B</option>
+                    <option>Clinic / Medical</option>
+                    <option>Other</option>
+                </select>
+            </label>
+
+            <fieldset class="quality">
+                <legend data-i18n="qualityLegend">✨ Fit-Out Quality</legend>
+                <label>
+                    <input type="radio" name="quality" value="light">
+                    <span data-i18n="light">Light</span>
+                </label>
+                <label>
+                    <input type="radio" name="quality" value="standard" checked>
+                    <span data-i18n="standard">Standard</span>
+                </label>
+                <label>
+                    <input type="radio" name="quality" value="premium">
+                    <span data-i18n="premium">Premium</span>
+                </label>
+            </fieldset>
+
+            <section class="base-includes">
+                <details>
+                    <summary data-i18n="fitoutBaseTitle">🏗️ Fit-Out (Base)</summary>
+                    <ul>
+                        <li data-i18n="fitout1">Partitions, doors & walls</li>
+                        <li data-i18n="fitout2">Ceilings & lighting</li>
+                        <li data-i18n="fitout3">Flooring & finishes</li>
+                        <li data-i18n="fitout4">Reception & pantry joinery</li>
+                        <li data-i18n="fitout5">Contractor preliminaries</li>
+                    </ul>
+                </details>
+                <details>
+                    <summary data-i18n="mepBaseTitle">⚡ MEP (Base)</summary>
+                    <ul>
+                        <li data-i18n="mep1">HVAC distribution</li>
+                        <li data-i18n="mep2">Electrical & power</li>
+                        <li data-i18n="mep3">Lighting controls</li>
+                        <li data-i18n="mep4">Plumbing</li>
+                        <li data-i18n="mep5">BMS integration</li>
+                        <li data-i18n="mep6">CAT5/6 LV cabling to desks</li>
+                        <li data-i18n="mep7">WiFi infrastructure</li>
+                        <li data-i18n="mep8">Basic server room/rack</li>
+                    </ul>
+                </details>
+            </section>
+
+            <fieldset class="options">
+                <legend data-i18n="optionsLegend">🎯 Options</legend>
+                <label class="opt-row">
+                    <input type="checkbox" value="furniture">
+                    <div class="opt-body">
+                        <div class="opt-title" data-i18n="furnitureTitle">Furniture Supply</div>
+                        <div class="opt-details">
+                            <ul>
+                                <li data-i18n="furniture1">Workstations and desks</li>
+                                <li data-i18n="furniture2">Task chairs</li>
+                                <li data-i18n="furniture3">Meeting room furniture</li>
+                                <li data-i18n="furniture4">Storage units</li>
+                            </ul>
+                        </div>
+                    </div>
+                </label>
+                <label class="opt-row">
+                    <input type="checkbox" value="ffe">
+                    <div class="opt-body">
+                        <div class="opt-title" data-i18n="ffeTitle">Loose Furnishings</div>
+                        <div class="opt-details">
+                            <ul>
+                                <li data-i18n="ffe1">Soft seating & breakout furniture</li>
+                                <li data-i18n="ffe2">Accessories and décor</li>
+                                <li data-i18n="ffe3">Window treatments</li>
+                                <li data-i18n="ffe4">Pantry equipment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </label>
+                <label class="opt-row">
+                    <input type="checkbox" value="art">
+                    <div class="opt-body">
+                        <div class="opt-title" data-i18n="artTitle">Art Procurement</div>
+                        <div class="opt-details">
+                            <ul>
+                                <li data-i18n="art1">Curated artwork selection</li>
+                                <li data-i18n="art2">Framing and mounting</li>
+                                <li data-i18n="art3">Installation services</li>
+                            </ul>
+                        </div>
+                    </div>
+                </label>
+                <label class="opt-row">
+                    <input type="checkbox" value="smart">
+                    <div class="opt-body">
+                        <div class="opt-title" data-i18n="smartTitle">Smart Workplace</div>
+                        <div class="opt-details">
+                            <ul>
+                                <li data-i18n="smart1">Meeting room AV systems</li>
+                                <li data-i18n="smart2">Video conferencing equipment</li>
+                                <li data-i18n="smart3">Digital signage</li>
+                                <li data-i18n="smart4">Structured cabling (Cat6A)</li>
+                                <li data-i18n="smart5">Network infrastructure</li>
+                            </ul>
+                        </div>
+                    </div>
+                </label>
+                <label class="opt-row">
+                    <input type="checkbox" value="green">
+                    <div class="opt-body">
+                        <div class="opt-title" data-i18n="greenTitle">LEED / Sustainability</div>
+                        <div class="opt-details">
+                            <ul>
+                                <li data-i18n="green1">Sustainable material specifications</li>
+                                <li data-i18n="green2">Low-VOC finishes and adhesives</li>
+                                <li data-i18n="green3">Energy-efficient systems</li>
+                                <li data-i18n="green4">Water conservation measures</li>
+                                <li data-i18n="green5">Indoor air quality enhancements</li>
+                                <li data-i18n="green6">LEED documentation support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </label>
+                <label class="opt-row">
+                    <input type="checkbox" value="fullhvac">
+                    <div class="opt-body">
+                        <div class="opt-title" data-i18n="hvacTitle">Full HVAC Plant</div>
+                        <div class="opt-details">
+                            <ul>
+                                <li data-i18n="hvac1">Dedicated air handling units</li>
+                                <li data-i18n="hvac2">Chilled water systems</li>
+                                <li data-i18n="hvac3">Generator and UPS systems</li>
+                                <li data-i18n="hvac4">Complete electrical infrastructure</li>
+                                <li data-i18n="hvac5">Water treatment systems</li>
+                            </ul>
+                        </div>
+                    </div>
+                </label>
+            </fieldset>
+        </section>
+
+        <section class="results">
+            <div class="hero">
+                <div class="hero-total" id="totalFigure">—</div>
+                <div class="hero-note" data-i18n="benchmarkNote">Based on industry benchmarks from recent data</div>
+                <div class="hero-meta">
+                    <div class="chips">
+                        <span class="chip" id="chipPerSqft">—</span>
+                        <span class="chip" id="chipSize">—</span>
+                        <span class="chip" id="chipLocation">—</span>
+                        <span class="chip" id="chipFloors" style="display:none;">—</span>
+                        <span class="chip" id="chipUsage" style="display:none;">—</span>
+                    </div>
+                    <button class="view-details" id="btnViewDetails" type="button" data-i18n="viewBreakdown">View Detailed Breakdown →</button>
+                </div>
+            </div>
+
+            <div class="kpis">
+                <div>
+                    <span class="kpi-label">Fit-Out (Base)</span>
+                    <strong id="kpiFitout">—</strong>
+                </div>
+                <div>
+                    <span class="kpi-label">MEP (Base)</span>
+                    <strong id="kpiMep">—</strong>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3 data-i18n="chartTitle">Cost Breakdown Analysis</h3>
+                    <p data-i18n="chartSubtitle">Professional estimate based on current market rates</p>
+                </div>
+                <canvas id="breakdownChart"></canvas>
+            </div>
+
+            <!-- Glossary Section -->
+            <details class="glossary-section" open>
+                <summary data-i18n="glossaryTitle">📖 Glossary</summary>
+                <div class="glossary-content">
+                    <div class="glossary-item">
+                        <strong>MEP:</strong>
+                        <span data-i18n="glMep">Mechanical, Electrical & Plumbing</span>
+                    </div>
+                    <div class="glossary-item">
+                        <strong>HVAC:</strong>
+                        <span data-i18n="glHvac">Heating, Ventilation & Air Conditioning</span>
+                    </div>
+                    <div class="glossary-item">
+                        <strong>BMS:</strong>
+                        <span data-i18n="glBms">Building Management System</span>
+                    </div>
+                    <div class="glossary-item">
+                        <strong>IAQ:</strong>
+                        <span data-i18n="glIaq">Indoor Air Quality</span>
+                    </div>
+                    <div class="glossary-item">
+                        <strong>LV:</strong>
+                        <span data-i18n="glLv">Low-Voltage (data/voice/IT/AV cabling & containment)</span>
+                    </div>
+                    <div class="glossary-item">
+                        <strong>FFE:</strong>
+                        <span data-i18n="glFfe">Furniture, Fixtures & Equipment</span>
+                    </div>
+                    <div class="glossary-item">
+                        <strong>LEED:</strong>
+                        <span data-i18n="glLeed">Leadership in Energy and Environmental Design</span>
+                    </div>
+                </div>
+            </details>
+
+            <div class="actions">
+                <a class="primary" href="https://thetemplerock.com/ola/services/book-a-consultation#7130d1e4-1a6e-4871-91d3-920d5f5b3e33" target="_blank" rel="noopener" data-i18n="bookConsultation">
+                    📅 Book Consultation
+                </a>
+                <button id="btnPdf" type="button" data-i18n="downloadPdf">📄 Download PDF</button>
+                <button id="btnEmail" type="button" data-i18n="emailEstimate">📧 Email Estimate</button>
+                <button id="btnWhatsApp" type="button" class="whatsapp" data-i18n="whatsapp">💬 WhatsApp</button>
+                <button id="btnSaveEstimate" type="button" class="btn-save-estimate" data-i18n="saveEstimate">💾 Save This Estimate</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Copyright Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p data-i18n="copyrightNotice">
+                © 2025 Temple Rock Design Build. All Rights Reserved. | Registered & Copyright Protected
+            </p>
+            <p class="footer-disclaimer" data-i18n="footerDisclaimer">
+                This estimator and its underlying algorithms are proprietary technology of TR Design Build.
+            </p>
+        </div>
+    </footer>
+
+    <div id="leadModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" data-close-lead></div>
+        <div class="modal__dialog">
+            <div class="lead-modal__header">
+                <h2 class="lead-modal__title" data-i18n="modalTitle">Get Your Estimate</h2>
+                <button class="modal__close" type="button" data-close-lead>×</button>
+            </div>
+            <div class="lead-modal__content">
+                <form id="leadForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required" data-i18n="nameLabel">Name</label>
+                            <input type="text" class="form-input" id="leadName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required" data-i18n="companyLabel">Company</label>
+                            <input type="text" class="form-input" id="leadCompany" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required" data-i18n="emailLabel">Email</label>
+                            <input type="email" class="form-input" id="leadEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="phoneLabel">Phone (optional)</label>
+                            <div class="phone-input-group">
+                                <input type="text" class="form-input country-code" id="leadCountryCode" list="countryCodes" placeholder="🌍 Country" value="+971" autocomplete="tel-country-code">
+                                <datalist id="countryCodes">
+                                    <option value="+93">🇦🇫 Afghanistan +93</option>
+                                    <option value="+355">🇦🇱 Albania +355</option>
+                                    <option value="+213">🇩🇿 Algeria +213</option>
+                                    <option value="+376">🇦🇩 Andorra +376</option>
+                                    <option value="+244">🇦🇴 Angola +244</option>
+                                    <option value="+54">🇦🇷 Argentina +54</option>
+                                    <option value="+374">🇦🇲 Armenia +374</option>
+                                    <option value="+61">🇦🇺 Australia +61</option>
+                                    <option value="+43">🇦🇹 Austria +43</option>
+                                    <option value="+994">🇦🇿 Azerbaijan +994</option>
+                                    <option value="+973">🇧🇭 Bahrain +973</option>
+                                    <option value="+880">🇧🇩 Bangladesh +880</option>
+                                    <option value="+375">🇧🇾 Belarus +375</option>
+                                    <option value="+32">🇧🇪 Belgium +32</option>
+                                    <option value="+501">🇧🇿 Belize +501</option>
+                                    <option value="+229">🇧🇯 Benin +229</option>
+                                    <option value="+975">🇧🇹 Bhutan +975</option>
+                                    <option value="+591">🇧🇴 Bolivia +591</option>
+                                    <option value="+387">🇧🇦 Bosnia +387</option>
+                                    <option value="+267">🇧🇼 Botswana +267</option>
+                                    <option value="+55">🇧🇷 Brazil +55</option>
+                                    <option value="+673">🇧🇳 Brunei +673</option>
+                                    <option value="+359">🇧🇬 Bulgaria +359</option>
+                                    <option value="+226">🇧🇫 Burkina Faso +226</option>
+                                    <option value="+257">🇧🇮 Burundi +257</option>
+                                    <option value="+855">🇰🇭 Cambodia +855</option>
+                                    <option value="+237">🇨🇲 Cameroon +237</option>
+                                    <option value="+1">🇨🇦 Canada +1</option>
+                                    <option value="+238">🇨🇻 Cape Verde +238</option>
+                                    <option value="+236">🇨🇫 Central African Republic +236</option>
+                                    <option value="+235">🇹🇩 Chad +235</option>
+                                    <option value="+56">🇨🇱 Chile +56</option>
+                                    <option value="+86">🇨🇳 China +86</option>
+                                    <option value="+57">🇨🇴 Colombia +57</option>
+                                    <option value="+269">🇰🇲 Comoros +269</option>
+                                    <option value="+242">🇨🇬 Congo +242</option>
+                                    <option value="+506">🇨🇷 Costa Rica +506</option>
+                                    <option value="+385">🇭🇷 Croatia +385</option>
+                                    <option value="+53">🇨🇺 Cuba +53</option>
+                                    <option value="+357">🇨🇾 Cyprus +357</option>
+                                    <option value="+420">🇨🇿 Czech Republic +420</option>
+                                    <option value="+45">🇩🇰 Denmark +45</option>
+                                    <option value="+253">🇩🇯 Djibouti +253</option>
+                                    <option value="+593">🇪🇨 Ecuador +593</option>
+                                    <option value="+20">🇪🇬 Egypt +20</option>
+                                    <option value="+503">🇸🇻 El Salvador +503</option>
+                                    <option value="+240">🇬🇶 Equatorial Guinea +240</option>
+                                    <option value="+291">🇪🇷 Eritrea +291</option>
+                                    <option value="+372">🇪🇪 Estonia +372</option>
+                                    <option value="+251">🇪🇹 Ethiopia +251</option>
+                                    <option value="+679">🇫🇯 Fiji +679</option>
+                                    <option value="+358">🇫🇮 Finland +358</option>
+                                    <option value="+33">🇫🇷 France +33</option>
+                                    <option value="+241">🇬🇦 Gabon +241</option>
+                                    <option value="+220">🇬🇲 Gambia +220</option>
+                                    <option value="+995">🇬🇪 Georgia +995</option>
+                                    <option value="+49">🇩🇪 Germany +49</option>
+                                    <option value="+233">🇬🇭 Ghana +233</option>
+                                    <option value="+30">🇬🇷 Greece +30</option>
+                                    <option value="+502">🇬🇹 Guatemala +502</option>
+                                    <option value="+224">🇬🇳 Guinea +224</option>
+                                    <option value="+592">🇬🇾 Guyana +592</option>
+                                    <option value="+509">🇭🇹 Haiti +509</option>
+                                    <option value="+504">🇭🇳 Honduras +504</option>
+                                    <option value="+852">🇭🇰 Hong Kong +852</option>
+                                    <option value="+36">🇭🇺 Hungary +36</option>
+                                    <option value="+354">🇮🇸 Iceland +354</option>
+                                    <option value="+91">🇮🇳 India +91</option>
+                                    <option value="+62">🇮🇩 Indonesia +62</option>
+                                    <option value="+98">🇮🇷 Iran +98</option>
+                                    <option value="+964">🇮🇶 Iraq +964</option>
+                                    <option value="+353">🇮🇪 Ireland +353</option>
+                                    <option value="+972">🇮🇱 Israel +972</option>
+                                    <option value="+39">🇮🇹 Italy +39</option>
+                                    <option value="+225">🇨🇮 Ivory Coast +225</option>
+                                    <option value="+81">🇯🇵 Japan +81</option>
+                                    <option value="+962">🇯🇴 Jordan +962</option>
+                                    <option value="+7">🇰🇿 Kazakhstan +7</option>
+                                    <option value="+254">🇰🇪 Kenya +254</option>
+                                    <option value="+965">🇰🇼 Kuwait +965</option>
+                                    <option value="+996">🇰🇬 Kyrgyzstan +996</option>
+                                    <option value="+856">🇱🇦 Laos +856</option>
+                                    <option value="+371">🇱🇻 Latvia +371</option>
+                                    <option value="+961">🇱🇧 Lebanon +961</option>
+                                    <option value="+266">🇱🇸 Lesotho +266</option>
+                                    <option value="+231">🇱🇷 Liberia +231</option>
+                                    <option value="+218">🇱🇾 Libya +218</option>
+                                    <option value="+423">🇱🇮 Liechtenstein +423</option>
+                                    <option value="+370">🇱🇹 Lithuania +370</option>
+                                    <option value="+352">🇱🇺 Luxembourg +352</option>
+                                    <option value="+853">🇲🇴 Macau +853</option>
+                                    <option value="+389">🇲🇰 Macedonia +389</option>
+                                    <option value="+261">🇲🇬 Madagascar +261</option>
+                                    <option value="+265">🇲🇼 Malawi +265</option>
+                                    <option value="+60">🇲🇾 Malaysia +60</option>
+                                    <option value="+960">🇲🇻 Maldives +960</option>
+                                    <option value="+223">🇲🇱 Mali +223</option>
+                                    <option value="+356">🇲🇹 Malta +356</option>
+                                    <option value="+222">🇲🇷 Mauritania +222</option>
+                                    <option value="+230">🇲🇺 Mauritius +230</option>
+                                    <option value="+52">🇲🇽 Mexico +52</option>
+                                    <option value="+373">🇲🇩 Moldova +373</option>
+                                    <option value="+377">🇲🇨 Monaco +377</option>
+                                    <option value="+976">🇲🇳 Mongolia +976</option>
+                                    <option value="+382">🇲🇪 Montenegro +382</option>
+                                    <option value="+212">🇲🇦 Morocco +212</option>
+                                    <option value="+258">🇲🇿 Mozambique +258</option>
+                                    <option value="+95">🇲🇲 Myanmar +95</option>
+                                    <option value="+264">🇳🇦 Namibia +264</option>
+                                    <option value="+977">🇳🇵 Nepal +977</option>
+                                    <option value="+31">🇳🇱 Netherlands +31</option>
+                                    <option value="+64">🇳🇿 New Zealand +64</option>
+                                    <option value="+505">🇳🇮 Nicaragua +505</option>
+                                    <option value="+227">🇳🇪 Niger +227</option>
+                                    <option value="+234">🇳🇬 Nigeria +234</option>
+                                    <option value="+850">🇰🇵 North Korea +850</option>
+                                    <option value="+47">🇳🇴 Norway +47</option>
+                                    <option value="+968">🇴🇲 Oman +968</option>
+                                    <option value="+92">🇵🇰 Pakistan +92</option>
+                                    <option value="+970">🇵🇸 Palestine +970</option>
+                                    <option value="+507">🇵🇦 Panama +507</option>
+                                    <option value="+675">🇵🇬 Papua New Guinea +675</option>
+                                    <option value="+595">🇵🇾 Paraguay +595</option>
+                                    <option value="+51">🇵🇪 Peru +51</option>
+                                    <option value="+63">🇵🇭 Philippines +63</option>
+                                    <option value="+48">🇵🇱 Poland +48</option>
+                                    <option value="+351">🇵🇹 Portugal +351</option>
+                                    <option value="+974">🇶🇦 Qatar +974</option>
+                                    <option value="+40">🇷🇴 Romania +40</option>
+                                    <option value="+7">🇷🇺 Russia +7</option>
+                                    <option value="+250">🇷🇼 Rwanda +250</option>
+                                    <option value="+966">🇸🇦 Saudi Arabia +966</option>
+                                    <option value="+221">🇸🇳 Senegal +221</option>
+                                    <option value="+381">🇷🇸 Serbia +381</option>
+                                    <option value="+248">🇸🇨 Seychelles +248</option>
+                                    <option value="+232">🇸🇱 Sierra Leone +232</option>
+                                    <option value="+65">🇸🇬 Singapore +65</option>
+                                    <option value="+421">🇸🇰 Slovakia +421</option>
+                                    <option value="+386">🇸🇮 Slovenia +386</option>
+                                    <option value="+252">🇸🇴 Somalia +252</option>
+                                    <option value="+27">🇿🇦 South Africa +27</option>
+                                    <option value="+82">🇰🇷 South Korea +82</option>
+                                    <option value="+211">🇸🇸 South Sudan +211</option>
+                                    <option value="+34">🇪🇸 Spain +34</option>
+                                    <option value="+94">🇱🇰 Sri Lanka +94</option>
+                                    <option value="+249">🇸🇩 Sudan +249</option>
+                                    <option value="+597">🇸🇷 Suriname +597</option>
+                                    <option value="+268">🇸🇿 Swaziland +268</option>
+                                    <option value="+46">🇸🇪 Sweden +46</option>
+                                    <option value="+41">🇨🇭 Switzerland +41</option>
+                                    <option value="+963">🇸🇾 Syria +963</option>
+                                    <option value="+886">🇹🇼 Taiwan +886</option>
+                                    <option value="+992">🇹🇯 Tajikistan +992</option>
+                                    <option value="+255">🇹🇿 Tanzania +255</option>
+                                    <option value="+66">🇹🇭 Thailand +66</option>
+                                    <option value="+228">🇹🇬 Togo +228</option>
+                                    <option value="+216">🇹🇳 Tunisia +216</option>
+                                    <option value="+90">🇹🇷 Turkey +90</option>
+                                    <option value="+993">🇹🇲 Turkmenistan +993</option>
+                                    <option value="+256">🇺🇬 Uganda +256</option>
+                                    <option value="+380">🇺🇦 Ukraine +380</option>
+                                    <option value="+971">🇦🇪 United Arab Emirates +971</option>
+                                    <option value="+44">🇬🇧 United Kingdom +44</option>
+                                    <option value="+1">🇺🇸 United States +1</option>
+                                    <option value="+598">🇺🇾 Uruguay +598</option>
+                                    <option value="+998">🇺🇿 Uzbekistan +998</option>
+                                    <option value="+678">🇻🇺 Vanuatu +678</option>
+                                    <option value="+58">🇻🇪 Venezuela +58</option>
+                                    <option value="+84">🇻🇳 Vietnam +84</option>
+                                    <option value="+967">🇾🇪 Yemen +967</option>
+                                    <option value="+260">🇿🇲 Zambia +260</option>
+                                    <option value="+263">🇿🇼 Zimbabwe +263</option>
+                                </datalist>
+                                <input type="tel" class="form-input phone-number" id="leadPhone" placeholder="50 123 4567">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label" data-i18n="notesLabel">Tell us about your project</label>
+                        <textarea class="form-textarea" id="leadNotes" data-i18n-placeholder="notesPlaceholder" placeholder="Any specific requirements, timeline, or questions? We're here to help!"></textarea></textarea>
+                    </div>
+                    <div class="estimate-summary">
+                        <h4 data-i18n="snapshotTitle">Estimate Snapshot</h4>
+                        <p id="estimateSummary">—</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" data-close-lead data-i18n="cancel">Cancel</button>
+                        <button type="submit" class="btn-submit" data-i18n="sendEstimate">Send Estimate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="breakdownModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" data-close></div>
+        <div class="modal__dialog">
+            <button class="modal__close" type="button" data-close>×</button>
+            <div class="modal__content">
+                <h2 data-i18n="breakdownTitle">💰 Detailed Cost Breakdown</h2>
+                <table class="cost-table">
+                    <thead>
+                        <tr><th data-i18n="categoryColumn">Item</th><th class="amt" data-i18n="amountColumn">Amount (AED)</th></tr>
+                    </thead>
+                    <tbody id="costRows"></tbody>
+                    <tfoot id="costFoot"></tfoot>
+                </table>
+                <div class="modal-notes">
+                    <div class="grid-2">
+                        <section>
+                            <h3 data-i18n="breakdownFitoutTitle">🏗️ Fit-Out (Base)</h3>
+                            <ul>
+                                <li data-i18n="breakdownFitout1">Partitions, doors & feature walls</li>
+                                <li data-i18n="breakdownFitout2">Suspended/feature ceilings, lighting</li>
+                                <li data-i18n="breakdownFitout3">Flooring & raised floor adaptations</li>
+                                <li data-i18n="breakdownFitout4">Reception & pantry joinery</li>
+                                <li data-i18n="breakdownFitout5">Contractor preliminaries, HS&E</li>
+                            </ul>
+                        </section>
+                        <section>
+                            <h3 data-i18n="breakdownMepTitle">⚡ MEP (Base)</h3>
+                            <ul>
+                                <li data-i18n="breakdownMep1">HVAC distribution from landlord</li>
+                                <li data-i18n="breakdownMep2">Electrical distribution & power</li>
+                                <li data-i18n="breakdownMep3">Lighting controls / fire alarm</li>
+                                <li data-i18n="breakdownMep4">Plumbing to pantry/restrooms</li>
+                                <li data-i18n="breakdownMep5">Basic BMS integration</li>
+                                <li data-i18n="breakdownMep6">CAT5/6 LV cabling to desks</li>
+                                <li data-i18n="breakdownMep7">WiFi infrastructure</li>
+                                <li data-i18n="breakdownMep8">Basic server room/rack</li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+window.addEventListener('DOMContentLoaded',function(){if(typeof Chart==='undefined'){console.error('Chart.js failed');return}
+
+// 🔒 SECURITY: Pricing data moved to secure server-side API
+// No longer exposed in client code - prevents IP theft
+
+const OPTION_LABELS={furniture:'Furniture Supply',ffe:'Loose Furnishings & Décor',art:'Original Art Procurement',smart:'Smart Workplace (IoT/AV)',green:'LEED / Sustainability',fullhvac:'Full HVAC Supply & Plant'};
+window.state={market:'uae-dubai',size:5000,unit:'sqft',quality:'standard',options:[]};
+let chart=null;
+let modalAction='email';
+
+// Rate limiter for API calls
+class RateLimiter {
+    constructor(maxRequests, windowMs) {
+        this.maxRequests = maxRequests;
+        this.windowMs = windowMs;
+        this.requests = [];
+    }
+    
+    check(action) {
+        const now = Date.now();
+        this.requests = this.requests.filter(time => now - time < this.windowMs);
+        
+        if (this.requests.length >= this.maxRequests) {
+            const oldestRequest = Math.min(...this.requests);
+            const waitTime = this.windowMs - (now - oldestRequest);
+            throw new Error(`Too many ${action}s. Please wait ${Math.ceil(waitTime/1000)} seconds.`);
+        }
+        
+        this.requests.push(now);
+        return true;
+    }
+}
+
+const calcLimiter = new RateLimiter(60, 60000); // 60 calculations per minute (1 per second)
+
+window.formatCurrency = function(num){const currency=state.market.startsWith('ksa')?'SAR':'AED';if(num>=1000000)return`${currency} ${(num/1000000).toFixed(2)}M`;if(num>=1000)return`${currency} ${(num/1000).toFixed(0)}K`;return`${currency} ${num.toLocaleString()}`}
+function sqftToM2(sqft){return Math.round(sqft*0.092903)}
+
+// 🔒 SECURE: Call server-side API for pricing calculation
+window.calculate = async function(){
+    const{market,size,quality,options}=state;
+    
+    try {
+        // Rate limiting
+        calcLimiter.check('calculation');
+        
+        console.log('🔒 Calculating via secure API...', {market, size, quality, options});
+        
+        // Call secure server-side API
+        const response = await fetch('/.netlify/functions/get-pricing', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                market,
+                quality,
+                size,
+                options: options || []
+            })
+        });
+        
+        if (!response.ok) {
+            if (response.status === 429) {
+                throw new Error('Too many requests. Please wait a moment.');
+            }
+            throw new Error('Calculation failed. Please try again.');
+        }
+        
+        const result = await response.json();
+        
+        console.log('✅ Calculation complete:', result);
+        
+        // Get floor and usage multipliers (client-side only, not pricing-sensitive)
+        const floorsElem = document.getElementById('floorCount');
+        const floorsText = floorsElem ? floorsElem.value : '1 Floor';
+        let floorMultiplier = 1.0;
+        if (floorsText.startsWith('2')) floorMultiplier = 1.1;
+        else if (floorsText.startsWith('3')) floorMultiplier = 1.25;
+        
+        const usageElem = document.getElementById('usageType');
+        const usageText = usageElem ? usageElem.value : 'Office';
+        const usageMultipliers = {'Office':1.0,'Retail':1.1,'Restaurant':1.2,'Healthcare':1.25,'Education':1.15};
+        const usageMultiplier = usageMultipliers[usageText] || 1.0;
+        
+        // Apply client-side multipliers
+        const adjustedTotal = result.total * floorMultiplier * usageMultiplier;
+        const adjustedPerSqft = adjustedTotal / size;
+        
+        // Return complete calculation with breakdown from server
+        return {
+            fitoutBase: result.fitoutBase * floorMultiplier * usageMultiplier,
+            mepBase: result.mepBase * floorMultiplier * usageMultiplier,
+            originalBase: result.total,
+            baseTotal: adjustedTotal,
+            optionsTotal: result.optionsTotal * floorMultiplier * usageMultiplier,
+            total: adjustedTotal + (result.optionsTotal * floorMultiplier * usageMultiplier),
+            breakdown: result.breakdown || [],
+            perSqft: Math.round(adjustedPerSqft),
+            floorMultiplier,
+            usageMultiplier,
+            floorsText: floorsText,
+            usageText: usageText
+        };
+        
+    } catch (error) {
+        console.error('❌ Calculation error:', error);
+        alert(error.message || 'Unable to calculate estimate. Please try again.');
+        
+        // Return safe fallback
+        return {
+            fitoutBase: 0,
+            mepBase: 0,
+            originalBase: 0,
+            baseTotal: 0,
+            optionsTotal: 0,
+            total: 0,
+            breakdown: [],
+            perSqft: 0,
+            floorMultiplier: 1,
+            usageMultiplier: 1,
+            floorsText: '1 Floor',
+            usageText: 'Office'
+        };
+    }
+}
+
+// Update UI function - now async
+async function updateUI(){
+    const calc = await calculate();
+    const{market,size,unit}=state;
+    
+    document.getElementById('totalFigure').textContent=formatCurrency(calc.total);
+    document.getElementById('chipPerSqft').textContent=`${formatCurrency(calc.perSqft)} per ${unit}`;
+    document.getElementById('chipSize').textContent=unit==='sqft'?`${size.toLocaleString()} SqFt`:`${sqftToM2(size).toLocaleString()} m²`;
+    document.getElementById('chipLocation').textContent=market
+        .replace('uae-abudhabi','UAE: Abu Dhabi')
+        .replace('uae-rasalkhaimah','UAE: Ras Al Khaimah')
+        .replace('uae-dubai','UAE: Dubai')
+        .replace('ksa-riyadh','KSA: Riyadh')
+        .replace('ksa-jeddah','KSA: Jeddah');
+    
+    // Show floor chip if not 1 floor
+    const chipFloors = document.getElementById('chipFloors');
+    if(calc.floorsText && !calc.floorsText.startsWith('1')){
+        chipFloors.textContent = calc.floorsText;
+        chipFloors.style.display = 'inline-block';
+    } else {
+        chipFloors.style.display = 'none';
+    }
+    
+    // Show usage chip if not Office
+    const chipUsage = document.getElementById('chipUsage');
+    if(calc.usageText && !calc.usageText.includes('Office')){
+        chipUsage.textContent = calc.usageText;
+        chipUsage.style.display = 'inline-block';
+    } else {
+        chipUsage.style.display = 'none';
+    }
+    
+    document.getElementById('kpiFitout').textContent=formatCurrency(calc.fitoutBase);
+    document.getElementById('kpiMep').textContent=formatCurrency(calc.mepBase);
+    updateChart(calc);
+    if(typeof gtag!=='undefined')gtag('event','estimate_calculated',{market:state.market,size:state.size,quality:state.quality});
+}
+// Make updateUI globally accessible
+window.updateUI = updateUI;
+function updateChart(calc){const canvas=document.getElementById('breakdownChart');const ctx=canvas.getContext('2d');const labels=[t('fitoutBase'),t('mepBase'),...calc.breakdown.map(b=>t(b.label)||b.label)];const data=[calc.fitoutBase,calc.mepBase,...calc.breakdown.map(b=>b.value)];const colors=['#1e5a7d','#2d7a9e','#e67e22','#f39c12','#84cc16','#06b6d4','#10b981','#6b7280'];if(chart)chart.destroy();try{chart=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:colors.slice(0,labels.length),borderColor:'#1e293b',borderWidth:3,hoverOffset:25,hoverBorderWidth:4}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'right',labels:{color:'#f1f5f9',padding:20,font:{size:13,weight:'600'},usePointStyle:true,pointStyle:'circle'}},tooltip:{backgroundColor:'#1e293b',titleColor:'#f1f5f9',bodyColor:'#cbd5e1',borderColor:'#334155',borderWidth:1,padding:12,callbacks:{label:function(context){let label=context.label||'';if(label)label+=': ';label+=formatCurrency(context.parsed);const total=context.dataset.data.reduce((a,b)=>a+b,0);const percentage=((context.parsed/total)*100).toFixed(1);label+=` (${percentage}%)`;return label}}}},onHover:(event,activeElements)=>{event.native.target.style.cursor=activeElements.length>0?'pointer':'default'}}})}catch(error){console.error('Chart error:',error)}}
+async function openLeadModal(action='email'){
+    modalAction=action;
+    const calc = await calculate();
+    const modal=document.getElementById('leadModal');
+    const modalTitle=modal.querySelector('.lead-modal__title');
+    const phoneField=document.getElementById('leadPhone').closest('.form-group');
+    const phoneLabel=phoneField.querySelector('.form-label');
+    const submitBtn=modal.querySelector('.btn-submit');
+    
+    // Prefill user data if logged in
+    const userId = localStorage.getItem('userId');
+    const userEmail = localStorage.getItem('userEmail');
+    const userName = localStorage.getItem('userName');
+    
+    if (userId && userEmail) {
+        console.log('✅ User logged in, prefilling form:', { userName, userEmail });
+        document.getElementById('leadName').value = userName || '';
+        document.getElementById('leadEmail').value = userEmail || '';
+        
+        // Add a note that user is logged in
+        const emailGroup = document.getElementById('leadEmail').closest('.form-group');
+        let loginNote = emailGroup.querySelector('.login-note');
+        if (!loginNote) {
+            loginNote = document.createElement('div');
+            loginNote.className = 'login-note';
+            loginNote.style.cssText = 'font-size:0.85rem;color:var(--green);margin-top:0.25rem;';
+            loginNote.innerHTML = '✅ Logged in as this user';
+            emailGroup.appendChild(loginNote);
+        }
+    } else {
+        // Clear fields if not logged in
+        document.getElementById('leadName').value = '';
+        document.getElementById('leadEmail').value = '';
+        document.getElementById('leadPhone').value = '';
+        
+        // Remove login note if exists
+        const emailGroup = document.getElementById('leadEmail').closest('.form-group');
+        const loginNote = emailGroup.querySelector('.login-note');
+        if (loginNote) loginNote.remove();
+    }
+    
+    if(action==='pdf'){
+        modalTitle.textContent='Get Your PDF Estimate';
+        submitBtn.textContent='Send & Download PDF';
+        phoneLabel.textContent='Phone (optional)';
+        phoneLabel.classList.remove('required')
+    }else if(action==='whatsapp'){
+        modalTitle.textContent='Share via WhatsApp';
+        phoneLabel.textContent='Phone';
+        phoneLabel.classList.add('required');
+        submitBtn.textContent='Send & Open WhatsApp'
+    }else{
+        modalTitle.textContent='Get Your Estimate';
+        phoneLabel.textContent='Phone (optional)';
+        phoneLabel.classList.remove('required');
+        submitBtn.textContent='Send Estimate'
+    }
+    
+    const summary=`Location: ${state.market.toUpperCase().replace('-',' — ')} — Size: ${state.size.toLocaleString()} SqFt — Quality: ${state.quality} — Total: ${formatCurrency(calc.total)} — Options: ${state.options.join(', ')||'none'}`;
+    document.getElementById('estimateSummary').textContent=summary;
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>modal.scrollTop=0,0)
+}
+function closeLeadModal(){document.getElementById('leadModal').setAttribute('aria-hidden','true');document.body.style.overflow=''}
+async function openBreakdownModal(){
+    const calc = await calculate();
+    const modal=document.getElementById('breakdownModal');
+    const tbody=document.getElementById('costRows');
+    const tfoot=document.getElementById('costFoot');
+    
+    let rows=`<tr><td>${t('fitoutBase')}</td><td class="amt">${formatCurrency(calc.fitoutBase)}</td></tr>`;
+    rows+=`<tr><td>${t('mepBase')}</td><td class="amt">${formatCurrency(calc.mepBase)}</td></tr>`;
+    
+    // Add floor multiplier if not 1 floor
+    if(calc.floorMultiplier > 1){
+        const floorAdjustment = calc.originalBase * (calc.floorMultiplier - 1);
+        rows+=`<tr style="background:rgba(251,146,60,0.1);"><td><strong>${calc.floorsText}</strong> (+${((calc.floorMultiplier-1)*100).toFixed(0)}%)</td><td class="amt"><strong>+${formatCurrency(floorAdjustment)}</strong></td></tr>`;
+    }
+    
+    // Add usage multiplier if not Office
+    if(calc.usageMultiplier > 1){
+        const baseAfterFloors = calc.originalBase * calc.floorMultiplier;
+        const usageAdjustment = baseAfterFloors * (calc.usageMultiplier - 1);
+        rows+=`<tr style="background:rgba(251,146,60,0.1);"><td><strong>${calc.usageText}</strong> (+${((calc.usageMultiplier-1)*100).toFixed(0)}%)</td><td class="amt"><strong>+${formatCurrency(usageAdjustment)}</strong></td></tr>`;
+    }
+    
+    // Add options
+    calc.breakdown.forEach(item=>{
+        const translatedLabel=t(item.label)||item.label;
+        rows+=`<tr><td>${translatedLabel} (+${(item.mult*100).toFixed(0)}%)</td><td class="amt">${formatCurrency(item.value)}</td></tr>`;
+    });
+    
+    tbody.innerHTML=rows;
+    tfoot.innerHTML=`<tr><td>${t('totalEstimate')}</td><td class="amt">${formatCurrency(calc.total)}</td></tr>`;
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>modal.scrollTop=0,0);
+}
+function closeBreakdownModal(){document.getElementById('breakdownModal').setAttribute('aria-hidden','true');document.body.style.overflow=''}
+document.getElementById('leadForm').addEventListener('submit',async function(e){
+    e.preventDefault();
+    const submitBtn=this.querySelector('.btn-submit');
+    const originalText=submitBtn.textContent;
+    
+    // Phone field capture - DEFENSIVE
+    const phoneInput=document.getElementById('leadPhone');
+    const countryCodeElem=document.getElementById('leadCountryCode');
+    
+    let fullPhone = '';
+    if (phoneInput && phoneInput.value && phoneInput.value.trim()) {
+        const countryCode = countryCodeElem && countryCodeElem.value ? countryCodeElem.value.trim() : '+971';
+        const phoneNumber = phoneInput.value.trim();
+        // Remove any non-digit characters from phone number
+        const cleanPhone = phoneNumber.replace(/[^\d]/g, '');
+        if (cleanPhone) {
+            fullPhone = countryCode + ' ' + cleanPhone;
+        }
+    }
+    
+    console.log('📞 Phone capture details:', {
+        phoneInputExists: !!phoneInput,
+        phoneInputValue: phoneInput ? phoneInput.value : 'N/A',
+        countryCodeValue: countryCodeElem ? countryCodeElem.value : 'N/A',
+        finalPhone: fullPhone || '(empty)'
+    });
+    
+    if(modalAction==='whatsapp'&&!phoneInput.value.trim()){
+        alert('Phone number is required for WhatsApp sharing');
+        phoneInput.focus();
+        return;
+    }
+    
+    submitBtn.disabled=true;
+    submitBtn.textContent='Sending...';
+    
+    const calc = await calculate();
+    
+    // Get floors and usage
+    const floorsElem = document.getElementById('floorCount');
+    const floorsText = floorsElem ? floorsElem.value : '1 Floor';
+    const usageElem = document.getElementById('usageType');
+    const usageText = usageElem ? usageElem.value : 'Office';
+    
+    // Detect currency based on market
+    const currency = state.market.startsWith('ksa-') ? 'SAR' : 'AED';
+    
+    const data={
+        action: modalAction, // 'pdf', 'email', or 'whatsapp'
+        name:document.getElementById('leadName').value,
+        email:document.getElementById('leadEmail').value,
+        company:document.getElementById('leadCompany').value,
+        phone:fullPhone,
+        notes:document.getElementById('leadNotes').value,
+        estimate:{
+            market:state.market,
+            size:state.size,
+            unit:state.unit || 'sqft',
+            quality:state.quality,
+            total:Number(calc.total),  // FORCE to number, strip any formatting
+            currency: currency  // Add currency
+        }
+    };
+    
+    console.log('💰 Total being sent:', {
+        calcTotal: calc.total,
+        calcTotalType: typeof calc.total,
+        dataEstimateTotal: data.estimate.total,
+        dataEstimateTotalType: typeof data.estimate.total
+    });
+    
+    // Add formatted version for email display BEFORE sending
+    data.estimate.totalFormatted = formatCurrency(calc.total);
+    console.log('📧 Email will show formatted total:', data.estimate.totalFormatted);
+    
+    try{
+        console.log('📧 Sending email notification for:', modalAction);
+        const response=await fetch('/.netlify/functions/email-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+        
+        if(response.ok){
+            console.log('✅ Email notification sent successfully for:', modalAction);
+            
+            // 📊 ALSO LOG TO GOOGLE SHEETS (with raw number)
+            try {
+                console.log('📊 Logging lead to Google Sheets...');
+                
+                const sheetsData = {
+                    ...data,  // Includes raw calc.total number
+                    source: document.referrer || 'Direct',
+                    timeOnSite: Math.floor((Date.now() - window.performance.timing.navigationStart) / 1000) + 's',
+                    pagesViewed: window.history.length
+                };
+                
+                const sheetsResponse = await fetch('/.netlify/functions/log-to-sheets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sheetsData)
+                });
+                
+                if (sheetsResponse.ok) {
+                    console.log('✅ Lead logged to Google Sheets');
+                } else {
+                    console.warn('⚠️ Google Sheets logging failed (non-critical)');
+                }
+            } catch (sheetsError) {
+                console.warn('⚠️ Google Sheets error:', sheetsError);
+                // Don't block the form submission if sheets fails
+            }
+            
+            if(modalAction==='pdf'){
+                submitBtn.textContent='✅ Downloading PDF...';
+                submitBtn.style.background='var(--green)';
+                setTimeout(()=>{
+                    generatePDF();
+                    closeLeadModal();
+                    document.getElementById('leadForm').reset();
+                    submitBtn.disabled=false;
+                    submitBtn.textContent=originalText;
+                    submitBtn.style.background='';
+                },2000);
+            }else if(modalAction==='whatsapp'){
+                submitBtn.textContent='✅ Opening WhatsApp...';
+                submitBtn.style.background='var(--green)';
+                const whatsappMsg=`🏗️ *TRDB Fitout Cost Estimate*%0A%0A👤 ${data.name} from ${data.company}%0A📍 ${state.market.toUpperCase().replace('-',' — ')}%0A📐 Size: ${state.size.toLocaleString()} SqFt%0A🏢 Floors: ${floorsText}%0A🎯 Usage: ${usageText}%0A✨ Quality: ${state.quality}%0A💰 Estimate: ${formatCurrency(calc.total)}%0A%0A📊 Get your own estimate:%0Aestimator.thetemplerock.com%0A%0A📧 ${data.email}${data.phone?'%0A📱 '+data.phone:''}${data.notes?'%0A%0A💬 '+data.notes:''}%0A%0A━━━━━━━━━━━━━━━━%0A© 2025 TR Design Build | All Rights Reserved`;
+                
+                // Open WhatsApp immediately
+                window.open(`https://wa.me/?text=${whatsappMsg}`,'_blank');
+                
+                // Show success message
+                submitBtn.textContent='✅ WhatsApp Opened!';
+                
+                // Keep modal open for 3 seconds so user can see the message
+                setTimeout(()=>{
+                    closeLeadModal();
+                    document.getElementById('leadForm').reset();
+                    submitBtn.disabled=false;
+                    submitBtn.textContent=originalText;
+                    submitBtn.style.background='';
+                },3000);
+            }else{
+                submitBtn.textContent='✅ Email Sent Successfully!';
+                submitBtn.style.background='var(--green)';
+                
+                // Show visible confirmation alert
+                setTimeout(() => {
+                    alert('✅ Email Sent!\n\nYour estimate has been sent to:\n' + data.email + '\n\nCheck your inbox!');
+                }, 500);
+                
+                setTimeout(()=>{
+                    closeLeadModal();
+                    document.getElementById('leadForm').reset();
+                    submitBtn.disabled=false;
+                    submitBtn.textContent=originalText;
+                    submitBtn.style.background='';
+                },2000);
+            }
+            if(typeof gtag!=='undefined')gtag('event','lead_submitted',{method:modalAction,market:state.market});
+        }else{
+            console.error('❌ Email notification failed. Status:', response.status);
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Error details:', errorData);
+            submitBtn.textContent='❌ Failed';
+            submitBtn.style.background='var(--red)';
+            setTimeout(()=>{
+                submitBtn.disabled=false;
+                submitBtn.textContent=originalText;
+                submitBtn.style.background='';
+            },2000);
+        }
+    }catch(error){
+        console.error('❌ Email send error:',error);
+        console.error('Error details:', error.message, error.stack);
+        submitBtn.textContent='❌ Error';
+        submitBtn.style.background='var(--red)';
+        setTimeout(()=>{
+            submitBtn.disabled=false;
+            submitBtn.textContent=originalText;
+            submitBtn.style.background='';
+        },2000);
+    }
+});
+async function generatePDF(){
+    if(typeof jspdf==='undefined'){
+        alert('PDF library not loaded. Please refresh.');
+        return;
+    }
+    
+    const calc = await calculate();
+    const{jsPDF}=window.jspdf;
+    const doc=new jsPDF();
+    
+    // Get floors and usage
+    const floorsElem = document.getElementById('floorCount');
+    const floorsText = floorsElem ? floorsElem.value : '1 Floor';
+    const usageElem = document.getElementById('usageType');
+    const usageText = usageElem ? usageElem.value : 'Office';
+    
+    // Header
+    doc.setFillColor(230,126,34);
+    doc.rect(0,0,210,40,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(24);
+    doc.setFont(undefined,'bold');
+    doc.text('TRDB FITOUT COST ESTIMATE',105,20,{align:'center'});
+    doc.setFontSize(12);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`,105,30,{align:'center'});
+    
+    // Project Details
+    doc.setTextColor(0,0,0);
+    doc.setFontSize(14);
+    doc.setFont(undefined,'bold');
+    doc.text('Project Details',20,55);
+    doc.setFontSize(11);
+    doc.setFont(undefined,'normal');
+    doc.text(`Location: ${state.market.toUpperCase().replace('-',' — ')}`,20,65);
+    doc.text(`Size: ${state.size.toLocaleString()} SqFt (${sqftToM2(state.size).toLocaleString()} m²)`,20,72);
+    doc.text(`Number of Floors: ${floorsText}`,20,79);
+    doc.text(`Primary Usage: ${usageText}`,20,86);
+    doc.text(`Quality: ${state.quality.charAt(0).toUpperCase()+state.quality.slice(1)}`,20,93);
+    
+    // Cost Summary
+    doc.setFontSize(14);
+    doc.setFont(undefined,'bold');
+    doc.text('Cost Summary',20,109);
+    doc.setFillColor(230,126,34);
+    doc.rect(20,114,170,25,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(18);
+    doc.text(formatCurrency(calc.total),105,129,{align:'center'});
+    
+    // Cost Breakdown
+    doc.setTextColor(0,0,0);
+    doc.setFontSize(14);
+    doc.setFont(undefined,'bold');
+    doc.text('Cost Breakdown',20,154);
+    let y=164;
+    doc.setFontSize(11);
+    doc.setFont(undefined,'normal');
+    doc.text('Fit-Out (Base):',20,y);
+    doc.text(formatCurrency(calc.fitoutBase),190,y,{align:'right'});
+    y+=7;
+    doc.text('MEP (Base):',20,y);
+    doc.text(formatCurrency(calc.mepBase),190,y,{align:'right'});
+    y+=8;
+    
+    // Add floor multiplier if applicable
+    if(calc.floorMultiplier && calc.floorMultiplier > 1){
+        const floorAdjustment = calc.originalBase * (calc.floorMultiplier - 1);
+        doc.text(`${calc.floorsText} (+${((calc.floorMultiplier-1)*100).toFixed(0)}%):`,20,y);
+        doc.text('+' + formatCurrency(floorAdjustment),190,y,{align:'right'});
+        y+=7;
+    }
+    
+    // Add usage multiplier if applicable
+    if(calc.usageMultiplier && calc.usageMultiplier > 1){
+        const baseAfterFloors = calc.originalBase * calc.floorMultiplier;
+        const usageAdjustment = baseAfterFloors * (calc.usageMultiplier - 1);
+        doc.text(`${calc.usageText} (+${((calc.usageMultiplier-1)*100).toFixed(0)}%):`,20,y);
+        doc.text('+' + formatCurrency(usageAdjustment),190,y,{align:'right'});
+        y+=7;
+    }
+    
+    // Add options breakdown
+    calc.breakdown.forEach(item=>{
+        doc.text(`${item.label} (+${(item.mult*100).toFixed(0)}%):`,20,y);
+        doc.text(formatCurrency(item.value),190,y,{align:'right'});
+        y+=7;
+    });
+    
+    // Footer
+    doc.setFontSize(9);
+    doc.setTextColor(100,100,100);
+    doc.text('Temple Rock Design Build | www.thetemplerock.com | info@thetemplerock.com',105,275,{align:'center'});
+    doc.text('© 2025 TR Design Build. All Rights Reserved. | Registered & Copyright Protected',105,280,{align:'center'});
+    doc.text('Based on industry benchmarks. Final costs subject to detailed design.',105,285,{align:'center'});
+    
+    doc.save(`TRDB_Estimate_${state.market}_${state.size}sqft_${Date.now()}.pdf`);
+    if(typeof gtag!=='undefined')gtag('event','pdf_generated',{market:state.market});
+}
+document.getElementById('marketSelect').addEventListener('change',e=>{state.market=e.target.value;updateUI()});
+document.getElementById('floorCount').addEventListener('change',()=>updateUI());
+document.getElementById('usageType').addEventListener('change',()=>updateUI());
+document.getElementById('btn-sqft').addEventListener('click',()=>{
+    state.unit='sqft';
+    document.getElementById('btn-sqft').classList.add('active');
+    document.getElementById('btn-m2').classList.remove('active');
+    // Update quick button labels
+    document.querySelectorAll('.chip[data-size]').forEach(btn => {
+        const size = parseInt(btn.getAttribute('data-size'));
+        btn.textContent = size >= 1000 ? (size/1000) + 'k' : size;
+    });
+    // Update input field to show sqft
+    document.getElementById('sizeInput').value = state.size;
+    updateUI();
+});
+document.getElementById('btn-m2').addEventListener('click',()=>{
+    state.unit='m2';
+    document.getElementById('btn-sqft').classList.remove('active');
+    document.getElementById('btn-m2').classList.add('active');
+    // Update quick button labels to m²
+    document.querySelectorAll('.chip[data-size]').forEach(btn => {
+        const sizeSqft = parseInt(btn.getAttribute('data-size'));
+        const sizeM2 = Math.round(sizeSqft * 0.092903);
+        btn.textContent = sizeM2 >= 1000 ? Math.round(sizeM2/1000) + 'k m²' : sizeM2 + ' m²';
+    });
+    // Update input field to show m² value
+    const sizeM2 = Math.round(state.size * 0.092903);
+    document.getElementById('sizeInput').value = sizeM2;
+    // Update range to use m² scale (convert to sqft for internal storage)
+    document.getElementById('sizeRange').value = state.size;
+    updateUI();
+});
+const sizeRange=document.getElementById('sizeRange');
+const sizeInput=document.getElementById('sizeInput');
+// Debounce timer for slider
+let updateUITimeout = null;
+
+// Debounced updateUI - waits 300ms after last change
+function debouncedUpdateUI() {
+    clearTimeout(updateUITimeout);
+    updateUITimeout = setTimeout(() => {
+        updateUI();
+    }, 300);
+}
+
+sizeRange.addEventListener('input',e=>{
+    state.size=parseInt(e.target.value);
+    if(state.unit==='m2'){
+        sizeInput.value=Math.round(state.size*0.092903);
+    }else{
+        sizeInput.value=state.size;
+    }
+    // Update display immediately but debounce calculation
+    document.getElementById('chipSize').textContent = state.unit==='sqft' ? `${state.size.toLocaleString()} SqFt` : `${Math.round(state.size*0.092903).toLocaleString()} m²`;
+    debouncedUpdateUI();
+});
+sizeInput.addEventListener('input',e=>{
+    let inputValue=parseInt(e.target.value)||1000;
+    if(state.unit==='m2'){
+        // User entered m², convert to sqft for internal storage
+        state.size=Math.round(inputValue/0.092903);
+    }else{
+        state.size=inputValue;
+    }
+    sizeRange.value=state.size;
+    updateUI();
+});
+document.getElementById('sizeMinus').addEventListener('click',()=>{state.size=Math.max(250,state.size-50);sizeInput.value=state.size;sizeRange.value=state.size;updateUI()});
+document.getElementById('sizePlus').addEventListener('click',()=>{state.size=Math.min(20000,state.size+50);sizeInput.value=state.size;sizeRange.value=state.size;updateUI()});
+document.querySelectorAll('.quick-chips .chip').forEach(chip=>{chip.addEventListener('click',()=>{state.size=parseInt(chip.dataset.size);sizeInput.value=state.size;sizeRange.value=state.size;updateUI()})});
+document.querySelectorAll('input[name="quality"]').forEach(radio=>{radio.addEventListener('change',e=>{state.quality=e.target.value;updateUI()})});
+document.querySelectorAll('.options input[type="checkbox"]').forEach(checkbox=>{checkbox.addEventListener('change',e=>{if(e.target.checked){state.options.push(e.target.value)}else{state.options=state.options.filter(opt=>opt!==e.target.value)}updateUI()})});
+document.getElementById('btnViewDetails').addEventListener('click',openBreakdownModal);
+document.querySelectorAll('[data-close]').forEach(el=>{el.addEventListener('click',closeBreakdownModal)});
+document.querySelectorAll('[data-close-lead]').forEach(el=>{el.addEventListener('click',closeLeadModal)});
+document.getElementById('btnPdf').addEventListener('click',()=>openLeadModal('pdf'));
+document.getElementById('btnEmail').addEventListener('click',()=>openLeadModal('email'));
+document.getElementById('btnWhatsApp').addEventListener('click',()=>openLeadModal('whatsapp'));
+updateUI();
+window.scrollTo(0,0)});
+    </script>
+
+    <!-- Arabic Translation System -->
+    <script>
+const translations = {
+    en: {
+        pageTitle: "TRDB Fitout Cost Estimator",
+        locationLabel: "🌍 Choose Location",
+        "uae-dubai": "UAE — Dubai",
+        "uae-abudhabi": "UAE — Abu Dhabi",
+        "uae-rasalkhaimah": "UAE — Ras Al Khaimah",
+        "ksa-riyadh": "KSA — Riyadh",
+        "ksa-jeddah": "KSA — Jeddah",
+        qualityLegend: "✨ Fit-Out Quality",
+        light: "Light",
+        standard: "Standard",
+        premium: "Premium",
+        fitoutBaseTitle: "🏗️ Fit-Out (Base)",
+        fitout1: "Partitions, doors & walls",
+        fitout2: "Ceilings & lighting",
+        fitout3: "Flooring & finishes",
+        fitout4: "Reception & pantry joinery",
+        fitout5: "Contractor preliminaries",
+        mepBaseTitle: "⚡ MEP (Base)",
+        mep1: "HVAC distribution",
+        mep2: "Electrical & power",
+        mep3: "Lighting controls",
+        mep4: "Plumbing",
+        mep5: "BMS integration",
+        mep6: "CAT5/6 LV cabling to desks",
+        mep7: "WiFi infrastructure",
+        mep8: "Basic server room/rack",
+        optionsLegend: "🎯 Options",
+        furnitureTitle: "Furniture Supply",
+        furniture1: "Workstations and desks",
+        furniture2: "Task chairs",
+        furniture3: "Meeting room furniture",
+        furniture4: "Storage units",
+        ffeTitle: "Loose Furnishings",
+        ffe1: "Soft seating & breakout furniture",
+        ffe2: "Accessories and décor",
+        ffe3: "Window treatments",
+        ffe4: "Pantry equipment",
+        artTitle: "Art Procurement",
+        art1: "Curated artwork selection",
+        art2: "Framing and mounting",
+        art3: "Installation services",
+        smartTitle: "Smart Workplace",
+        smart1: "Meeting room AV systems",
+        smart2: "Video conferencing equipment",
+        smart3: "Digital signage",
+        smart4: "Structured cabling (Cat6A)",
+        smart5: "Network infrastructure",
+        greenTitle: "LEED / Sustainability",
+        green1: "Sustainable material specifications",
+        green2: "Low-VOC finishes and adhesives",
+        green3: "Energy-efficient systems",
+        green4: "Water conservation measures",
+        green5: "Indoor air quality enhancements",
+        green6: "LEED documentation support",
+        hvacTitle: "Full HVAC Plant",
+        hvac1: "Dedicated air handling units",
+        hvac2: "Chilled water systems",
+        hvac3: "Generator and UPS systems",
+        hvac4: "Complete electrical infrastructure",
+        hvac5: "Water treatment systems",
+        bookConsultation: "📅 Book Consultation",
+        downloadPdf: "📄 Download PDF",
+        emailEstimate: "📧 Email Estimate",
+        whatsapp: "💬 WhatsApp",
+        modalTitle: "Get Your Estimate",
+        nameLabel: "Name",
+        companyLabel: "Company",
+        emailLabel: "Email",
+        phoneLabel: "Phone (optional)",
+        notesLabel: "Tell us about your project",
+        notesPlaceholder: "Any specific requirements, timeline, or questions? We're here to help!",
+        snapshotTitle: "Estimate Snapshot",
+        cancel: "Cancel",
+        sendEstimate: "Send Estimate",
+        breakdownTitle: "💰 Detailed Cost Breakdown",
+        categoryColumn: "Item",
+        amountColumn: "Amount (AED)",
+        chartTitle: "Cost Breakdown Analysis",
+        chartSubtitle: "Professional estimate based on current market rates",
+        viewBreakdown: "View Detailed Breakdown →",
+        totalEstimate: "TOTAL ESTIMATE",
+        fitoutBase: "Fit-Out (Base)",
+        mepBase: "MEP (Base)",
+        "Furniture Supply": "Furniture Supply",
+        "Loose Furnishings & Décor": "Loose Furnishings & Décor",
+        "Original Art Procurement": "Original Art Procurement",
+        "Smart Workplace (IoT/AV)": "Smart Workplace (IoT/AV)",
+        "LEED / Sustainability": "LEED / Sustainability",
+        "Full HVAC Supply & Plant": "Full HVAC Supply & Plant",
+        benchmarkNote: "Based on industry benchmarks from recent data",
+        glossaryTitle: "📖 Glossary",
+        glMep: "Mechanical, Electrical & Plumbing",
+        glHvac: "Heating, Ventilation & Air Conditioning",
+        glBms: "Building Management System",
+        glIaq: "Indoor Air Quality",
+        glLv: "Low-Voltage (data/voice/IT/AV cabling & containment)",
+        glFfe: "Furniture, Fixtures & Equipment",
+        glLeed: "Leadership in Energy and Environmental Design",
+        copyrightNotice: "© 2025 Temple Rock Design Build. All Rights Reserved. | Registered & Copyright Protected",
+        footerDisclaimer: "This estimator and its underlying algorithms are proprietary technology of TR Design Build.",
+        signUpFree: "Sign Up Free",
+        loginBtn: "Login",
+        logoutBtn: "Logout",
+        myEstimatesBtn: "📂 My Estimates",
+        saveEstimate: "💾 Save This Estimate",
+        signUpTitle: "Join TRDB Estimator",
+        signUpSubtitle: "Create your free account",
+        nameLabel: "Full Name",
+        emailLabel: "Email Address",
+        passwordLabel: "Password",
+        passwordHint: "Minimum 6 characters",
+        createAccount: "Create Account",
+        alreadyHaveAccount: "Already have an account?",
+        loginLink: "Login",
+        breakdownFitoutTitle: "🏗️ Fit-Out (Base)",
+        breakdownMepTitle: "⚡ MEP (Base)",
+        breakdownFitout1: "Partitions, doors & feature walls",
+        breakdownFitout2: "Suspended/feature ceilings, lighting",
+        breakdownFitout3: "Flooring & raised floor adaptations",
+        breakdownFitout4: "Reception & pantry joinery",
+        breakdownFitout5: "Contractor preliminaries, HS&E",
+        breakdownMep1: "HVAC distribution from landlord",
+        breakdownMep2: "Electrical distribution & power",
+        breakdownMep3: "Lighting controls / fire alarm",
+        breakdownMep4: "Plumbing to pantry/restrooms",
+        breakdownMep5: "Basic BMS integration",
+        breakdownMep6: "CAT5/6 LV cabling to desks",
+        breakdownMep7: "WiFi infrastructure",
+        breakdownMep8: "Basic server room/rack"
+    },
+    ar: {
+        pageTitle: "حاسبة تكاليف التشطيبات - TRDB",
+        locationLabel: "🌍 اختر الموقع",
+        "uae-dubai": "الإمارات — دبي",
+        "uae-abudhabi": "الإمارات — أبوظبي",
+        "uae-rasalkhaimah": "الإمارات — رأس الخيمة",
+        "ksa-riyadh": "السعودية — الرياض",
+        "ksa-jeddah": "السعودية — جدة",
+        qualityLegend: "✨ جودة التشطيب",
+        light: "خفيف",
+        standard: "قياسي",
+        premium: "فاخر",
+        fitoutBaseTitle: "🏗️ التشطيبات (الأساسية)",
+        fitout1: "الفواصل والأبواب والجدران",
+        fitout2: "الأسقف والإضاءة",
+        fitout3: "الأرضيات والتشطيبات",
+        fitout4: "نجارة الاستقبال والمطبخ",
+        fitout5: "أعمال المقاول التمهيدية",
+        mepBaseTitle: "⚡ الأعمال الكهروميكانيكية (الأساسية)",
+        mep1: "توزيع التكييف",
+        mep2: "الكهرباء والطاقة",
+        mep3: "التحكم في الإضاءة",
+        mep4: "السباكة",
+        mep5: "تكامل نظام BMS",
+        mep6: "كابلات CAT5/6 للمكاتب",
+        mep7: "البنية التحتية للواي فاي",
+        mep8: "غرفة خادم أساسية",
+        optionsLegend: "🎯 خيارات إضافية",
+        furnitureTitle: "توريد الأثاث",
+        furniture1: "محطات العمل والمكاتب",
+        furniture2: "كراسي العمل",
+        furniture3: "أثاث غرف الاجتماعات",
+        furniture4: "وحدات التخزين",
+        ffeTitle: "المفروشات المتنوعة",
+        ffe1: "المقاعد الناعمة وأثاث الاستراحة",
+        ffe2: "الإكسسوارات والديكور",
+        ffe3: "معالجات النوافذ",
+        ffe4: "معدات المطبخ",
+        artTitle: "اقتناء الأعمال الفنية",
+        art1: "اختيار أعمال فنية منسقة",
+        art2: "التأطير والتثبيت",
+        art3: "خدمات التركيب",
+        smartTitle: "مكان عمل ذكي",
+        smart1: "أنظمة AV لغرف الاجتماعات",
+        smart2: "معدات المؤتمرات المرئية",
+        smart3: "اللافتات الرقمية",
+        smart4: "الكابلات المهيكلة (Cat6A)",
+        smart5: "البنية التحتية للشبكة",
+        greenTitle: "استدامة LEED",
+        green1: "مواصفات المواد المستدامة",
+        green2: "تشطيبات ومواد لاصقة منخفضة VOC",
+        green3: "أنظمة موفرة للطاقة",
+        green4: "تدابير الحفاظ على المياه",
+        green5: "تحسينات جودة الهواء الداخلي",
+        green6: "دعم توثيق LEED",
+        hvacTitle: "منظومة تكييف كاملة",
+        hvac1: "وحدات معالجة الهواء المخصصة",
+        hvac2: "أنظمة المياه المبردة",
+        hvac3: "أنظمة المولدات وUPS",
+        hvac4: "البنية التحتية الكهربائية الكاملة",
+        hvac5: "أنظمة معالجة المياه",
+        bookConsultation: "📅 احجز استشارة",
+        downloadPdf: "📄 تحميل PDF",
+        emailEstimate: "📧 إرسال بالبريد",
+        whatsapp: "💬 واتساب",
+        modalTitle: "احصل على تقديرك",
+        nameLabel: "الاسم",
+        companyLabel: "الشركة",
+        emailLabel: "البريد الإلكتروني",
+        phoneLabel: "الهاتف (اختياري)",
+        notesLabel: "أخبرنا عن مشروعك",
+        notesPlaceholder: "أي متطلبات محددة أو جدول زمني أو أسئلة؟ نحن هنا للمساعدة!",
+        snapshotTitle: "ملخص التقدير",
+        cancel: "إلغاء",
+        sendEstimate: "إرسال التقدير",
+        breakdownTitle: "💰 تفصيل التكاليف التفصيلي",
+        categoryColumn: "الفئة",
+        amountColumn: "المبلغ (AED)",
+        chartTitle: "تحليل توزيع التكاليف",
+        chartSubtitle: "تقدير احترافي بناءً على أسعار السوق الحالية",
+        viewBreakdown: "→ عرض التفاصيل الكاملة",
+        totalEstimate: "إجمالي التقدير",
+        fitoutBase: "التشطيبات (الأساسية)",
+        mepBase: "الأعمال الكهروميكانيكية (الأساسية)",
+        "Furniture Supply": "توريد الأثاث",
+        "Loose Furnishings & Décor": "المفروشات المتنوعة والديكور",
+        "Original Art Procurement": "اقتناء الأعمال الفنية الأصلية",
+        "Smart Workplace (IoT/AV)": "مكان عمل ذكي (IoT/AV)",
+        "LEED / Sustainability": "استدامة LEED",
+        "Full HVAC Supply & Plant": "توريد ومنظومة التكييف الكاملة",
+        benchmarkNote: "بناءً على معايير الصناعة من البيانات الحديثة",
+        glossaryTitle: "📖 المصطلحات",
+        glMep: "الأعمال الميكانيكية والكهربائية والسباكة",
+        glHvac: "التدفئة والتهوية وتكييف الهواء",
+        glBms: "نظام إدارة المبنى",
+        glIaq: "جودة الهواء الداخلي",
+        glLv: "الجهد المنخفض (كابلات البيانات/الصوت/تقنية المعلومات/الصوت والمرئيات)",
+        glFfe: "الأثاث والتركيبات والمعدات",
+        glLeed: "الريادة في الطاقة والتصميم البيئي",
+        copyrightNotice: "© 2025 تمبل روك لتصميم المباني. جميع الحقوق محفوظة. | مسجل ومحمي بحقوق النشر",
+        footerDisclaimer: "هذا المقدر والخوارزميات الأساسية الخاصة به هي تقنية خاصة بشركة TR Design Build.",
+        signUpFree: "إنشاء حساب مجاني",
+        loginBtn: "تسجيل الدخول",
+        logoutBtn: "تسجيل الخروج",
+        myEstimatesBtn: "📂 تقديراتي",
+        saveEstimate: "💾 حفظ هذا التقدير",
+        signUpTitle: "انضم إلى مقدر TRDB",
+        signUpSubtitle: "أنشئ حسابك المجاني",
+        nameLabel: "الاسم الكامل",
+        emailLabel: "البريد الإلكتروني",
+        passwordLabel: "كلمة المرور",
+        passwordHint: "6 أحرف على الأقل",
+        createAccount: "إنشاء الحساب",
+        breakdownFitoutTitle: "🏗️ التشطيبات (الأساسية)",
+        breakdownMepTitle: "⚡ الأعمال الكهروميكانيكية (الأساسية)",
+        breakdownFitout1: "الفواصل والأبواب والجدران المميزة",
+        breakdownFitout2: "الأسقف المعلقة/المميزة والإضاءة",
+        breakdownFitout3: "الأرضيات وتكييفات الأرضيات المرتفعة",
+        breakdownFitout4: "نجارة الاستقبال والمطبخ",
+        breakdownFitout5: "أعمال المقاول التمهيدية والصحة والسلامة",
+        breakdownMep1: "توزيع التكييف من المالك",
+        breakdownMep2: "توزيع الكهرباء والطاقة",
+        breakdownMep3: "التحكم في الإضاءة / إنذار الحريق",
+        breakdownMep4: "السباكة للمطبخ/دورات المياه",
+        breakdownMep5: "تكامل نظام BMS الأساسي",
+        breakdownMep6: "كابلات CAT5/6 LV للمكاتب",
+        breakdownMep7: "البنية التحتية للواي فاي",
+        breakdownMep8: "غرفة الخادم/الرف الأساسية"
+    }
+};
+let currentLang='en';
+function t(key){return translations[currentLang][key]||key}
+function switchLanguage(lang){
+    currentLang=lang;
+    document.documentElement.setAttribute('dir',lang==='ar'?'rtl':'ltr');
+    document.documentElement.setAttribute('lang',lang);
+    document.getElementById('btn-lang-en').classList.toggle('active',lang==='en');
+    document.getElementById('btn-lang-ar').classList.toggle('active',lang==='ar');
+    document.querySelector('.title').textContent=t('pageTitle');
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const key=el.getAttribute('data-i18n');
+        const translated=t(key);
+        if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){
+            el.placeholder=translated
+        }else{
+            el.textContent=translated
+        }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+        const key=el.getAttribute('data-i18n-placeholder');
+        el.placeholder=t(key)
+    });
+    document.querySelectorAll('#marketSelect option').forEach(opt=>{
+        const val=opt.value;
+        if(translations[lang][val]){
+            opt.textContent=translations[lang][val]
+        }
+    });
+    localStorage.setItem('preferredLang',lang);
+    
+    // CRITICAL FIX: Refresh login state after language switch
+    const userId = localStorage.getItem('userId');
+    const userName = localStorage.getItem('userName');
+    console.log('🔄 Language switched, checking login state:', {
+        userId: userId ? 'exists' : 'none',
+        userName: userName
+    });
+    
+    // Update button visibility based on login state
+    const btnMyEstimates = document.getElementById('btnMyEstimates');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const btnSignUp = document.getElementById('btnSignUp');
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    
+    if (userId && userName) {
+        // User is logged in
+        if (welcomeMsg) {
+            welcomeMsg.textContent = `Welcome, ${userName}! 👋`;
+            welcomeMsg.style.display = 'block';
+        }
+        if (btnLogin) btnLogin.style.display = 'none';
+        if (btnSignUp) btnSignUp.style.display = 'none';
+        if (btnLogout) btnLogout.style.display = 'block';
+        if (btnMyEstimates) btnMyEstimates.style.display = 'block';
+        console.log('✅ Login state refreshed after language switch');
+    } else {
+        // User is logged out
+        if (welcomeMsg) welcomeMsg.style.display = 'none';
+        if (btnLogin) btnLogin.style.display = 'block';
+        if (btnSignUp) btnSignUp.style.display = 'block';
+        if (btnLogout) btnLogout.style.display = 'none';
+        if (btnMyEstimates) btnMyEstimates.style.display = 'block';
+    }
+    
+    if(typeof updateUI==='function'){updateUI()}
+}
+document.getElementById('btn-lang-en').addEventListener('click',()=>switchLanguage('en'));
+document.getElementById('btn-lang-ar').addEventListener('click',()=>switchLanguage('ar'));
+const savedLang=localStorage.getItem('preferredLang')||'en';
+if(savedLang==='ar'){switchLanguage('ar')}
+
+// ============================================
+// SUPABASE SIGNUP SYSTEM
+// ============================================
+
+// Initialize Supabase (must be global for both signup and login)
+const SUPABASE_URL = 'https://vcnblayxoogianvjtpyf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjbmJsYXl4b29naWFudmp0cHlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMjUxMzQsImV4cCI6MjA3NjkwMTEzNH0.Y_Hxet6L3ATwyl2XFah0n5w78f9MK2A4mpzay6xe7BA';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null;
+
+console.log('✅ Supabase initialized globally');
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎯 DOM loaded - initializing signup system...');
+
+console.log('✅ Supabase signup system initialized');
+
+// Check for existing session
+async function checkSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+        currentUser = session.user;
+        
+        // CRITICAL FIX: Store userId in localStorage
+        localStorage.setItem('userId', session.user.id);
+        localStorage.setItem('userEmail', session.user.email);
+        
+        // Try to get name from user metadata or database
+        const userName = session.user.user_metadata?.name || session.user.email.split('@')[0];
+        localStorage.setItem('userName', userName);
+        
+        console.log('✅ Session restored, userId stored:', session.user.id);
+        
+        showWelcomeMessage(session.user);
+    }
+}
+
+// Show welcome message
+function showWelcomeMessage(user) {
+    const btnSignUp = document.getElementById('btnSignUp');
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    const userName = user.user_metadata?.name || user.email.split('@')[0];
+    
+    if (btnSignUp) btnSignUp.style.display = 'none';
+    if (welcomeMsg) {
+        welcomeMsg.textContent = `Welcome, ${userName}! 👋`;
+        welcomeMsg.style.display = 'block';
+    }
+}
+
+// Open signup modal (global)
+window.openSignupModal = function() {
+    const modal = document.getElementById('signupModal');
+    if (modal) {
+        modal.setAttribute('aria-hidden', 'false');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Close signup modal (global)
+window.closeSignupModal = function() {
+    const modal = document.getElementById('signupModal');
+    if (modal) {
+        modal.setAttribute('aria-hidden', 'true');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        document.getElementById('signupForm').reset();
+    }
+}
+
+// Handle signup
+document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    console.log('🚀 FORM SUBMITTED!');
+    console.log('Form element:', e.target);
+    
+    const submitBtn = e.target.querySelector('.btn-submit');
+    const originalText = submitBtn.textContent;
+    
+    console.log('Submit button found:', submitBtn);
+    
+    try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating account...';
+        
+        const name = document.getElementById('signupName').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        
+        console.log('📝 Form values:', { name, email, password: '***' });
+        console.log('🔑 Calling Supabase signUp...');
+        
+        // Sign up
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: { name: name }
+            }
+        });
+        
+        console.log('📬 Supabase response:', { data, error });
+        if (error) throw error;
+        
+        // Create user profile
+        if (data.user) {
+            const { error: profileError } = await supabase
+                .from('users')
+                .insert({
+                    id: data.user.id,
+                    email: email,
+                    name: name,
+                    plan: 'free'
+                });
+            
+            if (profileError) console.warn('Profile creation:', profileError);
+        }
+        
+        console.log('✅ Signup successful! User:', data.user);
+        console.log('📧 Email confirmation required?', data.user?.identities?.length === 0);
+        
+        submitBtn.textContent = '✅ Success!';
+        submitBtn.style.background = 'var(--green)';
+        
+        // Track signup
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'sign_up', { method: 'email' });
+        }
+        
+        // Check if email confirmation is required
+        const needsEmailConfirmation = data.user && !data.user.confirmed_at && data.user.identities?.length === 0;
+        
+        // Show success message
+        setTimeout(() => {
+            closeSignupModal();
+            
+            let successMessage;
+            if (needsEmailConfirmation) {
+                // Email confirmation required
+                successMessage = `📧 Check Your Email!\n\n✅ Account created for:\n${email}\n\n📬 We sent you a confirmation email.\n\n👉 Click the link in the email to activate your account.\n\n💡 Then come back and login!\n\n(Check your spam folder if you don't see it)`;
+            } else {
+                // No confirmation needed (auto-confirmed)
+                successMessage = `🎉 Welcome ${name}!\n\n✅ Your account has been created!\n\n💡 You can now save estimates and access them anytime.\n\nEnjoy using the calculator!`;
+                
+                // CRITICAL FIX: Store userId IMMEDIATELY after signup
+                localStorage.setItem('userId', data.user.id);
+                localStorage.setItem('userEmail', data.user.email);
+                localStorage.setItem('userName', name);
+                
+                console.log('✅ User credentials stored after signup:', {
+                    userId: data.user.id,
+                    email: data.user.email,
+                    name: name
+                });
+                
+                // Update UI to logged in state
+                currentUser = data.user;
+                showWelcomeMessage(data.user);
+            }
+            
+            alert(successMessage);
+            console.log('✅ Success message shown');
+        }, 1500);
+        
+    } catch (error) {
+        console.error('❌ Signup error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            status: error.status,
+            name: error.name
+        });
+        
+        let errorMessage = 'Failed to create account.\n\n';
+        
+        if (error.message.includes('already registered') || error.message.includes('already been registered')) {
+            errorMessage += 'This email is already registered.\n\nTry logging in instead, or use a different email.';
+        } else if (error.message.includes('Invalid')) {
+            errorMessage += 'Invalid email or password format.';
+        } else {
+            errorMessage += error.message;
+        }
+        
+        alert(errorMessage);
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        submitBtn.style.background = '';
+    }
+});
+
+console.log('📋 Checking for signup form...');
+const signupFormElement = document.getElementById('signupForm');
+console.log('Form element:', signupFormElement);
+
+if (signupFormElement) {
+    console.log('✅ Signup form found - event listener should be attached');
+} else {
+    console.error('❌ Signup form NOT found!');
+}
+
+// Attach button listener
+const signupButton = document.getElementById('btnSignUp');
+console.log('Sign up button:', signupButton);
+
+if (signupButton) {
+    signupButton.addEventListener('click', () => {
+        console.log('🖱️ Sign Up button clicked!');
+        openSignupModal();
+    });
+    console.log('✅ Button listener attached');
+} else {
+    console.error('❌ Sign up button NOT found!');
+}
+
+// Check session on load
+checkSession();
+
+console.log('✅ Signup system ready');
+
+}); // End DOMContentLoaded
+    </script>
+
+    <!-- Sign Up Modal -->
+    <div id="signupModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" onclick="closeSignupModal()"></div>
+        <div class="modal__dialog" style="max-width:480px;">
+            <button class="modal__close" onclick="closeSignupModal()" aria-label="Close">×</button>
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2 style="font-size:1.75rem;color:var(--text-1);margin-bottom:0.5rem;" data-i18n="signUpTitle">Join TRDB Estimator</h2>
+                <p style="color:var(--text-2);font-size:0.95rem;" data-i18n="signUpSubtitle">Create your free account</p>
+            </div>
+            <form id="signupForm" style="display:flex;flex-direction:column;gap:1.25rem;">
+                <div class="form-group">
+                    <label class="form-label" for="signupName" data-i18n="nameLabel">Full Name</label>
+                    <input type="text" id="signupName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="signupEmail" data-i18n="emailLabel">Email Address</label>
+                    <input type="email" id="signupEmail" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="signupPassword" data-i18n="passwordLabel">Password</label>
+                    <input type="password" id="signupPassword" class="form-input" minlength="6" required>
+                    <small style="display:block;margin-top:0.25rem;font-size:0.8rem;color:var(--text-3);" data-i18n="passwordHint">Minimum 6 characters</small>
+                </div>
+                <button type="submit" class="btn-submit" data-i18n="createAccount">Create Account</button>
+                <div style="text-align:center;margin-top:1rem;">
+                    <p style="color:var(--text-3);font-size:0.9rem;">
+                        <span data-i18n="alreadyHaveAccount">Already have an account?</span>
+                        <a href="#" onclick="closeSignupModal(); openLoginModal(); return false;" style="color:var(--cyan);text-decoration:none;font-weight:600;margin-left:0.25rem;" data-i18n="loginLink">Login</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" onclick="closeLoginModal()"></div>
+        <div class="modal__dialog" style="max-width:480px;">
+            <button class="modal__close" onclick="closeLoginModal()" aria-label="Close">×</button>
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2 style="font-size:1.75rem;color:var(--text-1);margin-bottom:0.5rem;" data-i18n="loginTitle">Welcome Back</h2>
+                <p style="color:var(--text-2);font-size:0.95rem;" data-i18n="loginSubtitle">Login to your account</p>
+            </div>
+            <form id="loginForm" style="display:flex;flex-direction:column;gap:1.25rem;">
+                <div class="form-group">
+                    <label class="form-label" for="loginEmail" data-i18n="emailLabel">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="loginPassword" data-i18n="passwordLabel">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" required>
+                    <button type="button" onclick="openForgotPasswordModal()" style="color:var(--text-3);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0.25rem 0;font-size:0.75rem;text-align:left;display:block;margin-top:0.25rem;" data-i18n="forgotPasswordLink">Forgot password?</button>
+                </div>
+                <div id="loginError" style="display:none;padding:0.75rem;background:rgba(239,68,68,0.1);border:2px solid var(--red);border-radius:8px;color:var(--red);font-size:0.875rem;"></div>
+                <button type="submit" class="btn-submit" data-i18n="loginButton">Login</button>
+                <button type="button" onclick="switchToSignup()" style="color:var(--cyan);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0.5rem;font-size:0.875rem;" data-i18n="noAccountLink">Don't have an account? Sign up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" onclick="closeForgotPasswordModal()"></div>
+        <div class="modal__dialog" style="max-width:480px;">
+            <button class="modal__close" onclick="closeForgotPasswordModal()" aria-label="Close">×</button>
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2 style="font-size:1.75rem;color:var(--text-1);margin-bottom:0.5rem;" data-i18n="forgotPasswordTitle">Reset Password</h2>
+                <p style="color:var(--text-2);font-size:0.95rem;" data-i18n="forgotPasswordSubtitle">Enter your email to receive a password reset link</p>
+            </div>
+            <form id="forgotPasswordForm" style="display:flex;flex-direction:column;gap:1.25rem;">
+                <div class="form-group">
+                    <label class="form-label" for="resetEmail" data-i18n="emailLabel">Email Address</label>
+                    <input type="email" id="resetEmail" class="form-input" required placeholder="your.email@example.com">
+                </div>
+                <div id="resetError" style="display:none;padding:0.75rem;background:rgba(239,68,68,0.1);border:2px solid var(--red);border-radius:8px;color:var(--red);font-size:0.875rem;"></div>
+                <div id="resetSuccess" style="display:none;padding:0.75rem;background:rgba(16,185,129,0.1);border:2px solid var(--green);border-radius:8px;color:var(--green);font-size:0.875rem;"></div>
+                <button type="submit" class="btn-submit" data-i18n="sendResetLink">Send Reset Link</button>
+                <button type="button" onclick="backToLogin()" style="color:var(--cyan);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0.5rem;font-size:0.875rem;" data-i18n="backToLogin">Back to Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- My Estimates Modal -->
+    <div id="myEstimatesModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" onclick="closeMyEstimatesModal()"></div>
+        <div class="modal__dialog" style="max-width:900px;">
+            <button class="modal__close" onclick="closeMyEstimatesModal()" aria-label="Close">×</button>
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2 style="font-size:1.75rem;color:var(--orange);margin-bottom:0.5rem;">📂 My Saved Estimates</h2>
+                <p style="color:var(--text-2);font-size:0.95rem;">View, load, and manage your estimates</p>
+            </div>
+            <div id="estimatesListContainer" style="display:flex;flex-direction:column;gap:1rem;min-height:200px;">
+                <!-- Estimates will be loaded here -->
+                <div id="estimatesLoading" style="text-align:center;padding:3rem;color:var(--text-3);">
+                    <div style="font-size:2rem;margin-bottom:1rem;">⏳</div>
+                    <p>Loading your estimates...</p>
+                </div>
+                <div id="estimatesEmpty" style="display:none;text-align:center;padding:3rem;color:var(--text-3);">
+                    <div style="font-size:3rem;margin-bottom:1rem;">📂</div>
+                    <p style="font-size:1.1rem;margin-bottom:0.5rem;">No saved estimates yet</p>
+                    <p style="font-size:0.9rem;">Create an estimate and click "Save" to get started!</p>
+                </div>
+                <div id="estimatesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Estimate Name Dialog -->
+    <div id="saveEstimateModal" class="modal" aria-hidden="true">
+        <div class="modal__backdrop" onclick="closeSaveEstimateModal()"></div>
+        <div class="modal__dialog" style="max-width:480px;">
+            <button class="modal__close" onclick="closeSaveEstimateModal()" aria-label="Close">×</button>
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2 style="font-size:1.75rem;color:var(--orange);margin-bottom:0.5rem;">💾 Save Estimate</h2>
+                <p style="color:var(--text-2);font-size:0.95rem;">Give your estimate a name (optional)</p>
+            </div>
+            <form id="saveEstimateForm" style="display:flex;flex-direction:column;gap:1.25rem;">
+                <div class="form-group">
+                    <label class="form-label" for="estimateName">Estimate Name</label>
+                    <input type="text" id="estimateName" class="form-input" placeholder="e.g., Office Fitout - Dubai Marina" maxlength="100">
+                    <small style="display:block;margin-top:0.25rem;font-size:0.75rem;color:var(--text-3);">Leave blank to auto-generate a name</small>
+                </div>
+                <div id="saveEstimateError" style="display:none;padding:0.75rem;background:rgba(239,68,68,0.1);border:2px solid var(--red);border-radius:8px;color:var(--red);font-size:0.875rem;"></div>
+                <button type="submit" class="btn-submit">💾 Save Estimate</button>
+                <button type="button" onclick="closeSaveEstimateModal()" style="color:var(--text-3);text-decoration:underline;background:none;border:none;cursor:pointer;padding:0.5rem;font-size:0.875rem;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // ============================================
+    // LOGIN FUNCTIONALITY
+    // Extends existing signup system
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔐 Initializing login system...');
+
+        // Get elements
+        const loginBtn = document.getElementById('btnLogin');
+        const logoutBtn = document.getElementById('btnLogout');
+        const signupBtn = document.getElementById('btnSignUp');
+        const welcomeMsg = document.getElementById('welcomeMsg');
+        const loginModal = document.getElementById('loginModal');
+        const loginForm = document.getElementById('loginForm');
+
+        // Modal functions
+        window.openLoginModal = function() {
+            console.log('🔓 Opening login modal');
+            loginModal.setAttribute('aria-hidden', 'false');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        };
+
+        window.closeLoginModal = function() {
+            console.log('🔒 Closing login modal');
+            loginModal.setAttribute('aria-hidden', 'true');
+        };
+
+        window.switchToSignup = function() {
+            closeLoginModal();
+            setTimeout(() => openSignupModal(), 200);
+        };
+
+        // Forgot Password Modal Functions
+        window.openForgotPasswordModal = function() {
+            console.log('📧 Opening forgot password modal');
+            closeLoginModal();
+            const forgotModal = document.getElementById('forgotPasswordModal');
+            forgotModal.setAttribute('aria-hidden', 'false');
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('resetError').style.display = 'none';
+            document.getElementById('resetSuccess').style.display = 'none';
+        };
+
+        window.closeForgotPasswordModal = function() {
+            console.log('🔒 Closing forgot password modal');
+            document.getElementById('forgotPasswordModal').setAttribute('aria-hidden', 'true');
+        };
+
+        window.backToLogin = function() {
+            closeForgotPasswordModal();
+            setTimeout(() => openLoginModal(), 200);
+        };
+
+        // Attach button listeners
+        if (loginBtn) {
+            loginBtn.addEventListener('click', openLoginModal);
+            console.log('✅ Login button listener attached');
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', handleLogout);
+            console.log('✅ Logout button listener attached');
+        }
+
+        // Handle login form submission
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('🔐 Login form submitted');
+
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.style.display = 'none';
+
+            if (!email || !password) {
+                showLoginError('Please enter both email and password');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging in...';
+            submitBtn.style.opacity = '0.7';
+
+            try {
+                console.log('🔑 Attempting login for:', email);
+
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                console.log('✅ Login successful');
+
+                // Get user name
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('name')
+                    .eq('email', email)
+                    .single();
+
+                const userName = userData?.name || email.split('@')[0];
+
+                // Store in localStorage
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userName', userName);
+                localStorage.setItem('userId', data.user.id);
+
+                // Update UI
+                updateUIForLoggedInUser(userName);
+                closeLoginModal();
+
+                // Show success
+                showCustomPopup(`🎉 Welcome back, ${userName}!`, 'login-success');
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                submitBtn.style.opacity = '1';
+
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                
+                let errorMessage = 'Invalid email or password. Please try again.';
+                if (error.message.includes('Email not confirmed')) {
+                    errorMessage = 'Please confirm your email address first.';
+                }
+                
+                showLoginError(errorMessage);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                submitBtn.style.opacity = '1';
+            }
+        });
+
+        // Forgot Password Form Handler
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        forgotPasswordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('📧 Forgot password form submitted');
+
+            const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            const email = document.getElementById('resetEmail').value.trim();
+            const errorDiv = document.getElementById('resetError');
+            const successDiv = document.getElementById('resetSuccess');
+
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            if (!email) {
+                errorDiv.textContent = 'Please enter your email address.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.style.opacity = '0.7';
+
+            try {
+                console.log('📧 Sending password reset email to:', email);
+
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password`
+                });
+
+                if (error) throw error;
+
+                console.log('✅ Password reset email sent');
+
+                // Show success message
+                successDiv.textContent = '✅ Password reset link sent! Check your email.';
+                successDiv.style.display = 'block';
+
+                // Clear form
+                document.getElementById('resetEmail').value = '';
+
+                // Auto-close after 3 seconds
+                setTimeout(() => {
+                    closeForgotPasswordModal();
+                }, 3000);
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                submitBtn.style.opacity = '1';
+
+            } catch (error) {
+                console.error('❌ Password reset error:', error);
+
+                let errorMessage = 'Failed to send reset email. Please try again.';
+                if (error.message.includes('not found')) {
+                    errorMessage = 'No account found with this email address.';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.display = 'block';
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                submitBtn.style.opacity = '1';
+            }
+        });
+
+        // Handle logout
+        async function handleLogout() {
+            console.log('🚪 Logging out');
+
+            try {
+                await supabase.auth.signOut();
+                
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userId');
+
+                updateUIForLoggedOutUser();
+                showCustomPopup('👋 See you soon!', 'logout-success');
+
+                console.log('✅ Logged out successfully');
+
+            } catch (error) {
+                console.error('❌ Logout error:', error);
+            }
+        }
+
+        // Check login status
+        async function checkLoginStatus() {
+            console.log('🔍 Checking login status...');
+            
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (session) {
+                    console.log('✅ User has active session');
+                    const userName = localStorage.getItem('userName') || session.user.email.split('@')[0];
+                    updateUIForLoggedInUser(userName);
+                } else {
+                    console.log('ℹ️ No active session');
+                    updateUIForLoggedOutUser();
+                }
+            } catch (error) {
+                console.error('❌ Error checking session:', error);
+                updateUIForLoggedOutUser();
+            }
+        }
+
+        // Update UI for logged in user
+        function updateUIForLoggedInUser(userName) {
+            console.log('🎨 Updating UI for logged in user:', userName);
+            
+            if (welcomeMsg) {
+                welcomeMsg.textContent = `Welcome, ${userName}! 👋`;
+                welcomeMsg.style.display = 'block';
+            }
+            
+            const btnMyEstimates = document.getElementById('btnMyEstimates');
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (signupBtn) signupBtn.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'block';
+            // My Estimates button always visible
+            if (btnMyEstimates) btnMyEstimates.style.display = 'block';
+        }
+
+        // Update UI for logged out user
+        function updateUIForLoggedOutUser() {
+            console.log('🎨 Updating UI for logged out user');
+            
+            const btnMyEstimates = document.getElementById('btnMyEstimates');
+            if (welcomeMsg) {
+                welcomeMsg.style.display = 'none';
+            }
+            
+            if (loginBtn) loginBtn.style.display = 'block';
+            if (signupBtn) signupBtn.style.display = 'block';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+            // My Estimates button always visible
+            if (btnMyEstimates) btnMyEstimates.style.display = 'block';
+        }
+
+        // Show error
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Show custom popup
+        function showCustomPopup(message, type) {
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--bg-2);
+                border: 2px solid ${type.includes('success') ? 'var(--green)' : 'var(--cyan)'};
+                border-radius: 12px;
+                padding: 1.5rem;
+                color: var(--text-1);
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                animation: slideInRight 0.3s ease-out;
+            `;
+            popup.textContent = message;
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                popup.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => popup.remove(), 300);
+            }, 3000);
+        }
+
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('🔄 Auth state changed:', event);
+            
+            if (event === 'SIGNED_IN') {
+                const userName = localStorage.getItem('userName') || session.user.email.split('@')[0];
+                updateUIForLoggedInUser(userName);
+            } else if (event === 'SIGNED_OUT') {
+                updateUIForLoggedOutUser();
+            }
+        });
+
+        // Check on load
+        checkLoginStatus();
+        console.log('✅ Login system ready');
+    });
+    </script>
+
+    <script>
+    // ============================================
+    // MY ESTIMATES FUNCTIONALITY
+    // Save, load, and manage user estimates
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('💾 Initializing My Estimates system...');
+
+        // Get elements
+        const btnMyEstimates = document.getElementById('btnMyEstimates');
+        const btnSaveEstimate = document.getElementById('btnSaveEstimate');
+        const myEstimatesModal = document.getElementById('myEstimatesModal');
+        const saveEstimateModal = document.getElementById('saveEstimateModal');
+        const saveEstimateForm = document.getElementById('saveEstimateForm');
+
+        // Modal functions
+        window.openMyEstimatesModal = async function() {
+            const userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                // User not logged in - open signup/login modal
+                console.log('📝 User not logged in, opening signup modal');
+                openSignupModal();
+            } else {
+                // User logged in - show estimates
+                console.log('📂 Opening My Estimates modal');
+                myEstimatesModal.setAttribute('aria-hidden', 'false');
+                await loadUserEstimates();
+            }
+        };
+
+        window.closeMyEstimatesModal = function() {
+            console.log('🔒 Closing My Estimates modal');
+            myEstimatesModal.setAttribute('aria-hidden', 'true');
+        };
+
+        window.openSaveEstimateModal = function() {
+            console.log('💾 Opening Save Estimate modal');
+            saveEstimateModal.setAttribute('aria-hidden', 'false');
+            document.getElementById('estimateName').value = '';
+            document.getElementById('saveEstimateError').style.display = 'none';
+        };
+
+        window.closeSaveEstimateModal = function() {
+            console.log('🔒 Closing Save Estimate modal');
+            saveEstimateModal.setAttribute('aria-hidden', 'true');
+        };
+
+        // Attach button listeners
+        if (btnMyEstimates) {
+            btnMyEstimates.addEventListener('click', openMyEstimatesModal);
+            console.log('✅ My Estimates button listener attached');
+        }
+
+        if (btnSaveEstimate) {
+            btnSaveEstimate.addEventListener('click', handleSaveEstimateClick);
+            console.log('✅ Save Estimate button listener attached');
+        }
+
+        // Handle save estimate button click
+        function handleSaveEstimateClick() {
+            const userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                // User not logged in - open signup modal
+                console.log('📝 User not logged in, opening signup modal');
+                openSignupModal();
+            } else {
+                // User logged in - open save dialog
+                console.log('💾 User logged in, opening save dialog');
+                openSaveEstimateModal();
+            }
+        }
+
+        // Handle save estimate form submission
+        saveEstimateForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('💾 Save estimate form submitted');
+
+            const submitBtn = saveEstimateForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            const errorDiv = document.getElementById('saveEstimateError');
+
+            errorDiv.style.display = 'none';
+
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            try {
+                await saveCurrentEstimate();
+                
+                // Show success
+                closeSaveEstimateModal();
+                showCustomPopup('✅ Estimate saved successfully!', 'success');
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+
+            } catch (error) {
+                console.error('❌ Save error:', error);
+                errorDiv.textContent = error.message || 'Failed to save estimate. Please try again.';
+                errorDiv.style.display = 'block';
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Save current estimate to database
+        async function saveCurrentEstimate() {
+            const userId = localStorage.getItem('userId');
+            const userEmail = localStorage.getItem('userEmail');
+            
+            console.log('💾 Save initiated by user:', userEmail);
+            
+            if (!userId) {
+                throw new Error('You must be logged in to save estimates');
+            }
+
+            // Get estimate name from form
+            let estimateName = document.getElementById('estimateName').value.trim();
+            
+            // Auto-generate name if empty
+            if (!estimateName) {
+                const market = document.getElementById('marketSelect')?.value || state.market || 'uae-dubai';
+                const marketName = market.replace('uae-', 'UAE: ').replace('ksa-', 'KSA: ').replace('dubai', 'Dubai').replace('abudhabi', 'Abu Dhabi').replace('riyadh', 'Riyadh').replace('jeddah', 'Jeddah');
+                const date = new Date().toLocaleDateString();
+                estimateName = `Estimate - ${marketName} - ${date}`;
+            }
+
+            // Get current calculator state - FIXED: await the async function
+            const calc = await (window.calculate ? window.calculate() : calculate());
+            const area = parseFloat(document.getElementById('size')?.value) || state.size || 5000;
+            const unit = document.querySelector('input[name="unit"]:checked')?.value || state.unit || 'sqft';
+            const location = document.getElementById('marketSelect')?.value || state.market || 'uae-dubai';
+            const quality = document.querySelector('input[name="quality"]:checked')?.value || state.quality || 'standard';
+
+            // Gather category selections
+            const categorySelections = {};
+            const categories = ['flooring', 'ceiling', 'lighting', 'partitions', 'doors', 'furniture', 'kitchen', 'bathroom'];
+            
+            categories.forEach(cat => {
+                const elem = document.getElementById(cat);
+                if (elem) {
+                    categorySelections[cat] = elem.value;
+                }
+            });
+
+            // Prepare estimate data
+            const estimateData = {
+                user_id: userId,
+                estimate_name: estimateName,
+                area: area,
+                unit: unit,
+                location: location,
+                quality_level: quality,
+                category_selections: categorySelections,
+                total_cost: calc.total,
+                currency: 'AED',
+                breakdown: calc
+            };
+
+            console.log('💾 Saving estimate:', estimateData);
+            console.log('🔍 Using userId:', userId);
+
+            // Save to Supabase
+            const { data, error } = await supabase
+                .from('estimates')
+                .insert([estimateData])
+                .select();
+
+            console.log('📊 Supabase insert response:', { data, error });
+
+            if (error) {
+                console.error('❌ Save error:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    code: error.code,
+                    details: error.details,
+                    hint: error.hint
+                });
+                throw error;
+            }
+
+            console.log('✅ Estimate saved successfully:', data);
+            console.log('📝 Saved estimate ID:', data[0]?.id);
+            
+            // 📧 Send email notification to admin when estimate is saved
+            try {
+                const userName = localStorage.getItem('userName') || 'Unknown User';
+                const userEmail = localStorage.getItem('userEmail') || '';
+                
+                console.log('📧 Sending save notification email to admin...');
+                
+                const emailResponse = await fetch('/.netlify/functions/email-lead', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'save',
+                        name: userName,
+                        email: userEmail,
+                        estimateName: estimateName,
+                        estimate: {
+                            market: location,
+                            size: area,
+                            unit: unit,
+                            quality: quality,
+                            total: formatCurrency(calc.total)
+                        }
+                    })
+                });
+                
+                const emailResult = await emailResponse.json();
+                
+                if (emailResponse.ok) {
+                    console.log('✅ Save notification email sent successfully to admin');
+                } else {
+                    console.error('❌ Email notification failed:', emailResult);
+                }
+            } catch (emailError) {
+                console.error('❌ Error sending email notification:', emailError);
+                // Don't block the save success
+            }
+            
+            return data;
+        }
+
+        // Load user's estimates
+        async function loadUserEstimates() {
+            const userId = localStorage.getItem('userId');
+            console.log('🔍 Checking userId in localStorage:', userId);
+            
+            if (!userId) {
+                console.log('❌ No user logged in');
+                return;
+            }
+
+            const loadingDiv = document.getElementById('estimatesLoading');
+            const emptyDiv = document.getElementById('estimatesEmpty');
+            const listDiv = document.getElementById('estimatesList');
+
+            // Show loading
+            loadingDiv.style.display = 'block';
+            emptyDiv.style.display = 'none';
+            listDiv.innerHTML = '';
+
+            try {
+                console.log('📂 Loading estimates for user:', userId);
+                console.log('🔍 Querying Supabase...');
+
+                const { data: estimates, error } = await supabase
+                    .from('estimates')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+
+                console.log('📊 Supabase response:', { estimates, error });
+
+                if (error) {
+                    console.error('❌ Supabase error:', error);
+                    throw error;
+                }
+
+                console.log('✅ Loaded estimates:', estimates);
+                console.log('📈 Number of estimates:', estimates ? estimates.length : 0);
+
+                // Hide loading
+                loadingDiv.style.display = 'none';
+
+                if (!estimates || estimates.length === 0) {
+                    console.log('📭 No estimates found - showing empty state');
+                    // Show empty state
+                    emptyDiv.style.display = 'block';
+                } else {
+                    console.log('📋 Rendering estimates list');
+                    // Show estimates list
+                    renderEstimatesList(estimates);
+                }
+
+            } catch (error) {
+                console.error('❌ Load estimates error:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    code: error.code,
+                    details: error.details,
+                    hint: error.hint
+                });
+                loadingDiv.style.display = 'none';
+                emptyDiv.style.display = 'block';
+                
+                // Show error to user
+                alert(`Failed to load estimates: ${error.message}
+
+Check console for details.`);
+            }
+        }
+
+        // Render estimates list
+        function renderEstimatesList(estimates) {
+            const listDiv = document.getElementById('estimatesList');
+            listDiv.innerHTML = '';
+
+            estimates.forEach(estimate => {
+                const estimateCard = document.createElement('div');
+                estimateCard.style.cssText = `
+                    background: var(--bg-3);
+                    border: 2px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 1rem;
+                    transition: 0.2s;
+                `;
+                
+                estimateCard.innerHTML = `
+                    <div style="flex: 1;">
+                        <h3 style="color: var(--text-1); font-size: 1.1rem; margin-bottom: 0.5rem;">${estimate.estimate_name}</h3>
+                        <p style="color: var(--text-2); font-size: 0.9rem; margin-bottom: 0.25rem;">
+                            ${estimate.area.toLocaleString()} ${estimate.unit} • ${estimate.location} • ${estimate.quality_level}
+                        </p>
+                        <p style="color: var(--orange); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem;">
+                            ${formatCurrency(estimate.total_cost)}
+                        </p>
+                        <p style="color: var(--text-3); font-size: 0.75rem;">
+                            Saved: ${new Date(estimate.created_at).toLocaleDateString()}
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="loadEstimate('${estimate.id}')" style="padding: 0.75rem 1.5rem; background: var(--cyan); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;">
+                            📂 Load
+                        </button>
+                        <button onclick="deleteEstimate('${estimate.id}')" style="padding: 0.75rem 1rem; background: var(--red); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+
+                listDiv.appendChild(estimateCard);
+            });
+        }
+
+        // Load estimate into calculator
+        window.loadEstimate = async function(estimateId) {
+            console.log('📂 Loading estimate:', estimateId);
+
+            try {
+                const { data: estimate, error } = await supabase
+                    .from('estimates')
+                    .select('*')
+                    .eq('id', estimateId)
+                    .single();
+
+                if (error) throw error;
+
+                console.log('✅ Loaded estimate data:', estimate);
+                console.log('📊 Estimate details:', {
+                    area: estimate.area,
+                    unit: estimate.unit,
+                    location: estimate.location,
+                    quality: estimate.quality_level
+                });
+
+                // Update state object (this is what the calculator uses)
+                if (typeof window.state === 'undefined') {
+                    console.error('❌ state object not found! Initializing...');
+                    window.state = {market:'uae-dubai',size:5000,unit:'sqft',quality:'standard',options:[]};
+                }
+                
+                // Validate and set state with fallbacks for invalid data
+                window.state.size = estimate.area || 5000;
+                window.state.unit = estimate.unit || 'sqft';
+                window.state.market = estimate.location || 'uae-dubai';
+                window.state.quality = estimate.quality_level || 'standard';
+                
+                // If market or quality are empty strings, use defaults
+                if (!window.state.market || window.state.market === '') {
+                    console.warn('⚠️ Invalid market in estimate, using default');
+                    window.state.market = 'uae-dubai';
+                }
+                if (!window.state.quality || window.state.quality === '') {
+                    console.warn('⚠️ Invalid quality in estimate, using default');
+                    window.state.quality = 'standard';
+                }
+                
+                console.log('✅ State updated:', window.state);
+                
+                // CRITICAL: Update ALL UI elements from state
+                updateUIElementsFromState();
+                
+                // Populate category selections if they exist
+                if (estimate.category_selections) {
+                    Object.keys(estimate.category_selections).forEach(cat => {
+                        const elem = document.getElementById(cat);
+                        if (elem) {
+                            elem.value = estimate.category_selections[cat];
+                        }
+                    });
+                }
+
+                // Close modal
+                closeMyEstimatesModal();
+
+                // Update UI and trigger calculation
+                if (typeof window.updateUI === 'function') {
+                    // Give UI elements time to update
+                    setTimeout(() => {
+                        window.updateUI();
+                        console.log('🎯 Calculator updated with loaded values');
+                    }, 100);
+                } else {
+                    console.error('❌ updateUI function not found');
+                }
+
+                // Show success
+                showCustomPopup(`✅ Loaded: ${estimate.estimate_name}`, 'success');
+
+            } catch (error) {
+                console.error('❌ Load estimate error:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack
+                });
+                alert(`Failed to load estimate: ${error.message}`);
+            }
+        };
+
+        // NEW FUNCTION: Update all UI elements from state
+        function updateUIElementsFromState() {
+            console.log('🎨 Updating all UI elements from state:', window.state);
+            
+            // Update size input and slider
+            const sizeInput = document.getElementById('sizeInput');
+            const sizeRange = document.getElementById('sizeRange');
+            if (sizeInput) {
+                if (window.state.unit === 'm2') {
+                    sizeInput.value = Math.round(window.state.size * 0.092903);
+                } else {
+                    sizeInput.value = window.state.size;
+                }
+                console.log('✅ Updated size input:', sizeInput.value);
+            }
+            if (sizeRange) {
+                sizeRange.value = window.state.size;
+                console.log('✅ Updated size range:', sizeRange.value);
+            }
+            
+            // Update unit toggle buttons
+            const btnSqft = document.getElementById('btn-sqft');
+            const btnM2 = document.getElementById('btn-m2');
+            if (window.state.unit === 'm2') {
+                if (btnSqft) btnSqft.classList.remove('active');
+                if (btnM2) btnM2.classList.add('active');
+                console.log('✅ Updated unit to m²');
+            } else {
+                if (btnSqft) btnSqft.classList.add('active');
+                if (btnM2) btnM2.classList.remove('active');
+                console.log('✅ Updated unit to sqft');
+            }
+            
+            // Update market dropdown
+            const marketSelect = document.getElementById('marketSelect');
+            if (marketSelect && window.state.market) {
+                marketSelect.value = window.state.market;
+                console.log('✅ Updated market:', marketSelect.value);
+            }
+            
+            // Update quality radio buttons
+            const qualityRadios = document.querySelectorAll('input[name="quality"]');
+            qualityRadios.forEach(radio => {
+                if (radio.value === window.state.quality) {
+                    radio.checked = true;
+                    console.log('✅ Updated quality:', radio.value);
+                }
+            });
+            
+            console.log('✅ All UI elements updated from state');
+        }
+
+        // Delete estimate
+        window.deleteEstimate = async function(estimateId) {
+            if (!confirm('Are you sure you want to delete this estimate? This cannot be undone.')) {
+                return;
+            }
+
+            console.log('🗑️ Deleting estimate:', estimateId);
+
+            try {
+                const { error } = await supabase
+                    .from('estimates')
+                    .delete()
+                    .eq('id', estimateId);
+
+                if (error) throw error;
+
+                console.log('✅ Estimate deleted');
+
+                // Reload list
+                await loadUserEstimates();
+
+                // Show success
+                showCustomPopup('✅ Estimate deleted', 'success');
+
+            } catch (error) {
+                console.error('❌ Delete estimate error:', error);
+                showCustomPopup('❌ Failed to delete estimate', 'error');
+            }
+        };
+
+        // Show custom popup notification
+        function showCustomPopup(message, type) {
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--bg-2);
+                border: 2px solid ${type === 'success' ? 'var(--green)' : 'var(--red)'};
+                border-radius: 12px;
+                padding: 1.5rem;
+                color: var(--text-1);
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                animation: slideInRight 0.3s ease-out;
+            `;
+            popup.textContent = message;
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                popup.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => popup.remove(), 300);
+            }, 3000);
+        }
+
+        // Update UI for logged-in users - show My Estimates button
+        function updateMyEstimatesUI() {
+            const userId = localStorage.getItem('userId');
+            if (userId && btnMyEstimates) {
+                // My Estimates always visible
+                btnMyEstimates.style.display = 'block';
+            } else if (btnMyEstimates) {
+                // My Estimates always visible
+                btnMyEstimates.style.display = 'block';
+            }
+        }
+
+        // Check login status and update UI
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('🔄 Auth state changed in My Estimates:', event);
+            updateMyEstimatesUI();
+        });
+
+        // Initial UI update
+        updateMyEstimatesUI();
+        console.log('✅ My Estimates system ready');
+    });
+    </script>
+<!-- Old price patch removed - multipliers now in calculate() function -->
+</body>
+</html>

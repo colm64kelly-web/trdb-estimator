@@ -1,0 +1,39 @@
+[build]
+  command = "npm install"
+  functions = "netlify/functions"
+  publish = "."
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["node_modules/**"]
+
+# Security Headers - Protects against XSS, clickjacking, etc.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Force HTTPS (prevents downgrade attacks)
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    
+    # Prevent MIME type sniffing
+    X-Content-Type-Options = "nosniff"
+    
+    # Prevent clickjacking
+    X-Frame-Options = "DENY"
+    
+    # XSS Protection (legacy browsers)
+    X-XSS-Protection = "1; mode=block"
+    
+    # Control referrer information
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Restrict browser features
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    
+    # Content Security Policy - blocks unauthorized scripts
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.supabase.co https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://*.netlify.app https://script.google.com https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'none';"
+
+# Redirects
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

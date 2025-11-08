@@ -1,0 +1,15 @@
+{
+  "lang.name": "English",
+  "nav.brand": "TRDB ESTIMATOR",
+  "nav.tagline": "Construction Intelligence",
+
+  "hero.kicker": "YOUR FIT-OUT",
+  "hero.title": "ESTIMATE STARTS HERE",
+  "hero.subtitle": "AI-powered construction cost intelligence for the GCC",
+  "hero.cta": "Start Your Estimate",
+
+  "wizard.step1": "Select Your Market",
+  "wizard.step1.subtitle": "Choose the location for your fit-out project",
+  "wizard.step2": "Project Configuration",
+  "wizard.step2.subtitle": "Define size, quality, and features"
+}

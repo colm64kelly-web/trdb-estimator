@@ -1,0 +1,143 @@
+:root{
+  --ink:#0e2a36;          /* header/nav background */
+  --ink-2:#12394b;
+  --brand:#ef8625;        /* TRDB orange */
+  --chip:#0f2e3c;         /* dark chip */
+  --chip-text:#fff;
+  --border:#dde6ee;
+  --soft:#f5f9fc;
+  --radius:18px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+  color:#0b2530;
+  background:#f1f6fa;
+}
+
+/* Header */
+.site-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; background:var(--ink); color:#fff; position:sticky; top:0; z-index:50;
+}
+.logo{height:36px; width:auto; display:block}
+.header-title{margin:0 12px; font-weight:800; color:var(--brand)}
+.lang-switch button{
+  border:none; border-radius:999px; padding:10px 12px; font-weight:700; margin-left:8px; cursor:pointer;
+  background:#fff; color:#0b2530;
+}
+.lang-switch .active{background:var(--brand); color:#fff}
+
+/* Layout */
+.page{display:grid; grid-template-columns: 1fr 1fr; gap:22px; padding:22px}
+.inputs,.results{
+  background:#fff; border-radius:22px; box-shadow:0 8px 24px rgba(15,46,60,.08);
+  padding:22px;
+}
+
+/* Form bits */
+.field span{display:block; font-weight:700; margin-bottom:8px}
+select{
+  width:100%; padding:14px 16px; border:2px solid #0e2a36; border-radius:16px;
+  font-size:18px; background:#fff;
+}
+
+.unit-toggle{display:flex; gap:10px; margin:12px 0}
+.unit-toggle button{
+  border:2px solid var(--brand); background:#fff; color:#0b2530; border-radius:16px; padding:12px 20px; font-weight:800;
+}
+.unit-toggle button.active{background:var(--brand); color:#fff}
+
+#sizeRange{width:100%; margin:12px 0; accent-color:var(--brand)}
+.nudgers{display:flex; align-items:center; gap:12px}
+.nudgers input{
+  flex:1; padding:18px 16px; border:2px solid var(--border); border-radius:16px; font-size:28px; text-align:center;
+}
+.nudgers button{
+  width:64px; height:64px; border-radius:16px; border:2px solid var(--border); background:#fff; font-size:36px; font-weight:800; line-height:0;
+}
+
+.quick-chips{display:flex; gap:16px; margin:16px 0}
+.chip{
+  display:inline-flex; align-items:center; justify-content:center; min-width:84px; height:64px;
+  padding:0 18px; border-radius:20px; border:3px solid var(--brand); background:#fff; font-weight:800; font-size:24px; cursor:pointer;
+}
+.chip.active, .chip:focus-visible{background:var(--brand); color:#fff; outline:none}
+
+/* Quality */
+.quality{border:2px dashed var(--border); border-radius:16px; padding:16px; margin-top:6px}
+.quality legend{font-weight:800}
+.quality label{margin-right:22px; font-size:18px}
+
+/* Base includes + Options */
+.base-includes details{border:2px dashed var(--border); border-radius:16px; padding:14px 16px; margin-top:14px; background:#fff}
+.base-includes summary{font-weight:800; font-size:22px}
+.base-includes ul{margin:10px 0 0 20px}
+
+.options{border:2px dashed var(--border); border-radius:16px; padding:16px; margin-top:16px}
+.options legend{font-weight:800}
+.opt-row{display:flex; align-items:flex-start; gap:14px; padding:14px 12px; border-radius:14px}
+.opt-row:hover{background:var(--soft)}
+.opt-row input{width:22px; height:22px; margin-top:6px}
+.opt-title{font-weight:800; font-size:22px; margin-bottom:4px}
+.opt-notes{margin:6px 0 0 20px}
+
+/* Results: hero */
+.hero{
+  background:var(--brand); color:#fff; border-radius:26px; padding:26px; position:relative; box-shadow:0 20px 32px rgba(239,134,37,.18);
+}
+.hero-total{font-size:44px; font-weight:900; letter-spacing:.5px}
+.hero-meta{
+  margin-top:16px; display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap;
+}
+.hero .chips{display:flex; gap:12px; flex-wrap:wrap; max-width:100%}
+.hero .chips .chip{
+  background:var(--chip); color:var(--chip-text); border:none; height:48px; min-width:unset; padding:0 14px; font-size:18px; border-radius:26px;
+}
+.view-details{
+  background:var(--chip); color:#fff; border:none; border-radius:26px; padding:12px 18px; font-weight:800; cursor:pointer; white-space:nowrap;
+}
+
+/* KPIs + chart */
+.kpis{margin:16px 0 12px}
+.kpi-label{color:#365; opacity:.9}
+
+/* Actions */
+.actions{display:flex; gap:14px; flex-wrap:wrap}
+.actions button,.actions a{
+  border:2px solid var(--border); background:#fff; border-radius:12px; padding:14px 18px; font-weight:700; text-decoration:none; color:inherit
+}
+.actions .primary{background:var(--brand); color:#fff; border:none}
+
+/* Modal */
+.modal{position:fixed; inset:0; display:none; z-index:200}
+.modal.open{display:block}
+.modal__backdrop{position:absolute; inset:0; background:rgba(0,0,0,.5)}
+.modal__dialog{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:min(980px,90vw); max-height:80vh; background:#072330; color:#fff; border-radius:18px; overflow:hidden; display:flex; flex-direction:column;
+}
+.modal__close{
+  position:absolute; top:10px; right:12px; width:40px; height:40px; border-radius:50%; border:none; font-size:24px; font-weight:800; cursor:pointer;
+  color:#fff; background:rgba(255,255,255,.15)
+}
+.modal__content{padding:22px; overflow:auto}
+.modal__content h2{margin:0 0 12px 0}
+.cost-table{width:100%; border-collapse:collapse; margin:8px 0 12px}
+.cost-table th, .cost-table td{padding:14px 12px; border-bottom:1px solid rgba(255,255,255,.12)}
+.cost-table th{text-align:left; font-size:18px}
+.cost-table .amt{text-align:right; white-space:nowrap; font-weight:800}
+.cost-table tfoot td{font-size:20px; font-weight:900}
+.modal-notes .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+.modal-notes h3{margin:10px 0 6px}
+.modal-notes ul{margin:6px 0 0 18px}
+
+/* Responsive */
+@media (max-width: 1000px){
+  .page{grid-template-columns: 1fr}
+  .hero-total{font-size:36px}
+  .nudgers input{font-size:24px}
+}

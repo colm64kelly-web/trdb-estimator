@@ -1,0 +1,36 @@
+{
+  "hero.title": "YOUR FIT-OUT",
+  "hero.subtitle": "AI-powered construction cost intelligence for the GCC",
+  "hero.cta": "START YOUR ESTIMATE",
+
+  "form.country": "Country",
+  "form.city": "City",
+  "form.zone": "Zone",
+  "form.size": "Project Size (SqFt)",
+  "form.quality": "Quality Level",
+  "form.options": "Optional Adds",
+
+  "options.furniture": "Furniture Supply (+10%)",
+  "options.av": "Advanced AV/IT (+5%)",
+  "options.smart": "Smart Workplace Systems (+6%)",
+  "options.green": "Green / LEED Certified (+8%)",
+
+  "actions.calculate": "Calculate Estimate",
+
+  "results.title": "Estimated Investment (Midpoint)",
+  "results.total": "TOTAL",
+  "results.perSqft": "Per SqFt",
+  "results.size": "Size",
+  "results.location": "Location",
+
+  "breakdown.title": "Cost Breakdown",
+  "breakdown.base": "Base Construction",
+  "breakdown.furniture": "Furniture Supply",
+  "breakdown.av": "Advanced AV/IT",
+  "breakdown.smart": "Smart Workplace",
+  "breakdown.green": "Green / LEED",
+  "breakdown.totalMid": "TOTAL (Mid)",
+
+  "notes.benchmarks": "Benchmarks reflect prevailing market intelligence for the selected city/zone and quality. Optional adds are applied on top of the construction subtotal.",
+  "cta.getEstimate": "Get Estimate"
+}

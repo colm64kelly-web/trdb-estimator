@@ -1,0 +1,17 @@
+[
+  { "country": "UAE", "city": "Dubai", "quality": "light",    "currency": "AED/ft2", "unit_min": 220, "unit_ml": 260, "unit_max": 300, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "UAE", "city": "Dubai", "quality": "standard", "currency": "AED/ft2", "unit_min": 320, "unit_ml": 370, "unit_max": 420, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "UAE", "city": "Dubai", "quality": "premium",  "currency": "AED/ft2", "unit_min": 480, "unit_ml": 580, "unit_max": 680, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+
+  { "country": "UAE", "city": "Abu Dhabi", "quality": "light",    "currency": "AED/ft2", "unit_min": 210, "unit_ml": 250, "unit_max": 285, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "UAE", "city": "Abu Dhabi", "quality": "standard", "currency": "AED/ft2", "unit_min": 305, "unit_ml": 355, "unit_max": 400, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "UAE", "city": "Abu Dhabi", "quality": "premium",  "currency": "AED/ft2", "unit_min": 460, "unit_ml": 555, "unit_max": 650, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+
+  { "country": "KSA", "city": "Riyadh", "quality": "light",    "currency": "AED/ft2", "unit_min": 230, "unit_ml": 275, "unit_max": 315, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "KSA", "city": "Riyadh", "quality": "standard", "currency": "AED/ft2", "unit_min": 350, "unit_ml": 405, "unit_max": 460, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "KSA", "city": "Riyadh", "quality": "premium",  "currency": "AED/ft2", "unit_min": 520, "unit_ml": 620, "unit_max": 720, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+
+  { "country": "KSA", "city": "Jeddah", "quality": "light",    "currency": "AED/ft2", "unit_min": 210, "unit_ml": 255, "unit_max": 295, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "KSA", "city": "Jeddah", "quality": "standard", "currency": "AED/ft2", "unit_min": 320, "unit_ml": 380, "unit_max": 430, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" },
+  { "country": "KSA", "city": "Jeddah", "quality": "premium",  "currency": "AED/ft2", "unit_min": 480, "unit_ml": 600, "unit_max": 660, "as_of": "2025-10-01", "provenance": "Industry benchmarks (Q3-2025)" }
+]

@@ -1,0 +1,77 @@
+{
+  "UAE": {
+    "Dubai": {
+      "tiers": { "A": 1.10, "B": 1.05, "C": 1.00, "D": 0.96 },
+      "zones": {
+        "DIFC": "A",
+        "Business Bay": "B",
+        "JLT (DMCC)": "B",
+        "JAFZA": "C",
+        "DAFZA": "C",
+        "Dubai Media City (DMC)": "B",
+        "Dubai Internet City (DIC)": "B",
+        "Dubai Healthcare City (DHCC)": "B",
+        "Dubai South (DWC)": "C",
+        "Meydan Free Zone": "C",
+        "IFZA": "C",
+        "Deira": "C",
+        "Bur Dubai": "C",
+        "Al Karama": "C",
+        "Jumeirah": "B",
+        "Palm Jumeirah": "B"
+      }
+    },
+    "Abu Dhabi": {
+      "tiers": { "A": 1.10, "B": 1.05, "C": 1.00, "D": 0.96 },
+      "zones": {
+        "ADGM (Al Maryah Island)": "A",
+        "Al Maryah Island (non-ADGM)": "B",
+        "Al Reem Island": "B",
+        "Yas Island": "B",
+        "KEZAD": "C",
+        "twofour54": "B",
+        "Masdar City": "B",
+        "ADAFZ": "C",
+        "Al Khalidiyah": "C"
+      }
+    },
+    "Ras Al Khaimah": {
+      "tiers": { "A": 1.08, "B": 1.03, "C": 1.00, "D": 0.97 },
+      "zones": {
+        "RAKEZ": "C",
+        "RAK Maritime City": "C",
+        "RAK ICC": "C",
+        "Al Hamra Village": "C",
+        "Al Marjan Island": "C",
+        "Jebel Jais": "D",
+        "RAK City": "C"
+      }
+    }
+  },
+  "KSA": {
+    "Riyadh": {
+      "tiers": { "A": 1.12, "B": 1.06, "C": 1.00, "D": 0.97 },
+      "zones": {
+        "Diplomatic Quarter": "A",
+        "Olaya": "A",
+        "KAFD (adjacent/related)": "A",
+        "Al Malaz": "B",
+        "Al Bathaa": "C",
+        "Riyadh Integrated Logistics Zone (RILZ)": "C",
+        "KACST IT SEZ": "B"
+      }
+    },
+    "Jeddah": {
+      "tiers": { "A": 1.08, "B": 1.04, "C": 1.00, "D": 0.97 },
+      "zones": {
+        "Corniche": "B",
+        "Al Rawdah": "B",
+        "Al Zahra": "B",
+        "Al Hamra": "B",
+        "Al Balad": "C",
+        "Obhur": "C",
+        "KAEC (regional context)": "C"
+      }
+    }
+  }
+}

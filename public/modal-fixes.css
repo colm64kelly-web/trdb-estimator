@@ -1,0 +1,65 @@
+/* ===== TRDB Estimator — Modal/UI Fix Pack (v2) =====
+   This version makes .modal-content the scrolling container so the
+   sticky header (.modal-header) works and content never slides under it.
+*/
+
+/* The dialog panel */
+.modal-content{
+  max-height: min(90vh, 820px);
+  width: auto;
+  background: #0f172a;                 /* TRDB dark navy */
+  color: #e5e7eb;
+  border-radius: 16px;
+  /* IMPORTANT: the panel is now the scroller */
+  overflow: auto;
+}
+
+/* Sticky header inside the scrolling panel */
+.modal-header{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #1e293b;                 /* subtle contrast */
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+/* Body no longer scrolls; it rides inside the .modal-content scroller */
+.modal-body{
+  overflow: initial;                    /* let parent scroll */
+  padding: 18px 20px 22px;
+  scroll-padding-top: 12px;             /* for anchor offsets */
+}
+
+/* Prevent headings from hiding beneath the sticky header */
+.modal-body h1,
+.modal-body h2,
+.modal-body h3{ scroll-margin-top: 72px; }
+
+/* Larger and keyboard-visible close button */
+.modal-close{
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 10px; cursor: pointer;
+}
+.modal-close:focus-visible{
+  outline: 2px solid #f97316; outline-offset: 2px;
+}
+
+/* Long lists readability (Detailed Scope modal) */
+.modal-body .section,
+.modal-body .card{
+  background: #0b1220;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 12px 0;
+}
+.modal-body ul{ line-height: 1.7; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+}

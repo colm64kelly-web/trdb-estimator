@@ -1,0 +1,36 @@
+{
+  "hero.title": "تهيئة مكتبك",
+  "hero.subtitle": "ذكاء تكاليف الإنشاءات المعتمد على الذكاء الاصطناعي في دول الخليج",
+  "hero.cta": "ابدأ تقديرك",
+
+  "form.country": "الدولة",
+  "form.city": "المدينة",
+  "form.zone": "المنطقة",
+  "form.size": "المساحة (قدم²)",
+  "form.quality": "مستوى الجودة",
+  "form.options": "إضافات اختيارية",
+
+  "options.furniture": "توريد الأثاث (+10%)",
+  "options.av": "أنظمة AV/IT متقدمة (+5%)",
+  "options.smart": "أنظمة مكان العمل الذكي (+6%)",
+  "options.green": "شهادات خضراء/LEED (+8%)",
+
+  "actions.calculate": "احسب التقدير",
+
+  "results.title": "الاستثمار التقديري (النقطة الوسطى)",
+  "results.total": "الإجمالي",
+  "results.perSqft": "لكل قدم²",
+  "results.size": "المساحة",
+  "results.location": "الموقع",
+
+  "breakdown.title": "تفصيل التكاليف",
+  "breakdown.base": "أعمال الإنشاء الأساسية",
+  "breakdown.furniture": "توريد الأثاث",
+  "breakdown.av": "أنظمة AV/IT المتقدمة",
+  "breakdown.smart": "مكان العمل الذكي",
+  "breakdown.green": "أخضر / LEED",
+  "breakdown.totalMid": "الإجمالي (وسط)",
+
+  "notes.benchmarks": "تعكس المعايير معلومات السوق السائدة للمدينة/المنطقة والجودة المحددة. تُطبق الإضافات الاختيارية فوق تكلفة الإنشاء.",
+  "cta.getEstimate": "احصل على التقدير"
+}
