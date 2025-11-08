@@ -3115,7 +3115,44 @@ Check console for details.`);
   <!-- PRO UNLOCK MODAL -->
   <div id="proModal" class="fixed inset-0 ..."> ... </div>
   <script> ... </script>
+<!-- PRO UNLOCK MODAL -->
+<div id="proModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center">
+    <button class="float-right text-2xl font-bold text-gray-500 hover:text-gray-700" onclick="document.getElementById('proModal').classList.add('hidden')">&times;</button>
+    <h2 class="text-2xl font-bold mb-4">Go Pro – Unlock Full Power</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="p-4 border rounded-xl">
+        <h3 class="font-bold">Freemium</h3>
+        <p class="text-3xl font-bold">€0</p>
+        <ul class="text-left text-sm mt-2 space-y-1">
+          <li>Live Estimator</li>
+          <li>GitHub Sync</li>
+          <li>Basic Support</li>
+        </ul>
+      </div>
+      <div class="p-4 border-2 border-green-500 rounded-xl relative">
+        <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-xs">POPULAR</span>
+        <h3 class="font-bold">Pro</h3>
+        <p class="text-3xl font-bold">€49<span class="text-lg">/mo</span></p>
+        <ul class="text-left text-sm mt-2 space-y-1">
+          <li>3D + AR Export</li>
+          <li>Mobile Swipe Tabs</li>
+          <li>Custom Domain</li>
+          <li>Priority Support</li>
+          <li>White-label</li>
+        </ul>
+        <a href="https://buy.stripe.com/pro-trdb" class="block mt-4 bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600">Go Pro Now</a>
+      </div>
+    </div>
+    <p><a href="https://pro-demo.thetemplerock.com" target="_blank" class="text-green-500 font-bold">Live Pro Demo</a></p>
+  </div>
+</div>
 
+<script>
+  setTimeout(() => {
+    document.getElementById('proModal').classList.remove('hidden');
+  }, 8000);
+</script>
 </body>
 </html>
 </body>
