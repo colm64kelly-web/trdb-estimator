@@ -3153,7 +3153,23 @@ Check console for details.`);
     </p>
   </div>
 </div>
+<!-- 3D + AR EXPORT BUTTON (Pro Only) -->
+<div id="export3D" style="margin:32px auto 24px;text-align:center;display:none">
+  <button style="background:#10b981;color:white;padding:14px 28px;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:16px;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:transform 0.2s"
+          onmouseover="this.style.transform='translateY(-2px)'"
+          onmouseout="this.style.transform='translateY(0)'"
+          onclick="alert('3D + AR Export: Coming Q4 2025! (Pro Only) 🚀')">
+    Export 3D Model + AR View
+  </button>
+</div>
 
+<script>
+  // Show 3D export button after 10 seconds (Pro feature tease)
+  setTimeout(() => {
+    const btn = document.getElementById('export3D');
+    if (btn) btn.style.display = 'block';
+  }, 10000);
+</script>
 <script>
   setTimeout(() => {
     const modal = document.getElementById('proModal');
