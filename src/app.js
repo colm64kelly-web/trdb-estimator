@@ -1143,3 +1143,79 @@
   }
   init();
 })();
+// === START: LOCATION DRILL-DOWN SYSTEM (ZONE + BUILDING) ===
+const locationData = {
+  uae: {
+    dubai: {
+      zones: ["DIFC", "JLT", "Business Bay", "Downtown Dubai", "Dubai Media City"],
+      buildings: {
+        "DIFC": ["ICD Brookfield Place", "Emirates Financial Towers", "Index Tower", "Gate Avenue"],
+        "JLT": ["Silver Tower (AG Tower)", "Indigo Tower", "Saba Tower"],
+        "Business Bay": ["Vision Tower", "Executive Towers", "Iris Bay Tower"],
+        "Downtown Dubai": ["Emirates Office Tower", "The Address Boulevard"],
+        "Dubai Media City": ["Shatha Tower", "Business Central Towers", "The LOFT Offices"]
+      }
+    },
+    abudhabi: {
+      zones: ["Al Maryah Island", "Reem Island", "Khalidiya"],
+      buildings: {
+        "Al Maryah Island": ["Al Maryah Tower", "Al Maqam Tower"],
+        "Reem Island": ["Tamouh Tower", "Addax Tower"],
+        "Khalidiya": ["Khalidiya Towers", "CI Tower"]
+      }
+    }
+  }
+};
+
+function onMarketChange() {
+  const market = document.getElementById('marketSelect').value;
+  const refineSection = document.getElementById('refine-location');
+  const zoneSelect = document.getElementById('zone');
+  const buildingSelect = document.getElementById('building');
+
+  zoneSelect.innerHTML = '<option>Select zone</option>';
+  zoneSelect.disabled = true;
+  buildingSelect.innerHTML = '<option>Select building</option>';
+  buildingSelect.disabled = true;
+  refineSection.style.display = 'none';
+
+  if (!market) return;
+
+  let city = '';
+  if (market === 'uae-dubai') city = 'dubai';
+  else if (market === 'uae-abudhabi') city = 'abudhabi';
+  else return;
+
+  refineSection.style.display = 'block';
+
+  const zones = locationData.uae[city]?.zones || [];
+  zones.forEach(z => {
+    zoneSelect.innerHTML += `<option value="${z}">${z}</option>`;
+  });
+  zoneSelect.disabled = false;
+
+  recalc();
+}
+
+function loadBuildings() {
+  const zone = document.getElementById('zone').value;
+  const buildingSelect = document.getElementById('building');
+  const market = document.getElementById('marketSelect').value;
+
+  buildingSelect.innerHTML = '<option>Select building</option>';
+  buildingSelect.disabled = true;
+
+  let city = '';
+  if (market === 'uae-dubai') city = 'dubai';
+  else if (market === 'uae-abudhabi') city = 'abudhabi';
+  else return;
+
+  const buildings = locationData.uae[city]?.buildings[zone] || [];
+  buildings.forEach(b => {
+    buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
+  });
+  buildingSelect.disabled = false;
+
+  recalc();
+}
+// === END: LOCATION DRILL-DOWN SYSTEM ===
