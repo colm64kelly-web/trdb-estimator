@@ -347,7 +347,7 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
         <section class="inputs">
             <label class="field">
                 <span data-i18n="locationLabel">🌍 Choose Location</span>
-                <select id="marketSelect">
+                <select id="marketSelect" onchange="onMarketChange()">
                     <option value="uae-dubai">UAE — Dubai</option>
                     <option value="uae-abudhabi">UAE — Abu Dhabi</option>
                     <option value="uae-rasalkhaimah">UAE — Ras Al Khaimah</option>
@@ -3195,13 +3195,6 @@ Check console for details.`);
   }, 8000);
 </script>
     <script src="src/app.js"></script>
-    <style>
-  @media (max-width: 640px) {
-    label, select, option, #refine-location h4 {
-      font-size: 1rem !important;
-    }
-  }
-</style>
 </body>
 </html>
 </body>
