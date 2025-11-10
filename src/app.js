@@ -1218,6 +1218,9 @@
     markActiveChips(initVal);
   }
   init();
+// === CONNECT LOCATION DRILL-DOWN ===
+document.getElementById('marketSelect').addEventListener('change', onMarketChange);
+document.getElementById('zone').addEventListener('change', loadBuildings);
 })();
 
 
