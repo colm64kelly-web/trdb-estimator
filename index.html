@@ -402,14 +402,14 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
             </label>
 
             <label class="field">
-                <span>Primary Usage</span>
-                <select id="usageType">
-                    <option>Office</option>
-                    <option>Retail / F&B</option>
-                    <option>Clinic / Medical</option>
-                    <option>Other</option>
-                </select>
-            </label>
+    <span>Primary Usage</span>
+    <select id="usageType">
+        <option value="Office">Office</option>
+        <option value="Retail">Retail / F&B</option>
+        <option value="Healthcare">Clinic / Medical</option>
+        <option value="Other">Other</option>
+    </select>
+</label>
 
             <fieldset class="quality">
                 <legend data-i18n="qualityLegend">✨ Fit-Out Quality</legend>
@@ -3193,6 +3193,11 @@ Check console for details.`);
     const modal = document.getElementById('proModal');
     if (modal) modal.style.display = 'flex';
   }, 8000);
+</script>
+    <script>
+// === FIX: Make Floors & Usage change the price! ===
+document.getElementById('floorCount').addEventListener('change', function() { if (typeof debouncedUpdateUI === 'function') debouncedUpdateUI(); });
+document.getElementById('usageType').addEventListener('change', function() { if (typeof debouncedUpdateUI === 'function') debouncedUpdateUI(); });
 </script>
     <script src="src/app.js"></script>
 </body>
