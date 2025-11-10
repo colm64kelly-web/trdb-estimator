@@ -143,6 +143,29 @@
     },
     ar: {
       dir: 'rtl',
+        // === START: LOCATION DRILL-DOWN SYSTEM (ZONE + BUILDING) ===
+  const locationData = {
+    uae: {
+      dubai: {
+        zones: ["DIFC", "JLT", "Business Bay", "Downtown Dubai", "Dubai Media City"],
+        buildings: {
+          "DIFC": ["ICD Brookfield Place", "Emirates Financial Towers", "Index Tower", "Gate Avenue"],
+          "JLT": ["Silver Tower (A6 Tower)", "Indigo Tower", "Saba Tower"],
+          "Business Bay": ["Vision Tower", "Executive Towers", "Iris Bay Tower"],
+          "Downtown Dubai": ["Emirates Office Tower", "The Address Boulevard"],
+          "Dubai Media City": ["Shatha Tower", "Business Central Towers", "The LOFT Offices"]
+        }
+      },
+      abudhabi: {
+        zones: ["Al Maryah Island", "Reem Island", "Khalidiya"],
+        buildings: {
+          "Al Maryah Island": ["Al Maryan Tower", "Al Maqam Tower"],
+          "Reem Island": ["Tamouh Tower", "Addax Tower"],
+          "Khalidiya": ["Khalidiya Towers", "CI Tower"]
+        }
+      }
+    }
+  };
       appTitle: 'حاسبة تكلفة تجهيز المكاتب TRDB',
       appSubtitle: 'تقدير ميزانية التجهيز الداخلي بالذكاء الاصطناعي (الإمارات والسعودية)',
       projectInputs: 'مدخلات المشروع',
@@ -1143,29 +1166,6 @@
   }
   init();
 })();
-// === START: LOCATION DRILL-DOWN SYSTEM (ZONE + BUILDING) ===
-const locationData = {
-  uae: {
-    dubai: {
-      zones: ["DIFC", "JLT", "Business Bay", "Downtown Dubai", "Dubai Media City"],
-      buildings: {
-        "DIFC": ["ICD Brookfield Place", "Emirates Financial Towers", "Index Tower", "Gate Avenue"],
-        "JLT": ["Silver Tower (AG Tower)", "Indigo Tower", "Saba Tower"],
-        "Business Bay": ["Vision Tower", "Executive Towers", "Iris Bay Tower"],
-        "Downtown Dubai": ["Emirates Office Tower", "The Address Boulevard"],
-        "Dubai Media City": ["Shatha Tower", "Business Central Towers", "The LOFT Offices"]
-      }
-    },
-    abudhabi: {
-      zones: ["Al Maryah Island", "Reem Island", "Khalidiya"],
-      buildings: {
-        "Al Maryah Island": ["Al Maryah Tower", "Al Maqam Tower"],
-        "Reem Island": ["Tamouh Tower", "Addax Tower"],
-        "Khalidiya": ["Khalidiya Towers", "CI Tower"]
-      }
-    }
-  }
-};
 
 function onMarketChange() {
   const market = document.getElementById('marketSelect').value;
