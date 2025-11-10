@@ -141,9 +141,7 @@
         }
       }
     },
-    ar: {
-      dir: 'rtl',
-        // === START: LOCATION DRILL-DOWN SYSTEM (ZONE + BUILDING) ===
+     // === START: LOCATION DRILL-DOWN SYSTEM (ZONE + BUILDING) ===
   const locationData = {
     uae: {
       dubai: {
@@ -166,7 +164,62 @@
       }
     }
   };
-      appTitle: 'حاسبة تكلفة تجهيز المكاتب TRDB',
+    // === LOCATION DRILL-DOWN: ON MARKET CHANGE ===
+  function onMarketChange() {
+    const market = document.getElementById('marketSelect').value;
+    const refineSection = document.getElementById('refine-location');
+    const zoneSelect = document.getElementById('zone');
+    const buildingSelect = document.getElementById('building');
+
+    zoneSelect.innerHTML = '<option>Select zone</option>';
+    zoneSelect.disabled = true;
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    buildingSelect.disabled = true;
+    refineSection.style.display = 'none';
+
+    if (!market) return;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    refineSection.style.display = 'block';
+
+    const zones = locationData.uae[city]?.zones || [];
+    zones.forEach(z => {
+      zoneSelect.innerHTML += `<option value="${z}">${z}</option>`;
+    });
+    zoneSelect.disabled = false;
+
+    recalc();
+  }
+
+  // === LOCATION DRILL-DOWN: ON ZONE CHANGE ===
+  function loadBuildings() {
+    const zone = document.getElementById('zone').value;
+    const buildingSelect = document.getElementById('building');
+    const market = document.getElementById('marketSelect').value;
+
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    buildingSelect.disabled = true;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    const buildings = locationData.uae[city]?.buildings[zone] || [];
+    buildings.forEach(b => {
+      buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
+    });
+    buildingSelect.disabled = false;
+
+    recalc();
+  }
+    ar: {
+      dir: 'rtl',
+             appTitle: 'حاسبة تكلفة تجهيز المكاتب TRDB',
       appSubtitle: 'تقدير ميزانية التجهيز الداخلي بالذكاء الاصطناعي (الإمارات والسعودية)',
       projectInputs: 'مدخلات المشروع',
       estimationResults: 'نتائج التقدير',
@@ -1167,55 +1220,4 @@
   init();
 })();
 
-function onMarketChange() {
-  const market = document.getElementById('marketSelect').value;
-  const refineSection = document.getElementById('refine-location');
-  const zoneSelect = document.getElementById('zone');
-  const buildingSelect = document.getElementById('building');
 
-  zoneSelect.innerHTML = '<option>Select zone</option>';
-  zoneSelect.disabled = true;
-  buildingSelect.innerHTML = '<option>Select building</option>';
-  buildingSelect.disabled = true;
-  refineSection.style.display = 'none';
-
-  if (!market) return;
-
-  let city = '';
-  if (market === 'uae-dubai') city = 'dubai';
-  else if (market === 'uae-abudhabi') city = 'abudhabi';
-  else return;
-
-  refineSection.style.display = 'block';
-
-  const zones = locationData.uae[city]?.zones || [];
-  zones.forEach(z => {
-    zoneSelect.innerHTML += `<option value="${z}">${z}</option>`;
-  });
-  zoneSelect.disabled = false;
-
-  recalc();
-}
-
-function loadBuildings() {
-  const zone = document.getElementById('zone').value;
-  const buildingSelect = document.getElementById('building');
-  const market = document.getElementById('marketSelect').value;
-
-  buildingSelect.innerHTML = '<option>Select building</option>';
-  buildingSelect.disabled = true;
-
-  let city = '';
-  if (market === 'uae-dubai') city = 'dubai';
-  else if (market === 'uae-abudhabi') city = 'abudhabi';
-  else return;
-
-  const buildings = locationData.uae[city]?.buildings[zone] || [];
-  buildings.forEach(b => {
-    buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
-  });
-  buildingSelect.disabled = false;
-
-  recalc();
-}
-// === END: LOCATION DRILL-DOWN SYSTEM ===
