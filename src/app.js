@@ -1,4 +1,4 @@
-/* TRDB Estimator - Complete Working Version with Custom Alerts */
+/* TRDB Estimator - Complete Working Version with Custom Alerts & Location Drill-Down */
 
 (() => {
   /* ---------------- I18N (EN + AR) ---------------- */
@@ -141,85 +141,9 @@
         }
       }
     },
-     // === START: LOCATION DRILL-DOWN SYSTEM (ZONE + BUILDING) ===
-  const locationData = {
-    uae: {
-      dubai: {
-        zones: ["DIFC", "JLT", "Business Bay", "Downtown Dubai", "Dubai Media City"],
-        buildings: {
-          "DIFC": ["ICD Brookfield Place", "Emirates Financial Towers", "Index Tower", "Gate Avenue"],
-          "JLT": ["Silver Tower (A6 Tower)", "Indigo Tower", "Saba Tower"],
-          "Business Bay": ["Vision Tower", "Executive Towers", "Iris Bay Tower"],
-          "Downtown Dubai": ["Emirates Office Tower", "The Address Boulevard"],
-          "Dubai Media City": ["Shatha Tower", "Business Central Towers", "The LOFT Offices"]
-        }
-      },
-      abudhabi: {
-        zones: ["Al Maryah Island", "Reem Island", "Khalidiya"],
-        buildings: {
-          "Al Maryah Island": ["Al Maryan Tower", "Al Maqam Tower"],
-          "Reem Island": ["Tamouh Tower", "Addax Tower"],
-          "Khalidiya": ["Khalidiya Towers", "CI Tower"]
-        }
-      }
-    }
-  };
-    // === LOCATION DRILL-DOWN: ON MARKET CHANGE ===
-  function onMarketChange() {
-    const market = document.getElementById('marketSelect').value;
-    const refineSection = document.getElementById('refine-location');
-    const zoneSelect = document.getElementById('zone');
-    const buildingSelect = document.getElementById('building');
-
-    zoneSelect.innerHTML = '<option>Select zone</option>';
-    zoneSelect.disabled = true;
-    buildingSelect.innerHTML = '<option>Select building</option>';
-    buildingSelect.disabled = true;
-    refineSection.style.display = 'none';
-
-    if (!market) return;
-
-    let city = '';
-    if (market === 'uae-dubai') city = 'dubai';
-    else if (market === 'uae-abudhabi') city = 'abudhabi';
-    else return;
-
-    refineSection.style.display = 'block';
-
-    const zones = locationData.uae[city]?.zones || [];
-    zones.forEach(z => {
-      zoneSelect.innerHTML += `<option value="${z}">${z}</option>`;
-    });
-    zoneSelect.disabled = false;
-
-    recalc();
-  }
-
-  // === LOCATION DRILL-DOWN: ON ZONE CHANGE ===
-  function loadBuildings() {
-    const zone = document.getElementById('zone').value;
-    const buildingSelect = document.getElementById('building');
-    const market = document.getElementById('marketSelect').value;
-
-    buildingSelect.innerHTML = '<option>Select building</option>';
-    buildingSelect.disabled = true;
-
-    let city = '';
-    if (market === 'uae-dubai') city = 'dubai';
-    else if (market === 'uae-abudhabi') city = 'abudhabi';
-    else return;
-
-    const buildings = locationData.uae[city]?.buildings[zone] || [];
-    buildings.forEach(b => {
-      buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
-    });
-    buildingSelect.disabled = false;
-
-    recalc();
-  }
     ar: {
       dir: 'rtl',
-             appTitle: 'حاسبة تكلفة تجهيز المكاتب TRDB',
+      appTitle: 'حاسبة تكلفة تجهيز المكاتب TRDB',
       appSubtitle: 'تقدير ميزانية التجهيز الداخلي بالذكاء الاصطناعي (الإمارات والسعودية)',
       projectInputs: 'مدخلات المشروع',
       estimationResults: 'نتائج التقدير',
@@ -350,6 +274,84 @@
     }
   };
 
+  /* ---------------- LOCATION DRILL-DOWN DATA (MOVED TO TOP) ---------------- */
+  const locationData = {
+    uae: {
+      dubai: {
+        zones: ["DIFC", "JLT", "Business Bay", "Downtown Dubai", "Dubai Media City"],
+        buildings: {
+          "DIFC": ["ICD Brookfield Place", "Emirates Financial Towers", "Index Tower", "Gate Avenue"],
+          "JLT": ["Silver Tower (A6 Tower)", "Indigo Tower", "Saba Tower"],
+          "Business Bay": ["Vision Tower", "Executive Towers", "Iris Bay Tower"],
+          "Downtown Dubai": ["Emirates Office Tower", "The Address Boulevard"],
+          "Dubai Media City": ["Shatha Tower", "Business Central Towers", "The LOFT Offices"]
+        }
+      },
+      abudhabi: {
+        zones: ["Al Maryah Island", "Reem Island", "Khalidiya"],
+        buildings: {
+          "Al Maryah Island": ["Al Maryan Tower", "Al Maqam Tower"],
+          "Reem Island": ["Tamouh Tower", "Addax Tower"],
+          "Khalidiya": ["Khalidiya Towers", "CI Tower"]
+        }
+      }
+    }
+  };
+
+  /* ---------------- LOCATION DRILL-DOWN: ON MARKET CHANGE ---------------- */
+  function onMarketChange() {
+    const market = document.getElementById('marketSelect').value;
+    const refineSection = document.getElementById('refine-location');
+    const zoneSelect = document.getElementById('zone');
+    const buildingSelect = document.getElementById('building');
+
+    zoneSelect.innerHTML = '<option>Select zone</option>';
+    zoneSelect.disabled = true;
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    buildingSelect.disabled = true;
+    refineSection.style.display = 'none';
+
+    if (!market) return;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    refineSection.style.display = 'block';
+
+    const zones = locationData.uae[city]?.zones || [];
+    zones.forEach(z => {
+      zoneSelect.innerHTML += `<option value="${z}">${z}</option>`;
+    });
+    zoneSelect.disabled = false;
+
+    recalc();
+  }
+
+  /* ---------------- LOCATION DRILL-DOWN: ON ZONE CHANGE ---------------- */
+  function loadBuildings() {
+    const zone = document.getElementById('zone').value;
+    const buildingSelect = document.getElementById('building');
+    const market = document.getElementById('marketSelect').value;
+
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    buildingSelect.disabled = true;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    const buildings = locationData.uae[city]?.buildings[zone] || [];
+    buildings.forEach(b => {
+      buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
+    });
+    buildingSelect.disabled = false;
+
+    recalc();
+  }
+
   /* ---------------- DOM refs ---------------- */
   const els = {
     langEN: document.getElementById('lang-en'),
@@ -412,7 +414,7 @@
     footerNote: document.getElementById('t_footerNote'),
     btnConsult: document.getElementById('btn-consult')
   };
-  
+
   if (els.yr) els.yr.textContent = new Date().getFullYear();
 
   /* ---------------- CONFIG ---------------- */
@@ -657,7 +659,7 @@
       .map((c) => {
         const scopeItems = I18N[state.lang].scope[c.key] || [];
         const items = scopeItems.map((s) => '<li>' + s + '</li>').join('');
-        const tick = c.selected ? '<span class="info-chip">✓</span>' : '';
+        const tick = c.selected ? '<span class="info-chip">Checkmark</span>' : '';
         return '<div class="info-cat">' + c.label + tick + '</div><ul class="info-list">' + items + '</ul>';
       })
       .join('');
@@ -878,13 +880,13 @@
       t.fitOutQuality + ': ' + (t.quality[quality] || quality),
       '',
       t.options + ':',
-      '• ' + t.opt.furniture + ': ' + (els.opt.furniture.checked ? '✓' : '–'),
-      '• ' + t.opt.ffe + ': ' + (els.opt.ffe.checked ? '✓' : '–'),
-      '• ' + t.opt.art + ': ' + (els.opt.art.checked ? '✓' : '–'),
-      '• ' + t.opt.smart + ': ' + (els.opt.smart.checked ? '✓' : '–'),
-      '• ' + t.opt.green + ': ' + (els.opt.green.checked ? '✓' : '–'),
-      '• ' + t.opt.fast + ': ' + (els.opt.fast.checked ? '✓' : '–'),
-      '• ' + t.opt.fullhvac + ': ' + (els.opt.fullhvac.checked ? '✓' : '–')
+      '• ' + t.opt.furniture + ': ' + (els.opt.furniture.checked ? 'Checkmark' : '–'),
+      '• ' + t.opt.ffe + ': ' + (els.opt.ffe.checked ? 'Checkmark' : '–'),
+      '• ' + t.opt.art + ': ' + (els.opt.art.checked ? 'Checkmark' : '–'),
+      '• ' + t.opt.smart + ': ' + (els.opt.smart.checked ? 'Checkmark' : '–'),
+      '• ' + t.opt.green + ': ' + (els.opt.green.checked ? 'Checkmark' : '–'),
+      '• ' + t.opt.fast + ': ' + (els.opt.fast.checked ? 'Checkmark' : '–'),
+      '• ' + t.opt.fullhvac + ': ' + (els.opt.fullhvac.checked ? 'Checkmark' : '–')
     ];
     return lines.join('\n');
   };
@@ -1217,10 +1219,12 @@
     const initVal = parseInt(els.sqft.value, 10) || 0;
     markActiveChips(initVal);
   }
+
+  /* ---------------- CONNECT LOCATION DRILL-DOWN ---------------- */
+  document.getElementById('marketSelect').addEventListener('change', onMarketChange);
+  document.getElementById('zone').addEventListener('change', loadBuildings);
+
+  /* ---------------- CALL INIT ---------------- */
   init();
-// === CONNECT LOCATION DRILL-DOWN ===
-document.getElementById('marketSelect').addEventListener('change', onMarketChange);
-document.getElementById('zone').addEventListener('change', loadBuildings);
+
 })();
-
-
