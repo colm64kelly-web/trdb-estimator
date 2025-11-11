@@ -1194,8 +1194,7 @@ function onMarketChange() {
   });
   zoneSelect.disabled = false;
 
-  recalc();
-}
+  }
 
 function loadBuildings() {
   const zone = document.getElementById('zone').value;
@@ -1216,6 +1215,5 @@ function loadBuildings() {
   });
   buildingSelect.disabled = false;
 
-  recalc();
-}
+  }
 // === END: LOCATION DRILL-DOWN SYSTEM ===
