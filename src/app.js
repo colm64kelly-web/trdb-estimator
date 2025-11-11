@@ -1216,6 +1216,9 @@ function loadBuildings() {
     buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
   });
   buildingSelect.disabled = false;
-
+// === FIX #4: Building change triggers recalc ===
+document.getElementById('building')?.addEventListener('change', () => {
+  window.recalc();
+});
   }
 // === END: LOCATION DRILL-DOWN SYSTEM ===
