@@ -3272,7 +3272,31 @@ document.getElementById('building')?.addEventListener('change', function() {
         // Force multiplier into state
         window.tempLocationMultiplier = multiplier;
         debouncedUpdateUI();
-        setTimeout(() => { window.tempLocationMultiplier = null; }, 100);
+        // === FINAL BRIDGE: Connect to app.js recalc ===
+window.debouncedUpdateUI = function() {
+    if (typeof recalc === 'function') {
+        recalc();
+    }
+    if (typeof window.calculate === 'function') {
+        const result = window.calculate();
+        const total = document.getElementById('totalFigure');
+        const perSqft = document.getElementById('chipPerSqft');
+        if (total && perSqft) {
+            total.textContent = window.formatCurrency(result.total);
+            perSqft.textContent = window.formatCurrency(result.total / result.size) + ' per SqFt';
+        }
+    }
+};
+
+// Auto-trigger on zone/building change
+document.getElementById('zone')?.addEventListener('change', () => {
+    window.loadBuildings();
+    window.debouncedUpdateUI();
+});
+document.getElementById('building')?.addEventListener('change', window.debouncedUpdateUI);
+
+// Clear temp multiplier after 100ms
+setTimeout(() => { window.tempLocationMultiplier = null; }, 100);
     }
 });
 </script>
