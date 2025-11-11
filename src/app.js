@@ -1144,7 +1144,7 @@
   init();
 })();
 // === START: LOCATION DRILL-DOWN SYSTEM (ZONE + BUILDING) ===
-const locationData = {
+window.locationData = {
   uae: {
     dubai: {
       zones: ["DIFC", "JLT", "Business Bay", "Downtown Dubai", "Dubai Media City"],
