@@ -3276,6 +3276,104 @@ document.getElementById('building')?.addEventListener('change', function() {
     }
 });
 </script>
+    <script>
+// === FULLY WORKING: Zones, Buildings, DIFC +20% (Global) ===
+window.locationData = {
+    uae: {
+        dubai: {
+            zones: ["DIFC", "JLT", "Business Bay", "Downtown Dubai", "Dubai Media City"],
+            buildings: {
+                "DIFC": ["ICD Brookfield Place", "Emirates Financial Towers", "Index Tower", "Gate Avenue"],
+                "JLT": ["Silver Tower (A6 Tower)", "Indigo Tower", "Saba Tower"],
+                "Business Bay": ["Vision Tower", "Executive Towers", "Iris Bay Tower"],
+                "Downtown Dubai": ["Emirates Office Tower", "The Address Boulevard"],
+                "Dubai Media City": ["Shatha Tower", "Business Central Towers", "The LOFT Offices"]
+            }
+        },
+        abudhabi: {
+            zones: ["Al Maryah Island", "Reem Island", "Khalidiya"],
+            buildings: {
+                "Al Maryah Island": ["Al Maryan Tower", "Al Maqam Tower"],
+                "Reem Island": ["Tamouh Tower", "Addax Tower"],
+                "Khalidiya": ["Khalidiya Towers", "CI Tower"]
+            }
+        }
+    }
+};
+
+window.onMarketChange = function() {
+    const market = document.getElementById('marketSelect').value;
+    const refineSection = document.getElementById('refine-location');
+    const zoneSelect = document.getElementById('zone');
+    const buildingSelect = document.getElementById('building');
+
+    zoneSelect.innerHTML = '<option>Select zone</option>';
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    zoneSelect.disabled = true;
+    buildingSelect.disabled = true;
+    refineSection.style.display = 'none';
+
+    if (!market) return;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    refineSection.style.display = 'block';
+    zoneSelect.disabled = false;
+
+    const zones = window.locationData.uae[city].zones;
+    zones.forEach(z => {
+        zoneSelect.innerHTML += `<option value="${z}">${z}</option>`;
+    });
+
+    if (typeof window.debouncedUpdateUI === 'function') window.debouncedUpdateUI();
+};
+
+window.loadBuildings = function() {
+    const zone = document.getElementById('zone').value;
+    const buildingSelect = document.getElementById('building');
+    const market = document.getElementById('marketSelect').value;
+
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    buildingSelect.disabled = true;
+
+    if (!zone || !market) return;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    const buildings = window.locationData.uae[city].buildings[zone] || [];
+    buildings.forEach(b => {
+        buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
+    });
+
+    buildingSelect.disabled = false;
+    if (typeof window.debouncedUpdateUI === 'function') window.debouncedUpdateUI();
+};
+
+// DIFC +20% on building change
+document.getElementById('building')?.addEventListener('change', function() {
+    const zone = document.getElementById('zone')?.value || '';
+    const building = this.value || '';
+    let multiplier = 1.0;
+
+    if (zone === 'DIFC' || building.includes('DIFC') || building.includes('Gate')) multiplier = 1.20;
+    else if (zone === 'JLT' || building.includes('JLT')) multiplier = 1.10;
+    else if (zone === 'Downtown Dubai' || building.includes('Downtown')) multiplier = 1.15;
+
+    // Hook into existing calc
+    if (typeof window.calculate === 'function') {
+        const result = window.calculate();
+        const finalTotal = result.total * multiplier;
+        document.getElementById('totalFigure').textContent = window.formatCurrency(finalTotal);
+        document.getElementById('chipPerSqft').textContent = window.formatCurrency(finalTotal / result.size) + ' per SqFt';
+    }
+});
+</script>
     <script src="src/app.js"></script>
 </body>
 </html>
