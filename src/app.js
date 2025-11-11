@@ -1194,7 +1194,9 @@ function onMarketChange() {
   });
   zoneSelect.disabled = false;
 
-  }
+  recalc()
+
+}
 
 function loadBuildings() {
   const zone = document.getElementById('zone').value;
