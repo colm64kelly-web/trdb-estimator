@@ -3200,6 +3200,82 @@ Check console for details.`);
 document.getElementById('floorCount').addEventListener('change', function() { if (typeof debouncedUpdateUI === 'function') debouncedUpdateUI(); });
 document.getElementById('usageType').addEventListener('change', function() { if (typeof debouncedUpdateUI === 'function') debouncedUpdateUI(); });
 </script>
+    <script>
+// === GLOBAL FIX: Make Zones & Buildings Work + DIFC +20% ===
+window.onMarketChange = function() {
+    const market = document.getElementById('marketSelect').value;
+    const refineSection = document.getElementById('refine-location');
+    const zoneSelect = document.getElementById('zone');
+    const buildingSelect = document.getElementById('building');
+
+    // Reset
+    zoneSelect.innerHTML = '<option>Select zone</option>';
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    zoneSelect.disabled = true;
+    buildingSelect.disabled = true;
+    refineSection.style.display = 'none';
+
+    if (!market) return;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    refineSection.style.display = 'block';
+    zoneSelect.disabled = false;
+
+    const zones = window.locationData?.uae?.[city]?.zones || [];
+    zones.forEach(z => {
+        zoneSelect.innerHTML += `<option value="${z}">${z}</option>`;
+    });
+
+    if (typeof debouncedUpdateUI === 'function') debouncedUpdateUI();
+};
+
+window.loadBuildings = function() {
+    const zone = document.getElementById('zone').value;
+    const buildingSelect = document.getElementById('building');
+    const market = document.getElementById('marketSelect').value;
+
+    buildingSelect.innerHTML = '<option>Select building</option>';
+    buildingSelect.disabled = true;
+
+    if (!zone || !market) return;
+
+    let city = '';
+    if (market === 'uae-dubai') city = 'dubai';
+    else if (market === 'uae-abudhabi') city = 'abudhabi';
+    else return;
+
+    const buildings = window.locationData?.uae?.[city]?.buildings?.[zone] || [];
+    buildings.forEach(b => {
+        buildingSelect.innerHTML += `<option value="${b}">${b}</option>`;
+    });
+
+    buildingSelect.disabled = false;
+    if (typeof debouncedUpdateUI === 'function') debouncedUpdateUI();
+};
+
+// Apply premium on building change
+document.getElementById('building')?.addEventListener('change', function() {
+    const zone = document.getElementById('zone')?.value || '';
+    const building = this.value || '';
+    let multiplier = 1.0;
+
+    if (zone === 'DIFC' || building.includes('DIFC') || building.includes('Gate')) multiplier = 1.20;
+    else if (zone === 'JLT' || building.includes('JLT')) multiplier = 1.10;
+    else if (zone === 'Downtown Dubai' || building.includes('Downtown')) multiplier = 1.15;
+
+    // Re-run calculation with premium
+    if (typeof debouncedUpdateUI === 'function') {
+        // Force multiplier into state
+        window.tempLocationMultiplier = multiplier;
+        debouncedUpdateUI();
+        setTimeout(() => { window.tempLocationMultiplier = null; }, 100);
+    }
+});
+</script>
     <script src="src/app.js"></script>
 </body>
 </html>
