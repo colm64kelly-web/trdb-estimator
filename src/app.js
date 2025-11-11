@@ -1194,7 +1194,7 @@ function onMarketChange() {
   });
   zoneSelect.disabled = false;
 
-  recalc()
+  recalc();
 
 }
 
