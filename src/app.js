@@ -1194,10 +1194,10 @@ function onMarketChange() {
   });
   zoneSelect.disabled = false;
 
-  recalc();
-
-}
-
+  window.recalc = function() {
+if (typeof window.calculate === 'function') {
+const result = window.calculate();
+const totalEl = document.getElementById('totalFigure');
 function loadBuildings() {
   const zone = document.getElementById('zone').value;
   const buildingSelect = document.getElementById('building');
