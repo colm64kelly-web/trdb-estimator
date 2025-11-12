@@ -1147,7 +1147,7 @@ Object.values(els.opt).forEach(chk => {
     markActiveChips(initVal);
   }
   init();
-})();
+}));
 // === START: LOCATION DRILL-DOWN SYSTEM (FIXED + CLEAN) ===
 window.locationData = {
   uae: {
@@ -1303,10 +1303,13 @@ console.log('RESULT:', result);
   const finalTotal = result.total * multiplier;
 
   const totalEl = document.getElementById('totalFigure');
-  const perSqftEl = document.getElementById('chipPerSqft');
+const perSqFtEl = document.getElementById('chipPerSqft');
 
-  if (totalEl) totalEl.textContent = window.formatCurrency(finalTotal);
-  if (perSqFtEl) perSqFtEl.textContent = window.formatCurrency(finalTotal / result.size) + ' per SqFt';
+if (totalEl) totalEl.textContent = window.formatCurrency(finalTotal);
+
+const rawSize = result.rawSize || result.size;
+const unitLabel = result.unit === 'sqm' ? 'Sqm' : 'SqFt';
+if (perSqFtEl) perSqFtEl.textContent = window.formatCurrency(finalTotal / rawSize) + ` per ${unitLabel}`;
 
   if (typeof window.updateBreakdown === 'function') {
     window.updateBreakdown(result, multiplier);
