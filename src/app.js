@@ -1302,7 +1302,7 @@ window.calculate = function () {
   if (typeof window.updateBreakdown === 'function') {
     window.updateBreakdown(result, multiplier);
   }
-};
+
 // === FINAL: Run recalc when everything is ready ===
 setTimeout(() => {
   if (typeof window.recalc === 'function') {
