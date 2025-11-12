@@ -1228,12 +1228,14 @@ function applyLocationMultiplier() {
   else if (zone === 'Downtown Dubai') multiplier = 1.15;
 
   window.locationMultiplier = multiplier;
-  window.recalc();
+
 }
 
 // Global Recalc
+// === GLOBAL RECALC: Safe + Updates Total + Chart ===
 window.recalc = function () {
   if (typeof window.calculate !== 'function') {
+    console.warn('calculate() not ready, retrying...');
     setTimeout(window.recalc, 100);
     return;
   }
@@ -1249,10 +1251,30 @@ window.recalc = function () {
   if (perSqftEl) perSqftEl.textContent = window.formatCurrency(finalTotal / result.size) + ' per SqFt';
 
   if (typeof window.updateBreakdown === 'function') {
-    window.updateBreakdown(result, multiplier);
+    window.updateBreakdown(result.categories, multiplier);
   }
 };
 
+  const result = window.calculate();
+  const multiplier = window.locationMultiplier || 1.0;
+  const finalTotal = result.total * multiplier;
+
+  const totalEl = document.getElementById('totalFigure');
+  const perSqftEl = document.getElementById('chipPerSqft');
+
+  if (totalEl) totalEl.textContent = window.formatCurrency(finalTotal);
+  if (perSqftEl) perSqftEl.textContent = window.formatCurrency(finalTotal / result.size) + ' per SqFt';
+
+  if (typeof window.updateBreakdown === 'function') {
+    window.updateBreakdown(result, multiplier);
+  }
+};
+// === FINAL: Run recalc when everything is ready ===
+setTimeout(() => {
+  if (typeof window.recalc === 'function') {
+    window.recalc();
+  }
+}, 500);
 // Attach Listeners ONCE
 document.addEventListener('DOMContentLoaded', () => {
   const marketEl = document.getElementById('marketSelect');
