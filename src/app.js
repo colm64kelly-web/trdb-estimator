@@ -912,6 +912,7 @@
   }
 
   ['input', 'change'].forEach((e) => {
+  if (els.market) {
     els.market.addEventListener(e, (evt) => {
       const marketLabel = evt.target.options[evt.target.selectedIndex].text;
       if (typeof gtag === 'function') {
@@ -922,12 +923,16 @@
       }
       update();
     });
+  }
+});
     
-    els.sqft.addEventListener(e, update);
-    els.quality.forEach((r) => r.addEventListener(e, update));
-    Object.values(els.opt).forEach((chk) => {
-      if (chk) chk.addEventListener(e, update);
-    });
+    if (els.sqft) els.sqft.addEventListener(e, update);
+els.quality.forEach(r => {
+  if (r) r.addEventListener(e, update);
+});
+Object.values(els.opt).forEach(chk => {
+  if (chk) chk.addEventListener(e, update);
+});
   });
 
   if (els.sqft) {
@@ -1302,7 +1307,36 @@ window.calculate = function () {
   if (typeof window.updateBreakdown === 'function') {
     window.updateBreakdown(result, multiplier);
   }
+// === CORE CALCULATION ===
+window.calculate = function () {
+  const size = Number(document.getElementById('sizeInput')?.value) || 5000;
+  const quality = document.querySelector('input[name="quality"]:checked')?.value || 'standard';
 
+  const rates = {
+    light: { fitout: 120, mep: 70 },
+    standard: { fitout: 133, mep: 70 },
+    premium: { fitout: 160, mep: 85 }
+  };
+
+  const r = rates[quality] || rates.standard;
+  const fitOutCost = r.fitout * size;
+  const mepCost = r.mep * size;
+
+  const total = fitOutCost + mepCost;
+
+  console.log('CALCULATE:', { size, quality, total });
+
+  return {
+    total,
+    size,
+    categories: {
+      'Fit-Out (Base)': fitOutCost,
+      'MEP (Base)': mepCost,
+      'Furniture & Joinery': 0,
+      'Advanced Options': 0
+    }
+  };
+};
 // === FINAL: Run recalc when everything is ready ===
 setTimeout(() => {
   if (typeof window.recalc === 'function') {
