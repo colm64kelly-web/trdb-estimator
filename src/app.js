@@ -1308,7 +1308,7 @@ const perSqFtEl = document.getElementById('chipPerSqft');
 if (totalEl) totalEl.textContent = window.formatCurrency(finalTotal);
 
 const rawSize = result.rawSize || result.size;
-const unitLabel = result.unit === 'sqm' ? 'Sqm' : 'SqFt';
+const unitLabel = (result.unit || 'sqft') === 'sqm' ? 'Sqm' : 'SqFt';
 if (perSqFtEl) perSqFtEl.textContent = window.formatCurrency(finalTotal / rawSize) + ` per ${unitLabel}`;
 
   if (typeof window.updateBreakdown === 'function') {
