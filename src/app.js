@@ -1294,7 +1294,11 @@ window.calculate = function () {
     }
   };
 };
-  const result = window.calculate();
+  console.log('RECALLING... window.calculate exists?', typeof window.calculate);
+const result = typeof window.calculate === 'function' 
+  ? window.calculate() 
+  : { total: 0, size: 5000, categories: { 'Fit-Out (Base)': 0, 'MEP (Base)': 0 } };
+console.log('RESULT:', result);
   const multiplier = window.locationMultiplier || 1.0;
   const finalTotal = result.total * multiplier;
 
