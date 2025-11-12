@@ -1255,6 +1255,40 @@ window.recalc = function () {
   }
 };
 
+// === CORE CALCULATION ENGINE ===
+window.calculate = function () {
+  const size = Number(document.getElementById('sizeInput')?.value) || 5000;
+  const quality = document.querySelector('input[name="quality"]:checked')?.value || 'standard';
+
+  // Base rates per sq ft (AED) - Q4 2025 Dubai benchmarks
+  const rates = {
+    light: { fitout: 120, mep: 70 },
+    standard: { fitout: 133, mep: 70 },
+    premium: { fitout: 160, mep: 85 }
+  };
+
+  const r = rates[quality] || rates.standard;
+
+  const fitOutCost = r.fitout * size;
+  const mepCost = r.mep * size;
+  const furnitureCost = 0;  // Add logic later
+  const advancedCost = 0;
+
+  const total = fitOutCost + mepCost + furnitureCost + advancedCost;
+
+  console.log('CALCULATE:', { size, quality, fitOutCost, mepCost, total });
+
+  return {
+    total: isNaN(total) ? 0 : total,
+    size: size,
+    categories: {
+      'Fit-Out (Base)': fitOutCost,
+      'MEP (Base)': mepCost,
+      'Furniture & Joinery': furnitureCost,
+      'Advanced Options': advancedCost
+    }
+  };
+};
   const result = window.calculate();
   const multiplier = window.locationMultiplier || 1.0;
   const finalTotal = result.total * multiplier;
