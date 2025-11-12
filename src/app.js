@@ -1263,7 +1263,7 @@ window.recalc = function () {
 // === CORE CALCULATION ENGINE ===
 window.calculate = function () {
   const size = Number(document.getElementById('sizeInput')?.value) || 5000;
-  const quality = document.querySelector('input[name="quality"]:checked')?.value || 'standard';
+  const quality = (document.querySelector('input[name="quality"]:checked')?.value || 'standard').toLowerCase();
 
   // Base rates per sq ft (AED) - Q4 2025 Dubai benchmarks
   const rates = {
@@ -1306,33 +1306,46 @@ console.log('RESULT:', result);
   const perSqftEl = document.getElementById('chipPerSqft');
 
   if (totalEl) totalEl.textContent = window.formatCurrency(finalTotal);
-  if (perSqftEl) perSqftEl.textContent = window.formatCurrency(finalTotal / result.size) + ' per SqFt';
+  if (perSqFtEl) perSqFtEl.textContent = window.formatCurrency(finalTotal / result.size) + ' per SqFt';
 
   if (typeof window.updateBreakdown === 'function') {
     window.updateBreakdown(result, multiplier);
   }
 // === CORE CALCULATION ===
 window.calculate = function () {
-  const size = Number(document.getElementById('sizeInput')?.value) || 5000;
-  const quality = document.querySelector('input[name="quality"]:checked')?.value || 'standard';
+  // Get raw input from the size field
+  const rawInput = document.getElementById('sqft')?.value.trim();
+  const sizeInput = Number(rawInput) || 5000;
 
+  // Detect current unit (SqFt or Sqm)
+  const isSqm = (state?.units || 'sqft') === 'sqm';
+  const sizeInSqft = isSqm ? sizeInput * 10.7639 : sizeInput; // Convert Sqm → SqFt
+
+  // Get quality (force lowercase to match rates keys)
+  const quality = (document.querySelector('input[name="quality"]:checked')?.value || 'standard').toLowerCase();
+
+  // DEBUG: See what we're working with
+  console.log('CALCULATE INPUTS:', { rawInput, unit: isSqm ? 'sqm' : 'sqft', sizeInSqft, quality });
+
+  // Base rates per SqFt (AED) — Q4 2025 Dubai benchmarks
   const rates = {
-    light: { fitout: 120, mep: 70 },
+    light:    { fitout: 120, mep: 70 },
     standard: { fitout: 133, mep: 70 },
-    premium: { fitout: 160, mep: 85 }
+    premium:  { fitout: 160, mep: 85 }
   };
 
   const r = rates[quality] || rates.standard;
-  const fitOutCost = r.fitout * size;
-  const mepCost = r.mep * size;
-
+  const fitOutCost = r.fitout * sizeInSqft;
+  const mepCost = r.mep * sizeInSqft;
   const total = fitOutCost + mepCost;
 
-  console.log('CALCULATE:', { size, quality, total });
+  console.log('CALCULATE RESULT:', { total, sizeInSqft, quality });
 
   return {
     total,
-    size,
+    size: sizeInSqft,
+    rawSize: sizeInput,
+    unit: isSqm ? 'sqm' : 'sqft',
     categories: {
       'Fit-Out (Base)': fitOutCost,
       'MEP (Base)': mepCost,
