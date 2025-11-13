@@ -1014,11 +1014,9 @@ window.calculate = async function(){
         console.log('📍 Location multiplier:', locationMultiplier, 'for zone:', zone, 'building:', building);
         
         // Apply client-side multipliers
-        const adjustedTotal = result.total * floorMultiplier * usageMultiplier * locationMultiplier;
-        // Apply client-side multipliers        
-        const adjustedPerSqft = adjustedTotal / size;
-        1019        const adjustedPerSqft = adjustedTotal / size;
-1020        
+        const adjustedTotal = result.total * floorMultiplier * usageMultiplier * locationMultiplier;       
+        const adjustedPerSqft = adjustedTotal / size;      
+    
             // ✅ DEBUG: Check what values we have
             console.log('🔍 DEBUG BEFORE RETURN:', {
                 adjustedTotal: adjustedTotal,
