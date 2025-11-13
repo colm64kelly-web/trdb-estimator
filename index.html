@@ -1017,7 +1017,24 @@ window.calculate = async function(){
         const adjustedTotal = result.total * floorMultiplier * usageMultiplier * locationMultiplier;
         // Apply client-side multipliers        
         const adjustedPerSqft = adjustedTotal / size;
-        
+        1019        const adjustedPerSqft = adjustedTotal / size;
+1020        
+            // ✅ DEBUG: Check what values we have
+            console.log('🔍 DEBUG BEFORE RETURN:', {
+                adjustedTotal: adjustedTotal,
+                locationMultiplier: locationMultiplier,
+                floorMultiplier: floorMultiplier,
+                usageMultiplier: usageMultiplier,
+                resultTotal: result.total,
+                resultFitout: result.fitoutBase,
+                resultMep: result.mepBase,
+                size: size,
+                zone: zone,
+                building: building
+            });
+            
+1021        // Return complete calculation with breakdown from server
+1022        return {
         // Return complete calculation with breakdown from server
         return {
             fitoutBase: result.fitoutBase * floorMultiplier * usageMultiplier * locationMultiplier,,
