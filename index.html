@@ -1003,13 +1003,21 @@ window.calculate = async function(){
         const usageMultiplier = usageMultipliers[usageText] || 1.0;
         
         // ✅ APPLY LOCATION PREMIUM (DIFC +20%, JLT +10%, Downtown +15%)
-        if (zone === 'DIFC' || building.includes('DIFC') || building.includes('Gate')) {
-            locationMultiplier = 1.20;
-        } else if (zone === 'JLT' || building.includes('JLT')) {
-            locationMultiplier = 1.10;
-        } else if (zone === 'Downtown Dubai' || building.includes('Downtown')) {
-            locationMultiplier = 1.15;
-        }
+if (zone && building) {
+    if (zone === 'DIFC' || building.includes('DIFC') || building.includes('Gate')) {
+        locationMultiplier = 1.20;
+    } else if (zone === 'JLT' || building.includes('JLT')) {
+        locationMultiplier = 1.10;
+    } else if (zone === 'Downtown Dubai' || building.includes('Downtown')) {
+        locationMultiplier = 1.15;
+    }
+}
+
+// Safety check: ensure result.total exists and is a number
+if (!result.total || isNaN(result.total)) {
+    console.error('❌ Invalid result.total:', result.total);
+    throw new Error('Invalid calculation result from server');
+}
         
         console.log('📍 Location multiplier:', locationMultiplier, 'for zone:', zone, 'building:', building);
         
