@@ -949,7 +949,15 @@ function sqftToM2(sqft){return Math.round(sqft*0.092903)}
 // 🔒 SECURE: Call server-side API for pricing calculation
 window.calculate = async function(){
     const{market,size,quality,options}=state;
-    
+
+    951    const{market,size,quality,options}=state;
+952    
+953    // ✅ GET ZONE AND BUILDING
+954    const zone = document.getElementById('zone')?.value || '';
+955    const building = document.getElementById('building')?.value || '';
+956    let locationMultiplier = 1.0;
+957    
+958    try {
     try {
         // Rate limiting
         calcLimiter.check('calculation');
@@ -957,15 +965,18 @@ window.calculate = async function(){
         console.log('🔒 Calculating via secure API...', {market, size, quality, options});
         
         // Call secure server-side API
-        const response = await fetch('/.netlify/functions/get-pricing', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                market,
-                quality,
-                size,
-                options: options || []
-            })
+       const response = await fetch('/.netlify/functions/get-pricing', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        market,
+        quality,
+        size,
+        zone: zone,        // ✅ ADDED
+        building: building, // ✅ ADDED
+        options: options || []
+    })
+});
         });
         
         if (!response.ok) {
@@ -991,22 +1002,40 @@ window.calculate = async function(){
         const usageMultipliers = {'Office':1.0,'Retail':1.1,'Restaurant':1.2,'Healthcare':1.25,'Education':1.15};
         const usageMultiplier = usageMultipliers[usageText] || 1.0;
         
+        // ✅ APPLY LOCATION PREMIUM (DIFC +20%, JLT +10%, Downtown +15%)
+        if (zone === 'DIFC' || building.includes('DIFC') || building.includes('Gate')) {
+            locationMultiplier = 1.20;
+        } else if (zone === 'JLT' || building.includes('JLT')) {
+            locationMultiplier = 1.10;
+        } else if (zone === 'Downtown Dubai' || building.includes('Downtown')) {
+            locationMultiplier = 1.15;
+        }
+        
+        console.log('📍 Location multiplier:', locationMultiplier, 'for zone:', zone, 'building:', building);
+        
         // Apply client-side multipliers
-        const adjustedTotal = result.total * floorMultiplier * usageMultiplier;
+        const adjustedTotal = result.total * floorMultiplier * usageMultiplier * locationMultiplier;
+        // Apply client-side multipliers        
         const adjustedPerSqft = adjustedTotal / size;
         
         // Return complete calculation with breakdown from server
         return {
-            fitoutBase: result.fitoutBase * floorMultiplier * usageMultiplier,
-            mepBase: result.mepBase * floorMultiplier * usageMultiplier,
+            fitoutBase: result.fitoutBase * floorMultiplier * usageMultiplier * locationMultiplier,,
+            mepBase: result.mepBase * floorMultiplier * usageMultiplier * locationMultiplier,
             originalBase: result.total,
             baseTotal: adjustedTotal,
-            optionsTotal: result.optionsTotal * floorMultiplier * usageMultiplier,
+            optionsTotal: result.optionsTotal * floorMultiplier * usageMultiplier * locationMultiplier,
             total: adjustedTotal + (result.optionsTotal * floorMultiplier * usageMultiplier),
             breakdown: result.breakdown || [],
             perSqft: Math.round(adjustedPerSqft),
             floorMultiplier,
             usageMultiplier,
+            locationMultiplier,  // ✅ ADD THIS LINE
+            floorsText: floorsText,
+            usageText: usageText,
+            zone: zone,          // ✅ ADD THIS LINE
+            building: building   // ✅ ADD THIS LINE
+        };
             floorsText: floorsText,
             usageText: usageText
         };
