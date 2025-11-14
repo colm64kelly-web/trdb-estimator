@@ -25,15 +25,14 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ error: 'Name and email are required' })
       };
     }
-
-    // Configure SMTP transporter
-    const transporter = nodemailer.createTransporter({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false, // true for 465, false for other ports
+    // Configure SMTP transporter for GoDaddy
+    const transporter = nodemailer.createTransport({
+      host: 'smtpout.secureserver.net',  // GoDaddy SMTP server
+      port: 465,                          // SSL port
+      secure: true,                       // Use SSL
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
+        user: process.env.EMAIL_USER,     // info@thetemplerock.com
+        pass: process.env.EMAIL_PASSWORD  // Your GoDaddy email password
       }
     });
 
