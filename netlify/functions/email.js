@@ -89,12 +89,13 @@ exports.handler = async (event, context) => {
     // Send confirmation email to user (optional)
     if (action === 'pdf' || action === 'email') {
       const userEmail = await transporter.sendMail({
-        from: `"TRDB - Temple Rock Design Build" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: 'Your TRDB Fitout Cost Estimate',
-        html: generateUserConfirmationHTML(name, estimate),
-        text: generateUserConfirmationText(name, estimate)
-      });
+  from: `"TRDB - Temple Rock Design Build" <${process.env.EMAIL_USER}>`,
+  replyTo: 'info@thetemplerock.com',  // ✨ ADD THIS LINE!
+  to: email,
+  subject: 'Your TRDB Fitout Cost Estimate',
+  html: generateUserConfirmationHTML(name, estimate),
+  text: generateUserConfirmationText(name, estimate)
+});
 
       console.log('✅ Confirmation sent to user:', userEmail.messageId);
     }
