@@ -258,11 +258,70 @@ function generateEmailEstimateText(name, email, company, phone, notes, estimate)
 }
 
 function generateWhatsAppEmailHTML(name, email, company, phone, notes, estimate) {
-  return generateEmailEstimateHTML(name, email, company, phone, notes, estimate).replace('Email Estimate', 'WhatsApp Share');
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #25D366; color: white; padding: 20px; text-align: center; }
+        .content { background: #f4f4f4; padding: 20px; margin: 20px 0; }
+        .field { margin: 10px 0; }
+        .label { font-weight: bold; color: #25D366; }
+        .estimate { background: white; padding: 15px; border-left: 4px solid #25D366; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>📱 New WhatsApp Share</h1>
+          <p>TRDB Fitout Cost Estimator</p>
+        </div>
+        
+        <div class="content">
+          <h2>Contact Information</h2>
+          <div class="field"><span class="label">Name:</span> ${name}</div>
+          <div class="field"><span class="label">Email:</span> <a href="mailto:${email}">${email}</a></div>
+          ${company ? `<div class="field"><span class="label">Company:</span> ${company}</div>` : ''}
+          ${phone ? `<div class="field"><span class="label">Phone:</span> ${phone}</div>` : ''}
+          ${notes ? `<div class="field"><span class="label">Notes:</span><br>${notes}</div>` : ''}
+        </div>
+
+        <div class="estimate">
+          <h2>Estimate Details</h2>
+          <div class="field"><span class="label">Market:</span> ${estimate.market}</div>
+          <div class="field"><span class="label">Size:</span> ${estimate.size} ${estimate.unit}</div>
+          <div class="field"><span class="label">Quality:</span> ${estimate.quality}</div>
+          <div class="field"><span class="label">Total:</span> <strong style="color: #25D366; font-size: 1.5em;">${estimate.total}</strong></div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
 }
 
 function generateWhatsAppEmailText(name, email, company, phone, notes, estimate) {
-  return generatePDFEmailText(name, email, company, phone, notes, estimate).replace('PDF REQUEST', 'WHATSAPP SHARE');
+  return `
+NEW WHATSAPP SHARE - TRDB Fitout Estimator
+
+Contact Information:
+- Name: ${name}
+- Email: ${email}
+${company ? `- Company: ${company}` : ''}
+${phone ? `- Phone: ${phone}` : ''}
+${notes ? `- Notes: ${notes}` : ''}
+
+Estimate Details:
+- Market: ${estimate.market}
+- Size: ${estimate.size} ${estimate.unit}
+- Quality: ${estimate.quality}
+- Total: ${estimate.total}
+
+---
+Temple Rock Design Build
+https://thetemplerock.com
+  `;
 }
 
 function generateSaveEmailHTML(name, email, estimateName, estimate) {
