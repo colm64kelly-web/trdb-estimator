@@ -358,21 +358,65 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
 </label>
 <!-- === START: REFINE LOCATION (ZONE + BUILDING) === -->
 <div class="input-group" id="refine-location" style="display:none; margin-top:16px;">
-  <h4 style="margin:0 0 8px 0; font-size:0.9em; color:#1a5fb4;">Refine Your Location</h4>
-  
-  <div class="step">
-    <label style="font-size:0.85em;">Zone / District</label>
-    <select id="zone" onchange="loadBuildings()" disabled>
-      <option>Select zone</option>
-    </select>
-  </div>
-
-  <div class="step">
-    <label style="font-size:0.85em;">Building Name</label>
-    <select id="building" disabled>
-      <option>Select building</option>
-    </select>
-  </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <span style="color: #3b82f6; font-size: 1rem;">📍</span>
+        <span style="color: #e5e7eb; font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Refine Your Location</span>
+        <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.125rem 0.5rem; border-radius: 0.75rem; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.05em;">🔒 PRO</span>
+    </div>
+    
+    <!-- Zone Dropdown - Locked -->
+    <div class="step">
+        <label style="font-size:0.85em;">Zone / District</label>
+        <div class="pro-locked-feature" onclick="showProUpgradeModal()">
+            <div style="position: relative;">
+                <select 
+                    id="zone" 
+                    onchange="loadBuildings()" 
+                    disabled
+                    style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; cursor: not-allowed; appearance: none; opacity: 0.6;"
+                >
+                    <option>Select zone</option>
+                </select>
+                <div class="pro-unlock-badge">
+                    💎 Unlock with Pro
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Building Dropdown - Locked -->
+    <div class="step" style="margin-top: 1rem;">
+        <label style="font-size:0.85em;">Building Name</label>
+        <div class="pro-locked-feature" onclick="showProUpgradeModal()">
+            <div style="position: relative;">
+                <select 
+                    id="building" 
+                    disabled
+                    style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; cursor: not-allowed; appearance: none; opacity: 0.6;"
+                >
+                    <option>Select building</option>
+                </select>
+                <div class="pro-unlock-badge">
+                    💎 Unlock with Pro
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pro Feature Teaser -->
+    <div style="margin-top: 1rem; padding: 0.75rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 0.5rem;">
+        <p style="color: #a5b4fc; font-size: 0.8125rem; margin: 0; line-height: 1.5; font-family: 'Cairo', sans-serif;">
+            <strong>🎯 Go Pro</strong> to unlock zone-specific pricing, authority fee breakdowns, and building-level cost data.
+        </p>
+        <button 
+            onclick="showProUpgradeModal()" 
+            style="margin-top: 0.75rem; width: 100%; padding: 0.625rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: transform 0.2s;"
+            onmouseover="this.style.transform='scale(1.02)'"
+            onmouseout="this.style.transform='scale(1)'"
+        >
+            🚀 Upgrade to Pro
+        </button>
+    </div>
 </div>
 <!-- === END: REFINE LOCATION === -->
             <div class="size-control">
