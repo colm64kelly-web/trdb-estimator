@@ -364,44 +364,39 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
         <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.125rem 0.5rem; border-radius: 0.75rem; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.05em;">🔒 PRO</span>
     </div>
     
-    <!-- Zone Dropdown - Locked -->
-    <div class="step">
-        <label style="font-size:0.85em;">Zone / District</label>
-        <div class="pro-locked-feature" onclick="showProUpgradeModal()">
-            <div style="position: relative;">
-                <select 
-                    id="zone" 
-                    onchange="loadBuildings()" 
-                    disabled
-                    style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; cursor: not-allowed; appearance: none; opacity: 0.6;"
-                >
-                    <option value="">Select zone</option>
-                </select>
-                <div class="pro-unlock-badge">
-                    💎 Unlock with Pro
-                </div>
+   <!-- Zone Dropdown - Locked -->
+<div class="step">
+    <label style="font-size:0.85em;">Zone / District</label>
+    <div class="pro-locked-feature" onclick="showProUpgradeModal()" style="cursor: pointer;">
+        <div style="position: relative;">
+            <!-- HIDDEN disabled dropdown - not used in calculations -->
+            <div style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; opacity: 0.6; display: flex; align-items: center; justify-content: space-between;">
+                <span>DIFC</span>
+                <span style="font-size: 0.7rem;">▼</span>
+            </div>
+            <div class="pro-unlock-badge">
+                💎 Unlock with Pro
             </div>
         </div>
     </div>
+</div>
     
-    <!-- Building Dropdown - Locked -->
-    <div class="step" style="margin-top: 1rem;">
-        <label style="font-size:0.85em;">Building Name</label>
-        <div class="pro-locked-feature" onclick="showProUpgradeModal()">
-            <div style="position: relative;">
-                <select 
-                    id="building" 
-                    disabled
-                    style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; cursor: not-allowed; appearance: none; opacity: 0.6;"
-                >
-                    <option value="">Select building</option>
-                </select>
-                <div class="pro-unlock-badge">
-                    💎 Unlock with Pro
-                </div>
+   <!-- Building Dropdown - Locked -->
+<div class="step" style="margin-top: 1rem;">
+    <label style="font-size:0.85em;">Building Name</label>
+    <div class="pro-locked-feature" onclick="showProUpgradeModal()" style="cursor: pointer;">
+        <div style="position: relative;">
+            <!-- HIDDEN disabled dropdown - not used in calculations -->
+            <div style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; opacity: 0.6; display: flex; align-items: center; justify-content: space-between;">
+                <span>ICD Brookfield Place</span>
+                <span style="font-size: 0.7rem;">▼</span>
+            </div>
+            <div class="pro-unlock-badge">
+                💎 Unlock with Pro
             </div>
         </div>
     </div>
+</div>
     
     <!-- Pro Feature Teaser -->
     <div style="margin-top: 1rem; padding: 0.75rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 0.5rem;">
@@ -995,8 +990,9 @@ window.calculate = async function(){
     const{market,size,quality,options}=state;
 
     // ✅ GET ZONE AND BUILDING
-    const zone = document.getElementById('zone')?.value || '';
-    const building = document.getElementById('building')?.value || '';
+   // 🔒 PRO FEATURE ONLY - Free users always get empty values
+const zone = '';
+const building = '';
     let locationMultiplier = 1.0;
 
     try {
