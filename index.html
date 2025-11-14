@@ -375,7 +375,7 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
                     disabled
                     style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; cursor: not-allowed; appearance: none; opacity: 0.6;"
                 >
-                    <option>Select zone</option>
+                    <option value="">Select zone</option>
                 </select>
                 <div class="pro-unlock-badge">
                     💎 Unlock with Pro
@@ -394,7 +394,7 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
                     disabled
                     style="width: 100%; padding: 0.75rem 1rem; background: #1e293b; color: #64748b; border: 1px solid #334155; border-radius: 0.5rem; font-family: 'Cairo', sans-serif; font-size: 0.875rem; cursor: not-allowed; appearance: none; opacity: 0.6;"
                 >
-                    <option>Select building</option>
+                    <option value="">Select building</option>
                 </select>
                 <div class="pro-unlock-badge">
                     💎 Unlock with Pro
@@ -1146,6 +1146,37 @@ async function updateUI(){
 }
 // Make updateUI globally accessible
 window.updateUI = updateUI;
+                                                      
+
+// 🚀 Show Pro upgrade modal when locked features are clicked
+function showProUpgradeModal() {
+    alert('🚀 Upgrade to Pro to unlock:\n\n✓ Zone-specific pricing (±5% accuracy)\n✓ Authority fee breakdowns\n✓ Building-level cost data\n✓ DEWA, DM, Civil Defense fees\n✓ Priority support\n\nStarting at €49/month\n\nContact us to learn more!');
+    
+    // Track interaction for analytics
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'pro_feature_clicked', {
+            'event_category': 'monetization',
+            'event_label': 'location_refinement'
+        });
+    }
+}
+  }
+
+// 🔒 Clear locked Pro feature dropdowns on page load (prevent NaN errors)
+document.addEventListener('DOMContentLoaded', function() {
+    const zoneSelect = document.getElementById('zone');
+    const buildingSelect = document.getElementById('building');
+    
+    // For free users, ensure zone/building are always empty
+    if (zoneSelect && zoneSelect.disabled) {
+        zoneSelect.value = '';
+    }
+    if (buildingSelect && buildingSelect.disabled) {
+        buildingSelect.value = '';
+    }
+    
+    console.log('✅ Pro feature dropdowns cleared for free users');
+});                                                    
 function updateChart(calc){const canvas=document.getElementById('breakdownChart');const ctx=canvas.getContext('2d');const labels=[t('fitoutBase'),t('mepBase'),...calc.breakdown.map(b=>t(b.label)||b.label)];const data=[calc.fitoutBase,calc.mepBase,...calc.breakdown.map(b=>b.value)];const colors=['#1e5a7d','#2d7a9e','#e67e22','#f39c12','#84cc16','#06b6d4','#10b981','#6b7280'];if(chart)chart.destroy();try{chart=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:colors.slice(0,labels.length),borderColor:'#1e293b',borderWidth:3,hoverOffset:25,hoverBorderWidth:4}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'right',labels:{color:'#f1f5f9',padding:20,font:{size:13,weight:'600'},usePointStyle:true,pointStyle:'circle'}},tooltip:{backgroundColor:'#1e293b',titleColor:'#f1f5f9',bodyColor:'#cbd5e1',borderColor:'#334155',borderWidth:1,padding:12,callbacks:{label:function(context){let label=context.label||'';if(label)label+=': ';label+=formatCurrency(context.parsed);const total=context.dataset.data.reduce((a,b)=>a+b,0);const percentage=((context.parsed/total)*100).toFixed(1);label+=` (${percentage}%)`;return label}}}},onHover:(event,activeElements)=>{event.native.target.style.cursor=activeElements.length>0?'pointer':'default'}}})}catch(error){console.error('Chart error:',error)}}
 async function openLeadModal(action='email'){
     modalAction=action;
@@ -3282,8 +3313,8 @@ window.onMarketChange = function() {
     const buildingSelect = document.getElementById('building');
 
     // Reset
-    zoneSelect.innerHTML = '<option>Select zone</option>';
-    buildingSelect.innerHTML = '<option>Select building</option>';
+    zoneSelect.innerHTML = '<option value="">Select zone</option>';
+buildingSelect.innerHTML = '<option value="">Select building</option>';
     zoneSelect.disabled = true;
     buildingSelect.disabled = true;
     refineSection.style.display = 'none';
@@ -3311,7 +3342,7 @@ window.loadBuildings = function() {
     const buildingSelect = document.getElementById('building');
     const market = document.getElementById('marketSelect').value;
 
-    buildingSelect.innerHTML = '<option>Select building</option>';
+    buildingSelect.innerHTML = '<option value="">Select building</option>';
     buildingSelect.disabled = true;
 
     if (!zone || !market) return;
