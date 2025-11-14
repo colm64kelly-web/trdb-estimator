@@ -357,7 +357,7 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
     </select>
 </label>
 <!-- === START: REFINE LOCATION (ZONE + BUILDING) === -->
-<div class="input-group" id="refine-location" style="display:none; margin-top:16px;">
+<div class="input-group" id="refine-location" style="display:block; margin-top:16px;">
     <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
         <span style="color: #3b82f6; font-size: 1rem;">📍</span>
         <span style="color: #e5e7eb; font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Refine Your Location</span>
@@ -413,7 +413,18 @@ html{overflow-x:hidden;width:100%}body{font-family:-apple-system,BlinkMacSystemF
         </button>
     </div>
 </div>
-<!-- === END: REFINE LOCATION === -->
+            <!-- === END: REFINE LOCATION === -->
+<script>
+// 🎨 Force "Refine Your Location" section to be visible as Pro teaser
+document.addEventListener('DOMContentLoaded', function() {
+    const refineSection = document.getElementById('refine-location');
+    if (refineSection) {
+        refineSection.style.display = 'block';
+        console.log('✅ Refine Location section made visible');
+    }
+});
+</script>
+<div class="size-control">
             <div class="size-control">
                 <div class="unit-toggle">
                     <button id="btn-sqft" class="active" type="button">SqFt</button>
