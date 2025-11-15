@@ -10,7 +10,7 @@
   "author": "Temple Rock Design Build",
   "license": "ISC",
   "dependencies": {
-    "nodemailer": "^6.10.1",
+    "@sendgrid/mail": "^8.1.0",
     "googleapis": "^128.0.0",
     "@supabase/supabase-js": "^2.39.0"
   }
