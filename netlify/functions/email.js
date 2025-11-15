@@ -1,69 +1,51 @@
-// Netlify Function: Send Email Notifications
-// Path: netlify/functions/email-lead.js
-
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 exports.handler = async (event, context) => {
   // Only allow POST
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Method Not Allowed' })
-    };
+    return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    const data = JSON.parse(event.body);
-    const { action, name, email, company, phone, notes, estimate, estimateName } = data;
+    const { 
+      name, 
+      email, 
+      company, 
+      phone, 
+      notes, 
+      estimate, 
+      action,
+      estimateName 
+    } = JSON.parse(event.body);
 
-    console.log('📧 Email request received:', { action, email, company });
+    // Configure SendGrid
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-    // Validate required fields
-    if (!name || !email) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Name and email are required' })
-      };
-    }
-    // Configure SMTP transporter for Gmail
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT) || 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-      }
-    });
-
-    // Verify SMTP configuration
-    await transporter.verify();
-    console.log('✅ SMTP connection verified');
-
-    // Prepare email content based on action
+    // Determine email content based on action
     let subject, htmlContent, textContent;
+    const deliveryMethod = action; // 'pdf', 'email', 'whatsapp', or 'save'
 
-    switch (action) {
+    switch (deliveryMethod) {
       case 'pdf':
-        subject = `TRDB Fitout Estimate - PDF Request from ${company || name}`;
+        subject = `📄 New PDF Request from ${company || name}`;
         htmlContent = generatePDFEmailHTML(name, email, company, phone, notes, estimate);
         textContent = generatePDFEmailText(name, email, company, phone, notes, estimate);
         break;
 
       case 'email':
-        subject = `TRDB Fitout Estimate - Email Request from ${company || name}`;
+        subject = `📧 New Email Estimate Request from ${company || name}`;
         htmlContent = generateEmailEstimateHTML(name, email, company, phone, notes, estimate);
         textContent = generateEmailEstimateText(name, email, company, phone, notes, estimate);
         break;
 
       case 'whatsapp':
-        subject = `TRDB Fitout Estimate - WhatsApp Share from ${company || name}`;
+        subject = `📱 New WhatsApp Share Request from ${company || name}`;
         htmlContent = generateWhatsAppEmailHTML(name, email, company, phone, notes, estimate);
         textContent = generateWhatsAppEmailText(name, email, company, phone, notes, estimate);
         break;
 
       case 'save':
-        subject = `TRDB - New Estimate Saved: ${estimateName}`;
+        subject = `💾 New Estimate Saved: ${estimateName}`;
         htmlContent = generateSaveEmailHTML(name, email, estimateName, estimate);
         textContent = generateSaveEmailText(name, email, estimateName, estimate);
         break;
@@ -74,68 +56,74 @@ exports.handler = async (event, context) => {
         textContent = generateDefaultEmailText(name, email, company, phone, notes, estimate);
     }
 
-    // Send email to company
-    const companyEmail = await transporter.sendMail({
-      from: `"TRDB Estimator" <${process.env.EMAIL_USER}>`,
+    // Email to company/admin
+    const companyEmailMsg = {
       to: process.env.ADMIN_EMAIL || 'info@thetemplerock.com',
+      from: {
+        email: process.env.SENDGRID_FROM_EMAIL,
+        name: process.env.SENDGRID_FROM_NAME
+      },
       replyTo: email,
       subject: subject,
       text: textContent,
       html: htmlContent
-    });
+    };
 
-    console.log('✅ Email sent to company:', companyEmail.messageId);
+    await sgMail.send(companyEmailMsg);
+    console.log('✅ Email sent to company:', companyEmailMsg.to);
 
     // Send confirmation email to user (optional)
-    if (action === 'pdf' || action === 'email') {
-      const userEmail = await transporter.sendMail({
-  from: `"TRDB - Temple Rock Design Build" <${process.env.EMAIL_USER}>`,
-  replyTo: 'info@thetemplerock.com',  // ✨ ADD THIS LINE!
-  to: email,
-  subject: 'Your TRDB Fitout Cost Estimate',
-  html: generateUserConfirmationHTML(name, estimate),
-  text: generateUserConfirmationText(name, estimate)
-});
+    if (deliveryMethod === 'pdf' || deliveryMethod === 'email') {
+      const userEmailMsg = {
+        to: email,
+        from: {
+          email: process.env.SENDGRID_FROM_EMAIL,
+          name: process.env.SENDGRID_FROM_NAME
+        },
+        replyTo: process.env.ADMIN_EMAIL || 'info@thetemplerock.com',
+        subject: 'Your TRDB Fitout Cost Estimate',
+        html: generateUserConfirmationHTML(name, estimate),
+        text: generateUserConfirmationText(name, estimate)
+      };
 
-      console.log('✅ Confirmation sent to user:', userEmail.messageId);
+      await sgMail.send(userEmailMsg);
+      console.log('✅ Confirmation sent to user:', email);
     }
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
+      body: JSON.stringify({ 
         success: true,
-        message: 'Email sent successfully',
-        messageId: companyEmail.messageId
+        message: 'Email sent successfully via SendGrid'
       })
     };
 
   } catch (error) {
-    console.error('❌ Email error:', error);
+    console.error('❌ SendGrid Error:', error);
+    
+    if (error.response) {
+      console.error('SendGrid error body:', error.response.body);
+    }
     
     return {
       statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
+      body: JSON.stringify({ 
         success: false,
-        error: error.message,
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        error: 'Failed to send email',
+        details: error.message
       })
     };
   }
 };
 
 // ============================================
-// EMAIL TEMPLATES
+// EMAIL TEMPLATE FUNCTIONS
 // ============================================
 
+// Generate HTML email content for PDF notification
 function generatePDFEmailHTML(name, email, company, phone, notes, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
   return `
     <!DOCTYPE html>
     <html>
@@ -143,294 +131,34 @@ function generatePDFEmailHTML(name, email, company, phone, notes, estimate) {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #e67e22; color: white; padding: 20px; text-align: center; }
-        .content { background: #f4f4f4; padding: 20px; margin: 20px 0; }
-        .field { margin: 10px 0; }
-        .label { font-weight: bold; color: #e67e22; }
-        .estimate { background: white; padding: 15px; border-left: 4px solid #e67e22; }
-        .footer { text-align: center; color: #777; font-size: 12px; margin-top: 20px; }
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .estimate-box { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #ff6b35; }
+        .label { font-weight: bold; color: #1a1a2e; }
+        .highlight { color: #ff6b35; font-weight: bold; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
           <h1>📄 New PDF Request</h1>
-          <p>TRDB Fitout Cost Estimator</p>
+          <p>Someone requested a PDF estimate</p>
         </div>
-        
         <div class="content">
-          <h2>Contact Information</h2>
-          <div class="field"><span class="label">Name:</span> ${name}</div>
-          <div class="field"><span class="label">Email:</span> <a href="mailto:${email}">${email}</a></div>
-          ${company ? `<div class="field"><span class="label">Company:</span> ${company}</div>` : ''}
-          ${phone ? `<div class="field"><span class="label">Phone:</span> ${phone}</div>` : ''}
-          ${notes ? `<div class="field"><span class="label">Notes:</span><br>${notes}</div>` : ''}
-        </div>
-
-        <div class="estimate">
-          <h2>Estimate Details</h2>
-          <div class="field"><span class="label">Market:</span> ${estimate.market}</div>
-          <div class="field"><span class="label">Size:</span> ${estimate.size} ${estimate.unit}</div>
-          <div class="field"><span class="label">Quality:</span> ${estimate.quality}</div>
-          <div class="field"><span class="label">Total:</span> <strong style="color: #e67e22; font-size: 1.5em;">${estimate.total}</strong></div>
-        </div>
-
-        <div class="footer">
-          <p>© 2025 Temple Rock Design Build | <a href="https://thetemplerock.com">thetemplerock.com</a></p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-}
-
-function generatePDFEmailText(name, email, company, phone, notes, estimate) {
-  return `
-NEW PDF REQUEST - TRDB Fitout Estimator
-
-Contact Information:
-- Name: ${name}
-- Email: ${email}
-${company ? `- Company: ${company}` : ''}
-${phone ? `- Phone: ${phone}` : ''}
-${notes ? `- Notes: ${notes}` : ''}
-
-Estimate Details:
-- Market: ${estimate.market}
-- Size: ${estimate.size} ${estimate.unit}
-- Quality: ${estimate.quality}
-- Total: ${estimate.total}
-
----
-Temple Rock Design Build
-https://thetemplerock.com
-  `;
-}
-
-function generateEmailEstimateHTML(name, email, company, phone, notes, estimate) {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #e67e22; color: white; padding: 20px; text-align: center; }
-        .content { background: #f4f4f4; padding: 20px; margin: 20px 0; }
-        .field { margin: 10px 0; }
-        .label { font-weight: bold; color: #e67e22; }
-        .estimate { background: white; padding: 15px; border-left: 4px solid #e67e22; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>📧 New Email Estimate Request</h1>
-          <p>TRDB Fitout Cost Estimator</p>
-        </div>
-        
-        <div class="content">
-          <h2>Contact Information</h2>
-          <div class="field"><span class="label">Name:</span> ${name}</div>
-          <div class="field"><span class="label">Email:</span> <a href="mailto:${email}">${email}</a></div>
-          ${company ? `<div class="field"><span class="label">Company:</span> ${company}</div>` : ''}
-          ${phone ? `<div class="field"><span class="label">Phone:</span> ${phone}</div>` : ''}
-          ${notes ? `<div class="field"><span class="label">Notes:</span><br>${notes}</div>` : ''}
-        </div>
-
-        <div class="estimate">
-          <h2>Estimate Details</h2>
-          <div class="field"><span class="label">Market:</span> ${estimate.market}</div>
-          <div class="field"><span class="label">Size:</span> ${estimate.size} ${estimate.unit}</div>
-          <div class="field"><span class="label">Quality:</span> ${estimate.quality}</div>
-          <div class="field"><span class="label">Total:</span> <strong style="color: #e67e22; font-size: 1.5em;">${estimate.total}</strong></div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-}
-
-function generateEmailEstimateText(name, email, company, phone, notes, estimate) {
-  return generatePDFEmailText(name, email, company, phone, notes, estimate).replace('PDF REQUEST', 'EMAIL ESTIMATE REQUEST');
-}
-
-function generateWhatsAppEmailHTML(name, email, company, phone, notes, estimate) {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #25D366; color: white; padding: 20px; text-align: center; }
-        .content { background: #f4f4f4; padding: 20px; margin: 20px 0; }
-        .field { margin: 10px 0; }
-        .label { font-weight: bold; color: #25D366; }
-        .estimate { background: white; padding: 15px; border-left: 4px solid #25D366; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>📱 New WhatsApp Share</h1>
-          <p>TRDB Fitout Cost Estimator</p>
-        </div>
-        
-        <div class="content">
-          <h2>Contact Information</h2>
-          <div class="field"><span class="label">Name:</span> ${name}</div>
-          <div class="field"><span class="label">Email:</span> <a href="mailto:${email}">${email}</a></div>
-          ${company ? `<div class="field"><span class="label">Company:</span> ${company}</div>` : ''}
-          ${phone ? `<div class="field"><span class="label">Phone:</span> ${phone}</div>` : ''}
-          ${notes ? `<div class="field"><span class="label">Notes:</span><br>${notes}</div>` : ''}
-        </div>
-
-        <div class="estimate">
-          <h2>Estimate Details</h2>
-          <div class="field"><span class="label">Market:</span> ${estimate.market}</div>
-          <div class="field"><span class="label">Size:</span> ${estimate.size} ${estimate.unit}</div>
-          <div class="field"><span class="label">Quality:</span> ${estimate.quality}</div>
-          <div class="field"><span class="label">Total:</span> <strong style="color: #25D366; font-size: 1.5em;">${estimate.total}</strong></div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-}
-
-function generateWhatsAppEmailText(name, email, company, phone, notes, estimate) {
-  return `
-NEW WHATSAPP SHARE - TRDB Fitout Estimator
-
-Contact Information:
-- Name: ${name}
-- Email: ${email}
-${company ? `- Company: ${company}` : ''}
-${phone ? `- Phone: ${phone}` : ''}
-${notes ? `- Notes: ${notes}` : ''}
-
-Estimate Details:
-- Market: ${estimate.market}
-- Size: ${estimate.size} ${estimate.unit}
-- Quality: ${estimate.quality}
-- Total: ${estimate.total}
-
----
-Temple Rock Design Build
-https://thetemplerock.com
-  `;
-}
-
-function generateSaveEmailHTML(name, email, estimateName, estimate) {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #10b981; color: white; padding: 20px; text-align: center; }
-        .content { background: #f4f4f4; padding: 20px; margin: 20px 0; }
-        .field { margin: 10px 0; }
-        .label { font-weight: bold; color: #10b981; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>💾 Estimate Saved</h1>
-          <p>TRDB Fitout Cost Estimator</p>
-        </div>
-        
-        <div class="content">
-          <h2>User Activity</h2>
-          <div class="field"><span class="label">User:</span> ${name}</div>
-          <div class="field"><span class="label">Email:</span> <a href="mailto:${email}">${email}</a></div>
-          <div class="field"><span class="label">Estimate Name:</span> ${estimateName}</div>
-          <div class="field"><span class="label">Total:</span> <strong>${estimate.total}</strong></div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-}
-
-function generateSaveEmailText(name, email, estimateName, estimate) {
-  return `
-ESTIMATE SAVED - TRDB Fitout Estimator
-
-User: ${name}
-Email: ${email}
-Estimate Name: ${estimateName}
-Total: ${estimate.total}
-
----
-Temple Rock Design Build
-  `;
-}
-
-function generateDefaultEmailHTML(name, email, company, phone, notes, estimate) {
-  return generatePDFEmailHTML(name, email, company, phone, notes, estimate).replace('PDF Request', 'New Lead');
-}
-
-function generateDefaultEmailText(name, email, company, phone, notes, estimate) {
-  return generatePDFEmailText(name, email, company, phone, notes, estimate).replace('PDF REQUEST', 'NEW LEAD');
-}
-
-function generateUserConfirmationHTML(name, estimate) {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #e67e22; color: white; padding: 30px; text-align: center; }
-        .content { padding: 30px; }
-        .estimate-box { background: #f4f4f4; padding: 20px; margin: 20px 0; border-radius: 8px; }
-        .total { font-size: 2em; color: #e67e22; font-weight: bold; }
-        .footer { text-align: center; color: #777; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Thank You!</h1>
-          <p>Your Fitout Cost Estimate</p>
-        </div>
-        
-        <div class="content">
-          <p>Hi ${name},</p>
-          <p>Thank you for using the TRDB Fitout Cost Estimator. We've received your request and our team will be in touch with you shortly.</p>
+          <h2>Contact Details</h2>
+          <p><span class="label">Name:</span> ${name}</p>
+          <p><span class="label">Email:</span> ${email}</p>
+          <p><span class="label">Company:</span> ${company || 'Not provided'}</p>
+          <p><span class="label">Phone:</span> ${phone || 'Not provided'}</p>
+          ${notes ? `<p><span class="label">Notes:</span> ${notes}</p>` : ''}
           
           <div class="estimate-box">
-            <h2>Your Estimate</h2>
-            <p class="total">${estimate.total}</p>
-            <p><strong>Market:</strong> ${estimate.market}</p>
-            <p><strong>Size:</strong> ${estimate.size} ${estimate.unit}</p>
-            <p><strong>Quality Level:</strong> ${estimate.quality}</p>
+            <h3>Estimate Summary</h3>
+            <p><span class="label">Project Size:</span> ${estimate.area} sqm</p>
+            <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
+            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Total Estimate:</span> <span class="highlight">${formattedTotal}</span></p>
           </div>
-
-          <p>Our design and construction experts will review your requirements and provide you with a detailed proposal tailored to your project needs.</p>
-          
-          <p><strong>What happens next?</strong></p>
-          <ul>
-            <li>Our team will review your estimate within 24 hours</li>
-            <li>We'll contact you to discuss your project in detail</li>
-            <li>You'll receive a comprehensive proposal with timeline and specifications</li>
-          </ul>
-
-          <p>If you have any immediate questions, feel free to reply to this email or call us.</p>
-          
-          <p>Best regards,<br>
-          <strong>Temple Rock Design Build Team</strong></p>
-        </div>
-
-        <div class="footer">
-          <p><strong>Temple Rock Design Build</strong></p>
-          <p>📧 info@thetemplerock.com | 🌐 <a href="https://thetemplerock.com">thetemplerock.com</a></p>
-          <p>© 2025 Temple Rock Design Build. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -438,34 +166,258 @@ function generateUserConfirmationHTML(name, estimate) {
   `;
 }
 
+// Generate plain text email content for PDF notification
+function generatePDFEmailText(name, email, company, phone, notes, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
+  return `
+📄 NEW PDF REQUEST
+
+CONTACT DETAILS:
+Name: ${name}
+Email: ${email}
+Company: ${company || 'Not provided'}
+Phone: ${phone || 'Not provided'}
+${notes ? `Notes: ${notes}` : ''}
+
+ESTIMATE SUMMARY:
+Project Size: ${estimate.area} sqm
+Quality Level: ${estimate.quality}
+Finish Quality: ${estimate.finishQuality}
+Total Estimate: ${formattedTotal}
+  `.trim();
+}
+
+// Generate HTML email content for Email Estimate notification
+function generateEmailEstimateHTML(name, email, company, phone, notes, estimate) {
+  return generatePDFEmailHTML(name, email, company, phone, notes, estimate)
+    .replace('📄 New PDF Request', '📧 New Email Estimate Request')
+    .replace('requested a PDF estimate', 'requested an email estimate');
+}
+
+// Generate plain text email content for Email Estimate notification
+function generateEmailEstimateText(name, email, company, phone, notes, estimate) {
+  return generatePDFEmailText(name, email, company, phone, notes, estimate)
+    .replace('📄 NEW PDF REQUEST', '📧 NEW EMAIL ESTIMATE REQUEST');
+}
+
+// Generate HTML email content for WhatsApp notification
+function generateWhatsAppEmailHTML(name, email, company, phone, notes, estimate) {
+  return generatePDFEmailHTML(name, email, company, phone, notes, estimate)
+    .replace('📄 New PDF Request', '📱 New WhatsApp Share Request')
+    .replace('requested a PDF estimate', 'requested to share estimate via WhatsApp');
+}
+
+// Generate plain text email content for WhatsApp notification
+function generateWhatsAppEmailText(name, email, company, phone, notes, estimate) {
+  return generatePDFEmailText(name, email, company, phone, notes, estimate)
+    .replace('📄 NEW PDF REQUEST', '📱 NEW WHATSAPP SHARE REQUEST');
+}
+
+// Generate HTML email content for Save notification
+function generateSaveEmailHTML(name, email, estimateName, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .estimate-box { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #ff6b35; }
+        .label { font-weight: bold; color: #1a1a2e; }
+        .highlight { color: #ff6b35; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>💾 New Estimate Saved</h1>
+          <p>A user saved an estimate</p>
+        </div>
+        <div class="content">
+          <h2>User Details</h2>
+          <p><span class="label">Name:</span> ${name}</p>
+          <p><span class="label">Email:</span> ${email}</p>
+          <p><span class="label">Estimate Name:</span> ${estimateName}</p>
+          
+          <div class="estimate-box">
+            <h3>Estimate Summary</h3>
+            <p><span class="label">Project Size:</span> ${estimate.area} sqm</p>
+            <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
+            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Total Estimate:</span> <span class="highlight">${formattedTotal}</span></p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Generate plain text email content for Save notification
+function generateSaveEmailText(name, email, estimateName, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
+  return `
+💾 NEW ESTIMATE SAVED
+
+USER DETAILS:
+Name: ${name}
+Email: ${email}
+Estimate Name: ${estimateName}
+
+ESTIMATE SUMMARY:
+Project Size: ${estimate.area} sqm
+Quality Level: ${estimate.quality}
+Finish Quality: ${estimate.finishQuality}
+Total Estimate: ${formattedTotal}
+  `.trim();
+}
+
+// Generate HTML email content for default notification
+function generateDefaultEmailHTML(name, email, company, phone, notes, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .estimate-box { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #ff6b35; }
+        .label { font-weight: bold; color: #1a1a2e; }
+        .highlight { color: #ff6b35; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>TRDB Fitout Estimate - New Lead</h1>
+        </div>
+        <div class="content">
+          <h2>Contact Details</h2>
+          <p><span class="label">Name:</span> ${name}</p>
+          <p><span class="label">Email:</span> ${email}</p>
+          <p><span class="label">Company:</span> ${company || 'Not provided'}</p>
+          <p><span class="label">Phone:</span> ${phone || 'Not provided'}</p>
+          ${notes ? `<p><span class="label">Notes:</span> ${notes}</p>` : ''}
+          
+          <div class="estimate-box">
+            <h3>Estimate Summary</h3>
+            <p><span class="label">Project Size:</span> ${estimate.area} sqm</p>
+            <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
+            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Total Estimate:</span> <span class="highlight">${formattedTotal}</span></p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Generate plain text email content for default notification
+function generateDefaultEmailText(name, email, company, phone, notes, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
+  return `
+TRDB FITOUT ESTIMATE - NEW LEAD
+
+CONTACT DETAILS:
+Name: ${name}
+Email: ${email}
+Company: ${company || 'Not provided'}
+Phone: ${phone || 'Not provided'}
+${notes ? `Notes: ${notes}` : ''}
+
+ESTIMATE SUMMARY:
+Project Size: ${estimate.area} sqm
+Quality Level: ${estimate.quality}
+Finish Quality: ${estimate.finishQuality}
+Total Estimate: ${formattedTotal}
+  `.trim();
+}
+
+// Generate user confirmation HTML
+function generateUserConfirmationHTML(name, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .estimate-box { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #ff6b35; }
+        .label { font-weight: bold; color: #1a1a2e; }
+        .highlight { color: #ff6b35; font-weight: bold; font-size: 24px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Your TRDB Fitout Cost Estimate</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${name},</p>
+          <p>Thank you for using the TRDB Cost Estimator! Here's your estimate summary:</p>
+          
+          <div class="estimate-box">
+            <h3>Your Estimate</h3>
+            <p><span class="label">Project Size:</span> ${estimate.area} sqm</p>
+            <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
+            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Estimated Total:</span><br><span class="highlight">${formattedTotal}</span></p>
+          </div>
+          
+          <p>Our team will review your project and get back to you shortly.</p>
+          <p>Best regards,<br><strong>Temple Rock Design Build</strong></p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Generate user confirmation text
 function generateUserConfirmationText(name, estimate) {
+  const formattedTotal = formatCurrency(estimate.totalCost);
+  
   return `
 Hi ${name},
 
-Thank you for using the TRDB Fitout Cost Estimator. We've received your request and our team will be in touch with you shortly.
+Thank you for using the TRDB Cost Estimator! Here's your estimate summary:
 
-YOUR ESTIMATE
-${estimate.total}
-
-Market: ${estimate.market}
-Size: ${estimate.size} ${estimate.unit}
+YOUR ESTIMATE:
+Project Size: ${estimate.area} sqm
 Quality Level: ${estimate.quality}
+Finish Quality: ${estimate.finishQuality}
+Estimated Total: ${formattedTotal}
 
-Our design and construction experts will review your requirements and provide you with a detailed proposal tailored to your project needs.
-
-What happens next?
-- Our team will review your estimate within 24 hours
-- We'll contact you to discuss your project in detail
-- You'll receive a comprehensive proposal with timeline and specifications
-
-If you have any immediate questions, feel free to reply to this email or call us.
+Our team will review your project and get back to you shortly.
 
 Best regards,
-Temple Rock Design Build Team
-
----
 Temple Rock Design Build
-info@thetemplerock.com
-https://thetemplerock.com
-  `;
+  `.trim();
+}
+
+// Format currency
+function formatCurrency(amount) {
+  if (amount >= 1000000) {
+    return `AED ${(amount / 1000000).toFixed(2)}M`;
+  } else if (amount >= 1000) {
+    return `AED ${(amount / 1000).toFixed(0)}K`;
+  } else {
+    return `AED ${amount.toLocaleString()}`;
+  }
 }
