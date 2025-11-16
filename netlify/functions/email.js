@@ -349,6 +349,11 @@ Total Estimate: ${formattedTotal}
 function generateUserConfirmationHTML(name, estimate) {
   const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
+  // Handle different possible field names
+  const area = estimate.area || estimate.size || 'Not specified';
+  const quality = estimate.quality || estimate.qualityLevel || 'Not specified';
+  const finishQuality = estimate.finishQuality || estimate.finish || 'Not specified';
+  
   return `
     <!DOCTYPE html>
     <html>
@@ -374,9 +379,9 @@ function generateUserConfirmationHTML(name, estimate) {
           
           <div class="estimate-box">
             <h3>Your Estimate</h3>
-            <p><span class="label">Project Size:</span> ${estimate.area} sqm</p>
-            <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
-            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Project Size:</span> ${area} sqm</p>
+            <p><span class="label">Quality Level:</span> ${quality}</p>
+            <p><span class="label">Finish Quality:</span> ${finishQuality}</p>
             <p><span class="label">Estimated Total:</span><br><span class="highlight">${formattedTotal}</span></p>
           </div>
           
@@ -393,15 +398,20 @@ function generateUserConfirmationHTML(name, estimate) {
 function generateUserConfirmationText(name, estimate) {
   const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
+  // Handle different possible field names
+  const area = estimate.area || estimate.size || 'Not specified';
+  const quality = estimate.quality || estimate.qualityLevel || 'Not specified';
+  const finishQuality = estimate.finishQuality || estimate.finish || 'Not specified';
+  
   return `
 Hi ${name},
 
 Thank you for using the TRDB Cost Estimator! Here's your estimate summary:
 
 YOUR ESTIMATE:
-Project Size: ${estimate.area} sqm
-Quality Level: ${estimate.quality}
-Finish Quality: ${estimate.finishQuality}
+Project Size: ${area} sqm
+Quality Level: ${quality}
+Finish Quality: ${finishQuality}
 Estimated Total: ${formattedTotal}
 
 Our team will review your project and get back to you shortly.
