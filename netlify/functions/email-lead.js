@@ -122,7 +122,7 @@ exports.handler = async (event, context) => {
 
 // Generate HTML email content for PDF notification
 function generatePDFEmailHTML(name, email, company, phone, notes, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
     <!DOCTYPE html>
@@ -168,7 +168,7 @@ function generatePDFEmailHTML(name, email, company, phone, notes, estimate) {
 
 // Generate plain text email content for PDF notification
 function generatePDFEmailText(name, email, company, phone, notes, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
 📄 NEW PDF REQUEST
@@ -216,7 +216,7 @@ function generateWhatsAppEmailText(name, email, company, phone, notes, estimate)
 
 // Generate HTML email content for Save notification
 function generateSaveEmailHTML(name, email, estimateName, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
     <!DOCTYPE html>
@@ -260,7 +260,7 @@ function generateSaveEmailHTML(name, email, estimateName, estimate) {
 
 // Generate plain text email content for Save notification
 function generateSaveEmailText(name, email, estimateName, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
 💾 NEW ESTIMATE SAVED
@@ -280,7 +280,7 @@ Total Estimate: ${formattedTotal}
 
 // Generate HTML email content for default notification
 function generateDefaultEmailHTML(name, email, company, phone, notes, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
     <!DOCTYPE html>
@@ -325,7 +325,7 @@ function generateDefaultEmailHTML(name, email, company, phone, notes, estimate) 
 
 // Generate plain text email content for default notification
 function generateDefaultEmailText(name, email, company, phone, notes, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
 TRDB FITOUT ESTIMATE - NEW LEAD
@@ -347,7 +347,7 @@ Total Estimate: ${formattedTotal}
 
 // Generate user confirmation HTML
 function generateUserConfirmationHTML(name, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
     <!DOCTYPE html>
@@ -391,7 +391,7 @@ function generateUserConfirmationHTML(name, estimate) {
 
 // Generate user confirmation text
 function generateUserConfirmationText(name, estimate) {
-  const formattedTotal = formatCurrency(estimate.totalCost);
+  const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   return `
 Hi ${name},
@@ -411,13 +411,31 @@ Temple Rock Design Build
   `.trim();
 }
 
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+// Extract total cost from estimate object (handles different field names)
+function getEstimateTotal(estimate) {
+  // Try different possible field names
+  return estimate.totalCost || estimate.total || estimate.grandTotal || estimate.estimatedTotal || 0;
+}
+
 // Format currency
 function formatCurrency(amount) {
-  if (amount >= 1000000) {
-    return `AED ${(amount / 1000000).toFixed(2)}M`;
-  } else if (amount >= 1000) {
-    return `AED ${(amount / 1000).toFixed(0)}K`;
+  // Handle undefined or null values
+  if (!amount && amount !== 0) {
+    return 'AED 0';
+  }
+  
+  // Convert to number if it's a string
+  const numAmount = typeof amount === 'string' ? parseFloat(amount.replace(/[^0-9.-]/g, '')) : amount;
+  
+  if (numAmount >= 1000000) {
+    return `AED ${(numAmount / 1000000).toFixed(2)}M`;
+  } else if (numAmount >= 1000) {
+    return `AED ${(numAmount / 1000).toFixed(0)}K`;
   } else {
-    return `AED ${amount.toLocaleString()}`;
+    return `AED ${numAmount.toLocaleString()}`;
   }
 }
