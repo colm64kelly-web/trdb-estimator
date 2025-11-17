@@ -1565,7 +1565,7 @@ async function generatePDF(){
 document.getElementById('marketSelect').addEventListener('change',e=>{state.market=e.target.value;updateUI()});
 document.getElementById('floorCount').addEventListener('change',()=>updateUI());
 document.getElementById('usageType').addEventListener('change',()=>updateUI());
-document.getElementById('btn-sqft').addEventListener('click',()=>{
+document.getElementById('btn-sqft').addEventListener('click', async function(){
     state.unit='sqft';
     document.getElementById('btn-sqft').classList.add('active');
     document.getElementById('btn-m2').classList.remove('active');
@@ -1576,9 +1576,15 @@ document.getElementById('btn-sqft').addEventListener('click',()=>{
     });
     // Update input field to show sqft
     document.getElementById('sizeInput').value = state.size;
-    updateUI();
+    await updateUI();
+    
+    // 🔄 FIX: Refresh breakdown modal if open
+    const modal = document.getElementById('breakdownModal');
+    if (modal && modal.getAttribute('aria-hidden') === 'false') {
+        await openBreakdownModal();
+    }
 });
-document.getElementById('btn-m2').addEventListener('click',()=>{
+document.getElementById('btn-m2').addEventListener('click', async function(){
     state.unit='m2';
     document.getElementById('btn-sqft').classList.remove('active');
     document.getElementById('btn-m2').classList.add('active');
@@ -1593,7 +1599,13 @@ document.getElementById('btn-m2').addEventListener('click',()=>{
     document.getElementById('sizeInput').value = sizeM2;
     // Update range to use m² scale (convert to sqft for internal storage)
     document.getElementById('sizeRange').value = state.size;
-    updateUI();
+    await updateUI();
+    
+    // 🔄 FIX: Refresh breakdown modal if open
+    const modal = document.getElementById('breakdownModal');
+    if (modal && modal.getAttribute('aria-hidden') === 'false') {
+        await openBreakdownModal();
+    }
 });
 const sizeRange=document.getElementById('sizeRange');
 const sizeInput=document.getElementById('sizeInput');
