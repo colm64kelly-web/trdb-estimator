@@ -154,9 +154,9 @@ function generatePDFEmailHTML(name, email, company, phone, notes, estimate) {
           
           <div class="estimate-box">
             <h3>Estimate Summary</h3>
-            <p><span class="label">Project Size:</span> ${estimate.size} ${estimate.unit || 'sqft'}
+            <p><span class="label">Project Size:</span> ${estimate.size} ${estimate.unit || 'sqft'}</p>
             <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
-            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality || 'Not specified'}</p>
             <p><span class="label">Total Estimate:</span> <span class="highlight">${formattedTotal}</span></p>
           </div>
         </div>
@@ -183,7 +183,7 @@ ${notes ? `Notes: ${notes}` : ''}
 ESTIMATE SUMMARY:
 Project Size: ${estimate.size} ${estimate.unit || 'sqft'}
 Quality Level: ${estimate.quality}
-Finish Quality: ${estimate.finishQuality}
+Finish Quality: ${estimate.finishQuality || 'Not specified'}
 Total Estimate: ${formattedTotal}
   `.trim();
 }
@@ -246,9 +246,9 @@ function generateSaveEmailHTML(name, email, estimateName, estimate) {
           
           <div class="estimate-box">
             <h3>Estimate Summary</h3>
-            <p><span class="label">Project Size:</span> ${estimate.size} ${estimate.unit || 'sqft'}
+            <p><span class="label">Project Size:</span> ${estimate.size} ${estimate.unit || 'sqft'}</p>
             <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
-            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality || 'Not specified'}</p>
             <p><span class="label">Total Estimate:</span> <span class="highlight">${formattedTotal}</span></p>
           </div>
         </div>
@@ -273,7 +273,7 @@ Estimate Name: ${estimateName}
 ESTIMATE SUMMARY:
 Project Size: ${estimate.size} ${estimate.unit || 'sqft'}
 Quality Level: ${estimate.quality}
-Finish Quality: ${estimate.finishQuality}
+Finish Quality: ${estimate.finishQuality || 'Not specified'}
 Total Estimate: ${formattedTotal}
   `.trim();
 }
@@ -311,9 +311,9 @@ function generateDefaultEmailHTML(name, email, company, phone, notes, estimate) 
           
           <div class="estimate-box">
             <h3>Estimate Summary</h3>
-            <p><span class="label">Project Size:</span> ${estimate.size} ${estimate.unit || 'sqft'}
+            <p><span class="label">Project Size:</span> ${estimate.size} ${estimate.unit || 'sqft'}</p>
             <p><span class="label">Quality Level:</span> ${estimate.quality}</p>
-            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality}</p>
+            <p><span class="label">Finish Quality:</span> ${estimate.finishQuality || 'Not specified'}</p>
             <p><span class="label">Total Estimate:</span> <span class="highlight">${formattedTotal}</span></p>
           </div>
         </div>
@@ -340,7 +340,7 @@ ${notes ? `Notes: ${notes}` : ''}
 ESTIMATE SUMMARY:
 Project Size: ${estimate.size} ${estimate.unit || 'sqft'}
 Quality Level: ${estimate.quality}
-Finish Quality: ${estimate.finishQuality}
+Finish Quality: ${estimate.finishQuality || 'Not specified'}
 Total Estimate: ${formattedTotal}
   `.trim();
 }
@@ -350,7 +350,8 @@ function generateUserConfirmationHTML(name, estimate) {
   const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   // Handle different possible field names
-  const area = estimate.area || estimate.size || 'Not specified';
+  const size = estimate.size || 'Not specified';
+  const unit = estimate.unit || 'sqft';
   const quality = estimate.quality || estimate.qualityLevel || 'Not specified';
   const finishQuality = estimate.finishQuality || estimate.finish || 'Not specified';
   
@@ -379,7 +380,7 @@ function generateUserConfirmationHTML(name, estimate) {
           
           <div class="estimate-box">
             <h3>Your Estimate</h3>
-            <p><span class="label">Project Size:</span> ${area} ${estimate.unit || 'sqft'}</p>
+            <p><span class="label">Project Size:</span> ${size} ${unit}</p>
             <p><span class="label">Quality Level:</span> ${quality}</p>
             <p><span class="label">Finish Quality:</span> ${finishQuality}</p>
             <p><span class="label">Estimated Total:</span><br><span class="highlight">${formattedTotal}</span></p>
@@ -399,7 +400,8 @@ function generateUserConfirmationText(name, estimate) {
   const formattedTotal = formatCurrency(getEstimateTotal(estimate));
   
   // Handle different possible field names
-  const area = estimate.area || estimate.size || 'Not specified';
+  const size = estimate.size || 'Not specified';
+  const unit = estimate.unit || 'sqft';
   const quality = estimate.quality || estimate.qualityLevel || 'Not specified';
   const finishQuality = estimate.finishQuality || estimate.finish || 'Not specified';
   
@@ -409,7 +411,7 @@ Hi ${name},
 Thank you for using the TRDB Cost Estimator! Here's your estimate summary:
 
 YOUR ESTIMATE:
-Project Size: ${area} ${estimate.unit || 'sqft'}
+Project Size: ${size} ${unit}
 Quality Level: ${quality}
 Finish Quality: ${finishQuality}
 Estimated Total: ${formattedTotal}
