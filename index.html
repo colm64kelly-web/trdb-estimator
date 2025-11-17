@@ -2842,7 +2842,7 @@ console.log('✅ Signup system ready');
             const estimateData = {
                 user_id: userId,
                 estimate_name: estimateName,
-                area: area,
+                area: unit === 'm2' ? sqftToM2(area) : area,
                 unit: unit,
                 location: location,
                 quality_level: quality,
