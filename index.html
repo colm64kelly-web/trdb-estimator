@@ -1119,7 +1119,10 @@ async function updateUI(){
     const{market,size,unit}=state;
     
     document.getElementById('totalFigure').textContent=formatCurrency(calc.total);
-    document.getElementById('chipPerSqft').textContent=`${formatCurrency(calc.perSqft)} per ${unit}`;
+    // Calculate per-unit cost based on current unit
+const displaySize = unit === 'm2' ? sqftToM2(size) : size;
+const perUnitCost = calc.total / displaySize;
+document.getElementById('chipPerSqft').textContent=`${formatCurrency(Math.round(perUnitCost))} per ${unit}`;
     document.getElementById('chipSize').textContent=unit==='sqft'?`${size.toLocaleString()} SqFt`:`${sqftToM2(size).toLocaleString()} m²`;
     document.getElementById('chipLocation').textContent=market
         .replace('uae-abudhabi','UAE: Abu Dhabi')
