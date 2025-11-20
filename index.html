@@ -1342,7 +1342,7 @@ document.getElementById('leadForm').addEventListener('submit',async function(e){
         notes:document.getElementById('leadNotes').value,
         estimate:{
             market:state.market,
-            size:state.size,
+            size: state.unit === 'm2' ? Math.round(state.size * 0.092903) : state.size,
             unit:state.unit || 'sqft',
             quality:state.quality,
             total:Number(calc.total),  // FORCE to number, strip any formatting
