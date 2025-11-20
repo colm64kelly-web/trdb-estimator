@@ -1626,6 +1626,9 @@ function debouncedUpdateUI() {
 sizeRange.addEventListener('input',e=>{
     state.size=parseInt(e.target.value);
     
+    // Set a flag to prevent updateUIElementsFromState from interfering
+    window.isSliderDragging = true;
+    
     // Immediately update input in current unit BEFORE anything else
     if(state.unit==='m2'){
         sizeInput.value=Math.round(state.size*0.092903);
@@ -1640,6 +1643,11 @@ sizeRange.addEventListener('input',e=>{
     
     // Debounce the calculation
     debouncedUpdateUI();
+    
+    // Clear flag after a short delay
+    setTimeout(() => {
+        window.isSliderDragging = false;
+    }, 100);
 });
 sizeInput.addEventListener('input',e=>{
     let inputValue=parseInt(e.target.value)||1000;
@@ -3130,7 +3138,13 @@ Check console for details.`);
 
         // NEW FUNCTION: Update all UI elements from state
         function updateUIElementsFromState() {
-            console.log('🎨 Updating all UI elements from state:', window.state);
+    // Don't interfere while slider is being dragged
+    if (window.isSliderDragging) {
+        console.log('⏸️ Skipping updateUIElementsFromState - slider is being dragged');
+        return;
+    }
+    
+    console.log('🎨 Updating all UI elements from state:', window.state);
             
             // Update size input and slider
             const sizeInput = document.getElementById('sizeInput');
