@@ -1625,13 +1625,20 @@ function debouncedUpdateUI() {
 
 sizeRange.addEventListener('input',e=>{
     state.size=parseInt(e.target.value);
+    
+    // Immediately update input in current unit BEFORE anything else
     if(state.unit==='m2'){
         sizeInput.value=Math.round(state.size*0.092903);
     }else{
         sizeInput.value=state.size;
     }
-    // Update display immediately but debounce calculation
-    document.getElementById('chipSize').textContent = state.unit==='sqft' ? `${state.size.toLocaleString()} SqFt` : `${Math.round(state.size*0.092903).toLocaleString()} m²`;
+    
+    // Update display chip
+    const displaySize = state.unit === 'm2' ? Math.round(state.size*0.092903) : state.size;
+    const displayUnit = state.unit === 'm2' ? 'm²' : 'SqFt';
+    document.getElementById('chipSize').textContent = `${displaySize.toLocaleString()} ${displayUnit}`;
+    
+    // Debounce the calculation
     debouncedUpdateUI();
 });
 sizeInput.addEventListener('input',e=>{
