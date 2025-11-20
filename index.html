@@ -3277,22 +3277,28 @@ Check console for details.`);
   </script>
   <!-- Old price patch removed – multipliers now in calculate() function -->
 
-  <!-- PRO UNLOCK MODAL -->
-<!-- PRO UNLOCK MODAL - INLINE VERSION (NO CSP) -->
-<div id="proModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:none;justify-content:center;align-items:center;font-family:Arial,sans-serif">
-  <div style="background:white;border-radius:16px;padding:30px;width:90%;max-width:500px;text-align:center;position:relative">
-    <button style="position:absolute;top:15px;right:15px;background:none;border:none;font-size:28px;color:#666;cursor:pointer;font-weight:bold" onclick="document.getElementById('proModal').style.display='none'">×</button>
-    <h2 style="font-size:28px;font-weight:900;margin:0 0 24px;color:#111">Go Pro – Unlock Full Power</h2>
+<!-- PRO UNLOCK MODAL - UPDATED VERSION -->
+<!-- Replace the existing proModal section in your index.html with this complete code -->
+
+<!-- PRO MODAL -->
+<div id="proModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:none;justify-content:center;align-items:center;font-family:Arial,sans-serif;padding:20px;box-sizing:border-box;overflow-y:auto">
+  <div style="background:white;border-radius:16px;padding:30px;width:100%;max-width:500px;text-align:center;position:relative;margin:auto;max-height:90vh;overflow-y:auto">
+    <!-- CLOSE BUTTON - Made more visible for iOS -->
+    <button style="position:absolute;top:15px;right:15px;background:#ef4444;border:none;font-size:24px;color:white;cursor:pointer;font-weight:bold;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:10" onclick="document.getElementById('proModal').style.display='none'">×</button>
+    
+    <h2 style="font-size:28px;font-weight:900;margin:0 0 24px;color:#111;padding-right:50px">Go Pro – Unlock Full Power</h2>
     
     <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
       <!-- FREEMIUM -->
       <div style="padding:20px;border:1px solid #e5e7eb;border-radius:12px;width:200px">
         <h3 style="font-weight:700;margin:0 0 8px;color:#374151">Freemium</h3>
-        <p style="font-size:36px;font-weight:900;margin:0;color:#111">€0</p>
-        <ul style="text-align:left;font-size:14px;margin:12px 0 0;line-height:1.6;color:#4b5563">
-          <li>Live Estimator</li>
-          <li>GitHub Sync</li>
-          <li>Basic Support</li>
+        <p style="font-size:36px;font-weight:900;margin:0;color:#111">
+          <span id="proModalFreeCurrency">AED</span> 0
+        </p>
+        <ul style="text-align:left;font-size:14px;margin:12px 0 0;line-height:1.6;color:#4b5563;list-style:none;padding:0">
+          <li style="padding:4px 0">✓ Live Estimator</li>
+          <li style="padding:4px 0">✓ GitHub Sync</li>
+          <li style="padding:4px 0">✓ Basic Support</li>
         </ul>
       </div>
 
@@ -3300,45 +3306,163 @@ Check console for details.`);
       <div style="padding:20px;border:3px solid #10b981;border-radius:12px;width:200px;position:relative">
         <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#10b981;color:white;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600">POPULAR</span>
         <h3 style="font-weight:700;margin:0 0 8px;color:#374151">Pro</h3>
-        <p style="font-size:36px;font-weight:900;margin:0;color:#111">€49<span style="font-size:18px;font-weight:400">/mo</span></p>
-        <ul style="text-align:left;font-size:14px;margin:12px 0 0;line-height:1.6;color:#4b5563">
-          <li>3D + AR Export</li>
-          <li>Mobile Swipe Tabs</li>
-          <li>Custom Domain</li>
-          <li>Priority Support</li>
-          <li>White-label</li>
+        <p style="font-size:36px;font-weight:900;margin:0;color:#111">
+          <span id="proModalProCurrency">AED</span> 200<span style="font-size:18px;font-weight:400">/mo</span>
+        </p>
+        <ul style="text-align:left;font-size:14px;margin:12px 0 0;line-height:1.6;color:#4b5563;list-style:none;padding:0">
+          <li style="padding:4px 0">✓ 3D + AR Export</li>
+          <li style="padding:4px 0">✓ Mobile Swipe Tabs</li>
+          <li style="padding:4px 0">✓ Custom Domain</li>
+          <li style="padding:4px 0">✓ Priority Support</li>
+          <li style="padding:4px 0">✓ White-label</li>
         </ul>
-        <a href="https://buy.stripe.com/pro-trdb" style="display:block;background:#10b981;color:white;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:16px">Go Pro Now</a>
+        <button onclick="showComingSoon('pro')" style="display:block;width:100%;background:#10b981;color:white;padding:12px 20px;border-radius:8px;border:none;font-weight:700;margin-top:16px;cursor:pointer;transition:0.2s" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Go Pro Now</button>
       </div>
     </div>
 
     <p style="margin:24px 0 0">
-      <a href="https://pro-demo.thetemplerock.com" target="_blank" style="color:#10b981;font-weight:700;text-decoration:none">Live Pro Demo →</a>
+      <button onclick="showComingSoon('demo')" style="background:none;border:none;color:#10b981;font-weight:700;cursor:pointer;text-decoration:underline;font-size:16px">Live Pro Demo →</button>
     </p>
   </div>
 </div>
-<!-- 3D + AR EXPORT BUTTON (Pro Only) -->
-<div id="export3D" style="margin:32px auto 24px;text-align:center;display:none">
-  <button style="background:#10b981;color:white;padding:14px 28px;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:16px;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:transform 0.2s"
-          onmouseover="this.style.transform='translateY(-2px)'"
-          onmouseout="this.style.transform='translateY(0)'"
-          onclick="alert('3D + AR Export: Coming Q4 2025! (Pro Only) 🚀')">
-    Export 3D Model + AR View
-  </button>
+
+<!-- COMING SOON MODAL -->
+<div id="comingSoonModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:none;justify-content:center;align-items:center;font-family:Arial,sans-serif;padding:20px">
+  <div style="background:white;border-radius:16px;padding:40px;max-width:500px;width:90%;text-align:center;position:relative">
+    <button style="position:absolute;top:15px;right:15px;background:#ef4444;border:none;font-size:24px;color:white;cursor:pointer;font-weight:bold;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center" onclick="document.getElementById('comingSoonModal').style.display='none'">×</button>
+    <div style="font-size:64px;margin-bottom:20px">🚀</div>
+    <h2 style="font-size:32px;font-weight:900;margin:0 0 16px;color:#111">Coming Soon!</h2>
+    <p style="font-size:18px;color:#4b5563;margin:0 0 24px;line-height:1.6">We're working hard to bring you Pro features. Stay tuned!</p>
+    <p style="font-size:14px;color:#6b7280;margin:0">Want early access? Contact us at <a href="mailto:info@thetemplerock.com" style="color:#10b981;text-decoration:none;font-weight:600">info@thetemplerock.com</a></p>
+  </div>
 </div>
 
+<!-- JAVASCRIPT FOR PRO MODAL -->
 <script>
-  // Show 3D export button after 10 seconds (Pro feature tease)
-  setTimeout(() => {
-    const btn = document.getElementById('export3D');
-    if (btn) btn.style.display = 'block';
-  }, 10000);
-</script>
-<script>
-  setTimeout(() => {
+// Update Pro Modal currency based on market selection
+function updateProModalCurrency() {
+    const market = document.getElementById('marketSelect')?.value || 'uae-dubai';
+    const currency = market.startsWith('ksa') ? 'SAR' : 'AED';
+    
+    const freeCurrencyElem = document.getElementById('proModalFreeCurrency');
+    const proCurrencyElem = document.getElementById('proModalProCurrency');
+    
+    if (freeCurrencyElem) freeCurrencyElem.textContent = currency;
+    if (proCurrencyElem) proCurrencyElem.textContent = currency;
+    
+    console.log('💰 Pro Modal currency updated:', currency);
+}
+
+// Show Coming Soon modal
+function showComingSoon(source) {
+    console.log('🚀 Coming Soon clicked:', source);
+    
+    // Close Pro modal
+    document.getElementById('proModal').style.display = 'none';
+    
+    // Show Coming Soon modal
+    document.getElementById('comingSoonModal').style.display = 'flex';
+    
+    // Track event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'coming_soon_clicked', {
+            'event_category': 'pro_upgrade',
+            'event_label': source
+        });
+    }
+}
+
+// Update currency when market changes
+document.getElementById('marketSelect')?.addEventListener('change', updateProModalCurrency);
+
+// Initialize currency on load
+document.addEventListener('DOMContentLoaded', updateProModalCurrency);
+
+// Update showProUpgradeModal to refresh currency
+const originalShowProUpgradeModal = window.showProUpgradeModal;
+window.showProUpgradeModal = function() {
+    updateProModalCurrency();
     const modal = document.getElementById('proModal');
     if (modal) modal.style.display = 'flex';
-  }, 8000);
+};
+
+// If showProUpgradeModal doesn't exist yet, create it
+if (typeof window.showProUpgradeModal === 'undefined') {
+    window.showProUpgradeModal = function() {
+        updateProModalCurrency();
+        const modal = document.getElementById('proModal');
+        if (modal) modal.style.display = 'flex';
+    };
+}
+</script>
+
+<!-- CSS FOR PRO MODAL - iOS OPTIMIZED -->
+<style>
+/* iOS-specific fixes for Pro Modal */
+@media (max-width: 640px) {
+    #proModal > div {
+        width: 90% !important;
+        max-width: 400px !important;
+        padding: 20px !important;
+        margin: 20px auto !important;
+        max-height: 85vh !important;
+    }
+    
+    #proModal h2 {
+        font-size: 22px !important;
+        padding-right: 45px !important;
+    }
+    
+    #proModal > div > div {
+        flex-direction: column !important;
+    }
+    
+    #proModal > div > div > div {
+        width: 100% !important;
+        max-width: 280px !important;
+        margin: 0 auto !important;
+    }
+    
+    /* Make close button more visible on iOS */
+    #proModal > div > button {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 22px !important;
+        top: 10px !important;
+        right: 10px !important;
+    }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    #proModal {
+        align-items: flex-start !important;
+        padding-top: 10px !important;
+    }
+    
+    #proModal > div {
+        margin: 10px auto !important;
+        max-height: 95vh !important;
+    }
+}
+
+/* Coming Soon Modal - Mobile optimized */
+@media (max-width: 640px) {
+    #comingSoonModal > div {
+        padding: 30px 20px !important;
+        width: 85% !important;
+    }
+    
+    #comingSoonModal h2 {
+        font-size: 24px !important;
+    }
+    
+    #comingSoonModal > div > div:first-child {
+        font-size: 48px !important;
+    }
+}
+</style>
+
 </script>
     <script>
 // === FIX: Make Floors & Usage change the price! ===
