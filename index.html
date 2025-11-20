@@ -993,7 +993,7 @@ class RateLimiter {
 
 const calcLimiter = new RateLimiter(60, 60000); // 60 calculations per minute (1 per second)
 
-window.formatCurrency = function(num){const currency=state.market.startsWith('ksa')?'SAR':'AED';if(num>=1000000)return`${currency} ${(num/1000000).toFixed(2)}M`;if(num>=1000)return`${currency} ${(num/1000).toFixed(0)}K`;return`${currency} ${num.toLocaleString()}`}
+window.formatCurrency = function(num){const currency=state.market.startsWith('ksa')?'SAR':'AED';if(num>=1000000)return`${currency} ${(num/1000000).toFixed(2)}M`;if(num>=1000)return`${currency} ${(num/1000).toFixed(1)}K`;return`${currency} ${num.toLocaleString()}`}
 function sqftToM2(sqft){return Math.round(sqft*0.092903)}
 
 // 🔒 SECURE: Call server-side API for pricing calculation
