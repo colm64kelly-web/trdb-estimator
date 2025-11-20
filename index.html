@@ -1660,8 +1660,33 @@ sizeInput.addEventListener('input',e=>{
     sizeRange.value=state.size;
     updateUI();
 });
-document.getElementById('sizeMinus').addEventListener('click',()=>{state.size=Math.max(250,state.size-50);sizeInput.value=state.size;sizeRange.value=state.size;updateUI()});
-document.getElementById('sizePlus').addEventListener('click',()=>{state.size=Math.min(20000,state.size+50);sizeInput.value=state.size;sizeRange.value=state.size;updateUI()});
+document.getElementById('sizeMinus').addEventListener('click',()=>{
+    state.size=Math.max(250,state.size-50);
+    
+    // Update input in current unit
+    if(state.unit==='m2'){
+        sizeInput.value=Math.round(state.size*0.092903);
+    }else{
+        sizeInput.value=state.size;
+    }
+    
+    sizeRange.value=state.size;
+    updateUI();
+});
+
+document.getElementById('sizePlus').addEventListener('click',()=>{
+    state.size=Math.min(20000,state.size+50);
+    
+    // Update input in current unit
+    if(state.unit==='m2'){
+        sizeInput.value=Math.round(state.size*0.092903);
+    }else{
+        sizeInput.value=state.size;
+    }
+    
+    sizeRange.value=state.size;
+    updateUI();
+});
 document.querySelectorAll('.quick-chips .chip').forEach(chip=>{chip.addEventListener('click',()=>{state.size=parseInt(chip.dataset.size);sizeInput.value=state.size;sizeRange.value=state.size;updateUI()})});
 document.querySelectorAll('input[name="quality"]').forEach(radio=>{radio.addEventListener('change',e=>{state.quality=e.target.value;updateUI()})});
 document.querySelectorAll('.options input[type="checkbox"]').forEach(checkbox=>{checkbox.addEventListener('change',e=>{if(e.target.checked){state.options.push(e.target.value)}else{state.options=state.options.filter(opt=>opt!==e.target.value)}updateUI()})});
