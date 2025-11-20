@@ -1692,7 +1692,21 @@ document.getElementById('sizePlus').addEventListener('click',()=>{
     sizeRange.value=state.size;
     updateUI();
 });
-document.querySelectorAll('.quick-chips .chip').forEach(chip=>{chip.addEventListener('click',()=>{state.size=parseInt(chip.dataset.size);sizeInput.value=state.size;sizeRange.value=state.size;updateUI()})});
+document.querySelectorAll('.quick-chips .chip').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+        state.size=parseInt(chip.dataset.size);
+        
+        // Update input in current unit
+        if(state.unit==='m2'){
+            sizeInput.value=Math.round(state.size*0.092903);
+        }else{
+            sizeInput.value=state.size;
+        }
+        
+        sizeRange.value=state.size;
+        updateUI();
+    });
+});
 document.querySelectorAll('input[name="quality"]').forEach(radio=>{radio.addEventListener('change',e=>{state.quality=e.target.value;updateUI()})});
 document.querySelectorAll('.options input[type="checkbox"]').forEach(checkbox=>{checkbox.addEventListener('change',e=>{if(e.target.checked){state.options.push(e.target.value)}else{state.options=state.options.filter(opt=>opt!==e.target.value)}updateUI()})});
 document.getElementById('btnViewDetails').addEventListener('click',openBreakdownModal);
