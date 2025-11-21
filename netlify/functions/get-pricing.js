@@ -1,5 +1,8 @@
 // Netlify Function: Secure Pricing API
 // Path: netlify/functions/get-pricing.js
+// Version: 1.0
+// Last Updated: November 21, 2025
+// Rates calibrated based on: Odgers Berndtson (JLT) + AMIT (Marsa Al-Seef) + Compass benchmarks
 
 /**
  * SECURE PRICING ENDPOINT
