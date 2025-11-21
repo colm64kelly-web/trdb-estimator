@@ -15,32 +15,31 @@
 // Store pricing securely on server
 const PRICING_DATABASE = {
   'uae-dubai': {
-    light: [120, 170],
-    standard: [170, 240],
-    premium: [240, 340]
+    light: [167, 223],      // Was: [120, 170] → +39% / +31%
+    standard: [223, 297],   // Was: [170, 240] → +31% / +24%
+    premium: [297, 418]     // Was: [240, 340] → +24% / +23%
   },
   'uae-abudhabi': {
-    light: [115, 165],
-    standard: [165, 230],
-    premium: [230, 320]
+    light: [167, 223],      // Was: [115, 165] → Same as Dubai now
+    standard: [223, 297],   // Was: [165, 230]
+    premium: [297, 418]     // Was: [230, 320]
   },
   'uae-rasalkhaimah': {
-    light: [100, 145],
-    standard: [145, 200],
-    premium: [200, 280]
+    light: [150, 200],      // Was: [100, 145] → ~10% lower than Dubai
+    standard: [200, 267],   // Was: [145, 200]
+    premium: [267, 376]     // Was: [200, 280]
   },
   'ksa-riyadh': {
-    light: [130, 185],
-    standard: [185, 260],
-    premium: [260, 370]
+    light: [150, 201],      // Was: [130, 185] → 90% of UAE rates
+    standard: [201, 267],   // Was: [185, 260]
+    premium: [267, 376]     // Was: [260, 370]
   },
   'ksa-jeddah': {
-    light: [125, 180],
-    standard: [180, 250],
-    premium: [250, 355]
+    light: [150, 201],      // Was: [125, 180] → Same as Riyadh
+    standard: [201, 267],   // Was: [180, 250]
+    premium: [267, 376]     // Was: [250, 355]
   }
 };
-
 const MEP_SPLIT = 0.35;
 
 const OPTION_MULTIPLIERS = {
