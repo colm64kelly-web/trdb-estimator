@@ -43,12 +43,12 @@ const PRICING_DATABASE = {
 const MEP_SPLIT = 0.35;
 
 const OPTION_MULTIPLIERS = {
-  furniture: 0.10,
-  ffe: 0.09,
-  art: 0.05,
-  smart: 0.06,
-  green: 0.04,
-  fullhvac: 0.15
+  furniture: 0.13,    // Was: 0.10 → +30% = 0.13
+  ffe: 0.12,          // Was: 0.09 → +30% = 0.117 ≈ 0.12
+  art: 0.07,          // Was: 0.05 → +30% = 0.065 ≈ 0.07
+  smart: 0.08,        // Was: 0.06 → +30% = 0.078 ≈ 0.08
+  green: 0.05,        // Was: 0.04 → +30% = 0.052 ≈ 0.05
+  fullhvac: 0.20      // Was: 0.15 → +30% = 0.195 ≈ 0.20
 };
 
 const OPTION_LABELS = {
